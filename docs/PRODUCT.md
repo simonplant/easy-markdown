@@ -4,7 +4,7 @@ This document is the single source of truth for what we are building, why, and t
 
 **How to read this document**: Section 1 is the north star (press release + why now). Sections 2–3 establish intent (who we serve, what problems we solve). Sections 4–6 establish constraints (principles, non-goals, and the decisions that bind us). Sections 7–9 define what gets built (features, journeys, phases). Sections 10–13 define how we position, price, grow, and measure.
 
-**Ambition level**: We are not building a nice indie app. We are building **the best markdown editor in the world** — the defacto tool everyone reaches for when they need to write markdown outside of Cursor or VS Code. Every decision in this document should be evaluated against that bar.
+**Ambition level**: We are not building a nice indie app. We are building **what Cursor is for code, but for every document that isn't code** — with the craft and polish of the best Apple-native apps. In 2026, markdown is the universal format for unstructured data: AI agents produce it, developers write in it, teams collaborate through it. For 99% of documents people create — briefs, reports, READMEs, blog posts, architecture docs — markdown + AI + beautiful rendering is all you need. Word is overkill. Google Docs is overkill. easy-markdown is enough. Every decision in this document should be evaluated against that bar.
 
 ---
 
@@ -14,21 +14,23 @@ This is the Amazon "working backwards" press release. It describes the product a
 
 > **FOR IMMEDIATE RELEASE**
 >
-> ### easy-markdown: Markdown Is the Document Format of the AI Age. This Is Its Editor.
+> ### easy-markdown: Cursor for Prose. Apple-Quality Craft. The Document Tool for the AI Age.
 >
-> *The native markdown editor with built-in AI that opens any file on your device — no vaults, no sign-up, no lock-in, no limitations.*
+> *The AI-native document tool that handles everything from an AI agent's research report to your next product brief — beautifully, privately, on any device.*
 >
-> **2026** — Markdown has won. It's how developers write documentation, how writers draft blog posts, how teams capture knowledge, how AI reads and generates text. It's the universal plain-text format that everything understands. But the tools for writing it are stuck in the past — trapped behind vaults, locked in proprietary storage, or buried inside code editors that treat prose as an afterthought.
+> **2026** — Markdown has become the universal format for unstructured data. Every AI agent — Claude, ChatGPT, Perplexity, Copilot, Cursor — produces it. Every developer writes in it. Every team collaborates through it. Product briefs, architecture docs, research reports, blog posts, READMEs, meeting summaries — they're all markdown. For 99% of the documents people create, markdown + AI + beautiful rendering is all you need. Word is overkill. Google Docs is overkill.
 >
-> easy-markdown is the tool markdown deserves. It opens any `.md` file your device can see — iCloud Drive, Dropbox, a Git repo, your desktop, a USB drive, anywhere — and lets you create files wherever you have access. No vault. No library. No import step. No artificial limitations. Full file system access, limited only by what your OS allows.
+> But the tools haven't caught up. You get a `.md` file from an AI agent and open it in… TextEdit? Notes? You draft a product brief with AI and it lives in… a code editor? There's no tool that treats markdown the way it deserves — as the primary document format of the AI age.
 >
-> **The interface is outrageously good.** Intelligent auto-formatting cleans up your markdown as you type — fixing list indentation, aligning tables, normalizing headings. A built-in document doctor catches broken links, inconsistent structure, and formatting issues before they become problems. Every animation, every gesture, every pixel has been considered. It's the kind of app you show other people because it feels that good to use.
+> **easy-markdown is that tool.** Open any `.md` file on your device — iCloud Drive, Dropbox, a Git repo, anywhere. Create new documents wherever you have access. Write with AI as your co-author or receive AI-generated content and refine it. Everything renders beautifully: rich text, tables, diagrams, code blocks. When you're done, export a polished PDF or share the `.md` file directly. No vault. No library. No sign-up. No lock-in.
 >
-> **Built-in AI that works instantly.** Ask it to improve a paragraph, generate a summary, fix grammar, translate a section, or continue your thought. Core AI features run right on your device — private, offline, and instant. For heavier tasks like long-document analysis, advanced translation, and generation, optional cloud-powered Pro AI delivers state-of-the-art results. You choose: local-only for maximum privacy, or Pro for maximum capability.
+> **The interface is outrageously good.** This is what happens when you bring Apple-level craft to a document tool built for the AI age. Intelligent auto-formatting cleans up your markdown as you type. A built-in document doctor catches broken links, inconsistent structure, and formatting issues. Every animation, every gesture, every pixel has been considered. It's the kind of app you show other people because it feels that good to use.
 >
-> **Markdown is the first-class format.** You write in markdown. You save in markdown. You share in markdown. But when you need to hand it to someone who doesn't live in markdown, easy-markdown renders it beautifully — print it, share it via the iOS share sheet, export a rendered PDF, or save the `.md` file to any location. No Word documents. No proprietary formats. Markdown in, markdown stored, beautifully rendered out when needed. This is the tool that makes markdown the primary format for unstructured data in the age of AI.
+> **AI is woven into everything — and you can just talk to it.** Select text and improve it. Get a summary. Continue your thought. Or just speak: *"make this section more concise," "add a conclusion," "rewrite this for a technical audience."* Voice-driven, intent-based editing — describe what you want your document to become, and AI makes it happen. Core AI runs right on your device — private, offline, instant. For heavier tasks, optional cloud-powered Pro AI delivers state-of-the-art results. This is Cursor-level AI intelligence, purpose-built for prose and documents instead of code.
 >
-> "In the age of AI, markdown is the universal interface between human thought and machine intelligence. easy-markdown is how you write for that world," said the easy-markdown team.
+> **Markdown in, beautifully rendered out.** Tables, diagrams, code blocks — everything renders inline. When you need to hand a document to someone who doesn't live in markdown, export a polished PDF or print it directly. No Word documents. No proprietary formats. This is the tool that makes markdown the only document format you need.
+>
+> "Cursor showed what AI-native editing could be for code. easy-markdown is what it should be for everything else," said the easy-markdown team.
 >
 > easy-markdown launches first on iOS, with native macOS and Linux desktop to follow. The app is a one-time purchase at $9.99 — no subscription required. Pro AI is an optional $3.99/month for users who want cloud-powered capabilities, and you can cancel anytime without losing any app functionality.
 >
@@ -38,11 +40,13 @@ This is the Amazon "working backwards" press release. It describes the product a
 
 | Claim | Implication | Constrains |
 |-------|-------------|------------|
-| "The world's best markdown editor" | We compete on quality, not features. UI, performance, and polish are non-negotiable P0 requirements. | Prioritization — quality over scope, always |
+| "Cursor for prose — the document tool for the AI age" | Must be purpose-built for both writing with AI and receiving/refining AI output. The full workflow — create, receive, refine, render, share — is first-class. Rich content (tables, diagrams, code blocks) renders beautifully. | Feature priorities, persona definitions, AI integration |
+| "Apple-quality craft" | UI quality is a shipping requirement. Ship dates slip before UI quality does. This is what separates us from every Electron-based competitor. | Prioritization — quality over scope, always |
 | "Opens any `.md` file your device can see" | Must use OS-level file access APIs (UIDocument, file providers), not a custom file store | Architecture, file management |
 | "No vault, no library, no sign-up" | Zero-configuration first launch. No onboarding flow, no account creation to start editing. Pro AI uses App Store subscription auth — no separate account. | UX, first-run experience |
 | "The interface is outrageously good" | UI quality is a shipping requirement. Ship dates slip before UI quality does. | Prioritization, resourcing |
 | "The kind of app you show other people" | Must be visually remarkable enough to trigger organic sharing. This is our growth engine. | Design investment, viral coefficient |
+| "You can just talk to it" | Voice-driven intent-based editing using system speech recognition. Speak what you want your document to become. Not dictation — intent interpretation. | AI architecture, speech APIs, interaction design |
 | "Auto-formatting cleans up your markdown as you type" | Real-time, inline formatting — not a batch operation or separate mode | Editor architecture |
 | "Document doctor catches broken links, inconsistent structure" | Background analysis with inline, non-intrusive suggestions | Editor architecture, UX |
 | "Core AI features run right on your device" | On-device inference for core features (improve, summarize, continue). Must work offline with no account. | Architecture — Core ML / MLX for local inference |
@@ -54,12 +58,13 @@ This is the Amazon "working backwards" press release. It describes the product a
 
 ### Why now
 
-Four things converged in 2025–2026 that make this product possible and timely:
+Five things converged in 2025–2026 that make this product possible and timely:
 
 1. **On-device AI crossed the quality threshold.** Apple's Neural Engine (A16+/M1+), Core ML, and the open-source MLX framework now run 1–4GB quantized language models with usable quality and sub-second latency. Two years ago, local AI writing assistance wasn't viable on a phone. Now it is.
 2. **Subscription fatigue peaked.** The App Store is saturated with subscription-based writing tools. Users are vocally pushing back — Bear's subscription pivot, Ulysses's pricing backlash, and the rise of "pay once" indie apps signal a market ready for a premium one-time-purchase alternative.
 3. **The IDE/prose split crystallized.** Cursor and GitHub Copilot proved that AI-powered editing is transformative — but only for code. The millions of developers and writers who produce prose in markdown have no equivalent. The "Cursor for prose" positioning didn't exist before Cursor existed.
 4. **Incumbents are stuck.** Obsidian can't easily abandon its vault architecture. Bear can't easily open its proprietary storage. Notion can't easily go offline. iA Writer hasn't shipped AI. The market leaders are architecturally constrained from building what we're building. The window is open, but it won't stay open forever.
+5. **AI agents produce markdown at scale.** Claude, ChatGPT, Cursor, Perplexity, Copilot, and dozens of specialized AI agents all output markdown — research reports, summaries, product briefs, architecture docs with diagrams. Tens of millions of knowledge workers receive these files daily and open them in TextEdit or Notes. There is no purpose-built tool for consuming, refining, and sharing AI-generated documents. That gap is the opportunity.
 
 ---
 
@@ -81,7 +86,16 @@ And a second dimension no one has cracked:
 | **Locked storage** | Notion AI, Craft AI | Bear, Obsidian |
 | **Open files** | *empty* | iA Writer, Typora, everything else |
 
-**Decision [D-MKT-1]**: We are building for the intersection of four underserved positions: **great UI + open files + AI (local-first) + affordable**. No product in the market occupies this space. This is not a niche — it's the gap that everyone who writes markdown outside an IDE falls into.
+And a third dimension that defines our unique position:
+
+| | Purpose-built for AI-generated markdown | Not designed for AI output |
+|---|---|---|
+| **Great UI** | *empty — this is us* | iA Writer, Bear, Typora |
+| **Mediocre UI** | *empty* | TextEdit, Notes, VS Code preview |
+
+**Decision [D-MKT-1]**: We are building at the intersection of five underserved positions: **Apple-quality native UI + open files + AI-native editing (local-first) + affordable + purpose-built for how markdown is actually used in 2026**. No product in the market occupies this space. We serve both directions: writing with AI as co-author AND receiving/refining AI-generated output.
+
+**Decision [D-MKT-3]**: Markdown is the document format for 99% of knowledge work in the AI age. We are the tool that makes that true — for product briefs, architecture docs, research reports, blog posts, READMEs, and everything in between. The full workflow — create, receive, refine, render, share — is first-class. Rich content (tables, diagrams, code blocks) that AI and humans produce must render beautifully and be editable with AI assistance.
 
 ### Pain points we solve
 
@@ -94,44 +108,55 @@ And a second dimension no one has cracked:
 | P5 | **Bloat and complexity** — Obsidian's plugin system is powerful but overwhelming. Notion is a kitchen sink. | Focused feature set. No plugin system. No extensibility API. | **[D-SCOPE-1]** No plugin/extension system. We ship what we ship. |
 | P6 | **AI requires cloud and accounts** — Notion AI, Craft AI, and every other AI writing tool sends your content to remote servers, requires an account, and often charges a separate subscription. | Core AI runs on-device with no account. Pro AI is opt-in cloud with transparent privacy. Neither requires an account to use the app. | **[D-AI-1]** Local-first AI. Cloud is opt-in enhancement, not a requirement. |
 | P7 | **No purpose-built markdown tool for non-IDE users** — Developers use Cursor/VS Code for code but have no great standalone tool for prose. Writers have no tool that combines AI + open files + great UI. | Be the app developers open alongside their IDE, and the app writers open instead of one. | **[D-MKT-2]** Position as the complement to IDEs, not a competitor. |
+| P8 | **No AI-native document tool for markdown** — AI agents produce `.md` files (research reports, summaries, briefs, architecture docs) and people co-author documents with AI, but there's no tool purpose-built for this workflow. Users bounce between TextEdit, Notes, Google Docs, and code editors. | Be the AI-native document tool: write with AI, receive AI output, refine, render beautifully (tables, diagrams, code blocks), share as polished PDF. One tool for the full workflow. | **[D-MKT-3]** Markdown is the document format for 99% of knowledge work in the AI age. We are the tool that makes that true. |
 
 ---
 
 ## 3. Target Users
 
-### Primary persona: The Everyday Markdown Writer
+### Primary persona: The AI-Native Knowledge Worker
 
-> *"I write markdown constantly — notes, docs, blog posts, READMEs. I want a beautiful, fast app that opens my files wherever they are, helps me write better with AI, and doesn't make me set up anything. I'll pay for quality."*
+> *"I write product briefs, review AI research reports, draft architecture docs — all in markdown, all with AI helping me. I need a tool that makes these documents look beautiful, helps me write and refine with AI, and lets me share polished output. I don't think of myself as 'a markdown user' — I'm someone who creates documents in the AI age."*
 
-- Writes frequently in markdown across personal and professional contexts
-- Cares about where their files live — uses iCloud, Dropbox, Git, or local disk
-- Values craft and aesthetics in tools — will pay a fair price for quality
-- Wants AI assistance for writing but won't create cloud accounts or send content to servers
-- **Platforms**: iPhone + Mac most common, but Android and Windows are real
-- **Scale**: Realistic addressable market is 2–5M active markdown writers who would pay for a quality tool (developers writing docs/READMEs, technical writers, bloggers, academics). Broader markdown-adjacent audience (students, casual note-takers) is a growth opportunity, not the launch market.
+- **Creates** documents with AI as co-author: product briefs, reports, proposals, blog posts
+- **Receives** `.md` files from AI agents (Claude, ChatGPT, Perplexity, Cursor, custom agents) — research reports, summaries, analysis
+- **Refines** content: tightens prose, fixes structure, adjusts tone, updates diagrams with AI assistance
+- **Shares** polished output: PDF export to stakeholders, share sheet to colleagues
+- Needs rich content (tables, diagrams, code blocks) to render beautifully — not as raw syntax
+- May not know or care about markdown syntax — interacts through rich view and AI assist
+- **Platforms**: iPhone + Mac most common, but cross-platform matters
+- **Scale**: Tens of millions of knowledge workers who create and consume markdown daily through AI tools. This is not a niche — it's everyone who does knowledge work with AI, and that number is growing exponentially.
 
-**Decision [D-USER-1]**: This is our primary user. When trade-offs arise, optimize for this persona. They value file freedom, UI quality, and AI assistance. They are not power users who want extensibility — they want a polished, opinionated tool that makes them better at writing.
+**Decision [D-USER-1]**: This is our primary user. When trade-offs arise, optimize for this persona. They value AI-assisted writing, beautiful rendering of rich content (tables, diagrams, code blocks), and polished sharing. They may never toggle to source view — and that's fine.
 
-### Secondary persona: The Developer-Writer
+### Secondary persona: The Builder
 
-> *"I use Cursor for code, but for writing docs and READMEs I want something purpose-built. VS Code's markdown preview is fine, but easy-markdown is actually good."*
+> *"I'm a product manager / engineer / technical writer. I write product briefs, architecture docs, API docs, READMEs. AI co-authors everything. I want Cursor for prose — an editor that understands my content and helps me make it better."*
 
-- Lives in an IDE for code, switches to easy-markdown for writing
-- Wants keyboard shortcuts, fast file switching, and the AI to understand code-adjacent writing (changelogs, API docs, commit message drafts)
-- This persona is our largest referral channel — developers recommend tools to each other
+- Product managers writing PRDs and briefs
+- Engineers writing architecture docs, ADRs, READMEs
+- Technical writers producing API docs, guides, changelogs
+- AI is a co-author on everything — they write with AI, not just consume AI output
+- Rich content matters: architecture diagrams, flowcharts, tables, code examples are part of their daily output
+- Cares about where files live — uses Git repos, iCloud, Dropbox
+- This persona is our loudest referral channel — builders recommend tools to each other
 
-**Decision [D-USER-2]**: We serve this persona but do not optimize for them at the expense of the primary persona. We will support keyboard shortcuts and fast workflows, but we will not add Vim bindings, terminal integration, or Git integration. The key insight: developers who write code in an IDE want a *different* tool for writing prose, not a worse version of the same tool.
+**Decision [D-USER-2]**: We serve this persona with deep investment. They overlap with our primary persona but are more hands-on with markdown syntax. Keyboard shortcuts, fast file switching, and AI that understands code-adjacent writing (changelogs, API docs) matter. We will not add Vim bindings, terminal integration, or Git integration — this is not an IDE.
 
-### Tertiary persona: The Frustrated Switcher
+### Tertiary persona: The Content Creator
 
-> *"I've been using Obsidian/Bear for years and just realized my notes are trapped. I want out."*
+> *"I'm a blogger / devrel / docs team member. Markdown is my source format. AI helps me draft, I refine, I publish."*
 
-- Locked into a vault/proprietary ecosystem, looking for a way out
-- Attracted by "open any file" simplicity — our product *is* the migration path
+- Bloggers, developer relations professionals, documentation teams
+- Markdown is the source format for their publishing pipeline (Hugo, Jekyll, Docusaurus, etc.)
+- AI assists with drafting, but they own the final voice and structure
+- Values great typography and rendering — their content needs to look good in the editor too
 
-**Decision [D-USER-3]**: We serve this persona passively. Our open-file-access model is the migration. We will not build explicit import tools for other apps' formats.
+**Decision [D-USER-3]**: We serve this persona naturally. Our open-file model, AI assistance, and beautiful rendering serve their workflow without special investment. We will not build publishing pipelines (D-NO-4) but we make their source files look great.
 
 ### Scale consideration
+
+The addressable market has shifted dramatically. The old framing of "markdown enthusiasts" understates the opportunity by an order of magnitude. Every knowledge worker whose AI tools produce markdown is a potential user — and that number is in the tens of millions and growing rapidly as AI agent adoption accelerates.
 
 **Decision [D-USER-4]**: We are building for a global audience from day one. The product must work excellently for non-English writing (CJK text, RTL languages, accented characters, emoji). Localization of the UI is Phase 2; correct rendering and editing of all languages is Phase 1 / P0.
 
@@ -201,7 +226,7 @@ Standard markdown in, standard markdown out. We never inject proprietary syntax,
 - We do not invent custom markdown syntax
 - We do not add front matter to files
 - We do not create companion/sidecar files alongside the user's files
-- If we support extended syntax (e.g., Mermaid), it's read/render only — we never generate it
+- We render widely-adopted extended syntax (Mermaid diagrams) beautifully. AI may modify existing Mermaid blocks at user request — this is editing existing content, not generating proprietary syntax.
 
 ### DP-7: AI is local-first, private, and instant
 AI is a core capability of the editor, not a bolted-on chatbot. It follows a **local-first** architecture: core AI features run on-device (private, offline, instant), while optional Pro AI uses cloud inference for advanced capabilities that exceed on-device model limits.
@@ -289,7 +314,7 @@ All significant product and technical decisions are recorded here. Each decision
 | ID | Decision | Rationale | Alternatives considered |
 |----|----------|-----------|------------------------|
 | **D-MD-1** | Support **CommonMark + GitHub Flavored Markdown (GFM)** as the baseline spec. | GFM is the de facto standard. It covers tables, task lists, strikethrough, and autolinks — features users expect. CommonMark alone is too limited. | CommonMark only (too restrictive); MultiMarkdown (less adoption); Custom superset (violates DP-6). |
-| **D-MD-2** | Extended syntax (Mermaid, math/KaTeX, footnotes) is **render-only, Phase 3**. We do not generate or auto-format these. | Users encounter these in existing files and need to view them. Generating/formatting them adds complexity and risks proprietary behavior. | Full editing support (too complex for MVP); Ignore entirely (frustrating when opening existing files). |
+| **D-MD-2** | **Mermaid diagram rendering is P1 (v1.0). AI-assisted Mermaid editing is P1. KaTeX math and footnotes remain render-only, Phase 3.** Mermaid is core to AI-generated markdown — architecture diagrams, flowcharts, sequence diagrams, ER diagrams appear constantly in AI output. We render Mermaid beautifully inline. AI can modify Mermaid blocks from natural language (select block → describe change → AI rewrites the Mermaid code). We do not build a visual diagram editor — AI is the interface, code is the source, render is the output. | AI agents frequently produce Mermaid diagrams in markdown output. Rendering them is essential for our primary persona (AI-Native Knowledge Worker). AI-assisted editing of Mermaid blocks is a natural extension of our AI assist pattern. KaTeX and footnotes are less common in AI output and can wait. | Ignore Mermaid (broken experience for AI output); Visual diagram editor (different product, violates DP-5); All extended syntax at once (scope creep). |
 | **D-MD-3** | We do not invent or support custom syntax extensions. | Violates DP-6 (no lock-in). If we generate syntax only easy-markdown understands, we've created lock-in through content. | Proprietary extensions for features like callouts (rejected — use standard blockquotes). |
 
 ### Editor
@@ -589,6 +614,8 @@ On-device AI writing assistance per [D-AI-1] through [D-AI-6]. Included with app
 
 **MVP capabilities** (per [D-AI-6] — ship what works excellently first):
 
+**Content-Aware AI** — AI understands the context of what's selected. Prose gets prose improvements. A Mermaid diagram block gets structural suggestions. A table gets formatting and content help. Dedicated diagram editing is in F-022b.
+
 **Improve Writing** — Select text → "Improve" → AI suggests a rewritten version:
 - Grammar and spelling correction
 - Clarity improvements (simplify complex sentences, remove ambiguity)
@@ -607,6 +634,7 @@ On-device AI writing assistance per [D-AI-1] through [D-AI-6]. Included with app
 - **Selection-based**: Select text → floating action bar appears above selection with AI options (Improve, Summarize) alongside standard format actions (Bold, Italic, etc.)
 - **Cursor-based**: AI can proactively suggest continuations after a natural pause (3 seconds). Ghost text appears. Tab to accept, keep typing to dismiss. Can be turned off in settings.
 - **Keyboard**: Cmd+J invokes AI assist on current selection or at cursor position
+- **Voice**: Hold microphone button (or Cmd+Shift+J) → speak an intent → AI interprets and executes. See F-037 for full voice control spec.
 - All AI actions are undoable (Cmd+Z reverts to pre-AI text)
 - **Pro AI badge**: If user is a Pro subscriber, a small indicator shows when a Pro-tier action is available in the action bar (e.g., Translate, Adjust Tone). These are seamlessly integrated — same interaction pattern, just powered by cloud instead of local model.
 
@@ -658,7 +686,8 @@ Share markdown with the world — rendered beautifully, printed cleanly, or shar
 - **Print**: Print the rendered rich text view directly (matches in-editor appearance with custom typography)
 - **Rendered PDF**: Export a beautifully rendered PDF of the document (same quality as print, for sharing with non-markdown users)
 - **No proprietary formats**: No Word, Pages, RTF, or Google Docs export. PDF is a rendered view, not a format conversion.
-- **Acceptance**: User shares a `.md` file via AirDrop to a colleague. User prints a document and the output matches the in-editor rich text appearance. User exports a PDF that looks polished, not like a browser print.
+- **Rich content in export**: Rendered PDF and print output include diagrams as vector graphics, tables as formatted tables, and code blocks with syntax highlighting
+- **Acceptance**: User shares a `.md` file via AirDrop to a colleague. User prints a document and the output matches the in-editor rich text appearance. User exports a PDF that looks polished, not like a browser print. PDF includes all rendered rich content (tables, diagrams, code blocks).
 
 #### F-014: Custom Themes and Fonts
 User-selectable visual themes and typeface options.
@@ -730,6 +759,54 @@ Context-aware autocomplete that goes beyond simple text prediction. Included wit
 - **Device floor**: Same as F-025 — requires iPhone 15 / M1 Mac (A16+ / Apple Silicon). Uses the same on-device model. Not available on older devices.
 - **Acceptance**: User types `| Name | Email |` and presses Enter. AI suggests a separator row and first data row. User Tabs to accept.
 
+#### F-037: Voice Control — Intent-Based Editing
+Speak what you want your document to become. AI interprets and executes.
+
+This is not dictation (speech-to-text for content insertion). This is **speech-to-intent for editing operations** — a fundamentally different interaction model. The user describes a change in natural language, and AI makes it happen.
+
+- **Activation**: Hold microphone button in toolbar, or Cmd+Shift+J (keyboard shortcut). Visual indicator shows "listening" state.
+- **Intent interpretation**: User speaks a command. AI interprets the intent and maps it to an editing operation:
+  - *"Make this more concise"* → AI rewrites selected text (or current paragraph) for brevity
+  - *"Add a conclusion to this document"* → AI generates a conclusion section at the end
+  - *"Rewrite this for a technical audience"* → tone adjustment on selection
+  - *"Move the second section before the first"* → structural reorder
+  - *"Summarize the last three paragraphs"* → summary generated
+  - *"Add a diagram showing the API flow"* → Mermaid diagram generated at cursor
+  - *"What's missing from this document?"* → AI analysis surfaced as doctor-style suggestions
+- **Preview before apply**: All voice-initiated changes show the same inline diff preview as touch/keyboard AI actions. User accepts, edits, or dismisses. Voice never modifies the document without confirmation.
+- **Speech recognition**: Uses iOS Speech framework (on-device recognition, no network required for basic recognition on iOS 17+). Supports system language. Transcription shown in real-time as user speaks.
+- **Context-aware**: Voice commands operate on the current selection (if text is selected) or the current cursor position / visible section. "Make this shorter" means different things depending on what's selected.
+- **Chained commands**: User can speak multiple intents in sequence. Each produces a preview. User accepts/dismisses each.
+- **Accessibility**: Voice control is itself an accessibility feature — enables hands-free document editing. Works alongside VoiceOver (distinct from VoiceOver commands — these are AI editing intents, not navigation).
+- **Performance**: Speech recognition begins within 200ms of activation. Intent interpretation and first AI response within 1 second of speech completion.
+- **Acceptance**: User holds the mic button, says "make this paragraph shorter and more direct," releases. AI shows an inline diff of the rewritten paragraph within 3 seconds. User taps to accept. The entire interaction takes less time than selecting text, tapping Improve, and waiting.
+
+#### F-022a: Mermaid Diagram Rendering
+Render Mermaid diagram blocks as visual diagrams inline in the editor.
+
+- Fenced code blocks with `mermaid` language tag render as visual diagrams in rich view
+- Supported diagram types: flowcharts, sequence diagrams, ER diagrams, class diagrams, Gantt charts, pie charts, state diagrams, mind maps
+- Diagrams render inline, replacing the code block with the visual output
+- Source view shows the raw Mermaid code (toggle preserves cursor position near the block)
+- Diagrams adapt to light/dark theme
+- Diagrams included in PDF export and print output (F-013) as vector graphics
+- The Render animation (F-035) applies: Mermaid code block animates into the rendered diagram
+- Malformed Mermaid shows the raw code with a doctor warning (F-005)
+- **Performance**: Diagram renders within 500ms of file open or edit pause
+- **Accessibility**: VoiceOver reads the diagram type and any text labels within it
+- **Acceptance**: User opens a file with a Mermaid flowchart. It renders as a visual diagram inline. Toggling to source shows the Mermaid code. Exporting to PDF includes the rendered diagram.
+
+#### F-022b: AI-Assisted Mermaid Diagram Editing
+Select a Mermaid block → describe a change in natural language → AI rewrites the Mermaid code → diagram re-renders.
+
+- When user selects (or taps) a rendered Mermaid diagram, a contextual action bar appears with "Edit with AI"
+- User describes the change: "add a database node," "make the flow go left to right," "add an error path from step 3"
+- AI rewrites the Mermaid code block, diagram re-renders with the change
+- Shows inline diff of the Mermaid code (before/after) with rendered preview of the new diagram
+- User accepts (diagram updates), edits the code manually, or dismisses
+- Uses same AI infrastructure as F-025 (local AI for simple edits, Pro AI for complex diagram changes)
+- **Acceptance**: User taps a rendered flowchart, types "add a retry loop from the error handler back to step 2," AI updates the Mermaid code, new diagram renders with the change. User accepts.
+
 ### P2 — Phase 3 / Future (validated demand required)
 
 | ID | Feature | Ships when |
@@ -738,7 +815,7 @@ Context-aware autocomplete that goes beyond simple text prediction. Included wit
 | F-019 | Windows/Linux app | Demand validated; tech approach TBD |
 | F-020 | Folder browsing sidebar (opt-in, not required) | User feedback requests it |
 | F-021 | Snippet/template system | User feedback requests it |
-| F-022 | Extended syntax rendering: Mermaid, KaTeX, footnotes (render-only per [D-MD-2]) | User feedback requests it |
+| F-022c | Extended syntax rendering: KaTeX/math blocks, footnotes (render-only per [D-MD-2]) | User feedback requests it |
 | F-023 | Shortcuts/Siri integration (Apple) | iOS/macOS stable |
 | F-024 | Quick capture widget (iOS home screen) | iOS stable |
 | F-029 | AI — Generate from prompt *(Pro AI)* ("write a README for…", "create a table comparing…") | MVP AI validated, cloud infrastructure stable |
@@ -841,6 +918,35 @@ User is writing → Colleague/friend sees the app → "What is that?" → User s
 - This is our primary growth mechanism. The product must be visually striking enough — and the intelligent features surprising enough — that people ask about it unprompted.
 - **Decision [D-GROWTH-1]**: We design for "over the shoulder" impact. The editor should look noticeably beautiful from 3 feet away. AI interactions should produce visible "wow" moments.
 
+### Journey 8: Voice-Driven Editing
+
+```
+Reading a document → Hold mic → "Make this section shorter" → AI shows diff → Accept → "Add a diagram of the architecture" → AI generates Mermaid → Accept → Done
+```
+
+- User is reading through an AI-generated report on their iPhone
+- They spot a wordy section. Instead of selecting text and navigating menus, they hold the mic button and say "make this section more concise"
+- AI interprets the intent, identifies the current section, and shows an inline diff with a tighter version
+- User taps Accept. Says "now add a conclusion summarizing the key findings"
+- AI generates a conclusion paragraph, shows it as ghost text at the end. User accepts.
+- The entire refinement session happens hands-free — perfect for iPad with keyboard, iPhone on a desk, or accessibility needs.
+- **This is the "show someone" moment for voice**: a user talking to their document and watching it transform in real time.
+
+### Journey 9: Receive from AI → Refine → Share
+
+```
+AI agent produces report.md → User opens in easy-markdown → Everything renders beautifully → Refine with AI → Export polished PDF → Share
+```
+
+- User receives a `.md` file from an AI agent (research report with tables and diagrams, analysis with code examples)
+- Opens in easy-markdown (system file picker or "Open With" association)
+- Rich view renders everything beautifully: headings, tables, diagrams, code blocks — the document looks professional immediately
+- User reads through, selects a section that needs tightening → "Improve" → accepts
+- User taps a diagram → "Edit with AI" → describes a change in natural language → diagram updates
+- User exports as PDF → polished document with all rich content rendered → shares via email or AirDrop
+- **Total time from AI output to polished shared document: 5–10 minutes**
+- This journey is the primary value proposition for our primary persona — and the thing no other tool does well.
+
 ---
 
 ## 9. Roadmap with Exit Criteria
@@ -849,9 +955,9 @@ Each phase has explicit exit criteria — conditions that must be true before we
 
 ### Phase 1: MVP — iOS
 
-**Goal**: Ship the best markdown editor on iOS. Validate that great UI + open files + local AI is a product people love and recommend.
+**Goal**: Ship the AI-native document tool on iOS. Validate that Apple-quality craft + open files + AI co-authoring + beautiful rendering is a product people love and recommend.
 
-**Scope**: Features F-001 through F-010, F-025 (Local AI Assist), F-033 (Word Count), F-034 (Spell Check), F-035 (The Render), F-036 (iPad Optimization).
+**Scope**: Features F-001 through F-010, F-022a (Mermaid Diagram Rendering), F-025 (Local AI Assist), F-033 (Word Count), F-034 (Spell Check), F-035 (The Render), F-036 (iPad Optimization).
 
 **Performance contract**: All targets in [D-PERF-1] through [D-PERF-5] must be met before launch.
 
@@ -870,7 +976,7 @@ Each phase has explicit exit criteria — conditions that must be true before we
 
 **Goal**: Expand to macOS. Launch Pro AI cloud tier. Deepen AI capabilities. Begin building toward "defacto" status.
 
-**Scope**: F-011 through F-017, F-026 through F-028, plus Pro AI infrastructure (cloud API integration, App Store subscription management, privacy pipeline per [D-AI-8]), plus MVP refinements.
+**Scope**: F-011 through F-017, F-022b (AI-Assisted Mermaid Editing), F-026 through F-028, F-037 (Voice Control), plus Pro AI infrastructure (cloud API integration, App Store subscription management, privacy pipeline per [D-AI-8]), plus MVP refinements.
 
 **Exit criteria to move to Phase 3**:
 - macOS app rated ≥ 4.7 stars
@@ -881,9 +987,9 @@ Each phase has explicit exit criteria — conditions that must be true before we
 
 ### Phase 3: Expansion + Defacto
 
-**Goal**: Broaden platform reach. Deepen AI intelligence. Establish easy-markdown as the default markdown editor.
+**Goal**: Broaden platform reach. Deepen AI intelligence. Establish easy-markdown as the default document tool for the AI age.
 
-**Scope**: F-018 through F-032, selected based on demand signals.
+**Scope**: F-018 through F-021, F-022c (KaTeX/Footnotes), F-023 through F-032, selected based on demand signals.
 
 **Entry criteria (each feature independently)**:
 - Quantified demand signal
@@ -904,15 +1010,18 @@ Each phase has explicit exit criteria — conditions that must be true before we
 | **Ulysses** | $50/yr | Apple | Library-based | Excellent | Basic | No subscription. Open files. Better AI (local). |
 | **Notion** | Free/$8+/mo | All | Proprietary | Good | Cloud AI | Open files. No subscription. Local/private AI. |
 | **Cursor/VS Code** | Free/$20/mo | Desktop | Open files | Dev-focused | Cloud AI | Purpose-built for prose. Mobile. Native. Private AI. Complementary, not competitive. |
+| **TextEdit/Notes/Preview** | Free | Apple | Open files | Minimal | No | Purpose-built for markdown. Renders beautifully. AI co-authoring. Polished PDF export. |
+| **Word/Google Docs** | Free–$10/mo | All | Proprietary | Good | Cloud AI | Markdown is lighter, faster, AI-native. No subscription. No lock-in. For 99% of documents, we're enough — and better. |
 
-**Strategic position**: The definitive markdown editor for the AI age. The only tool that treats markdown as the primary format for unstructured data — not a stepping stone to PDF or Word — combined with open file access, local-first AI, exceptional native UI, and a one-time fair price. We don't just edit markdown — we make the case that markdown is all you need.
+**Strategic position**: Cursor showed what AI-native editing could be for code. We are what it should be for everything else — with the craft and polish of the best Apple-native apps. For 99% of the documents people create in 2026, markdown + AI + beautiful rendering is all you need. We're not just competing with markdown editors — we're the reason people stop reaching for Word and Google Docs for briefs, reports, READMEs, and everything that isn't a spreadsheet.
 
-**Competitive moat**: Three reinforcing advantages that are hard to replicate:
-1. **Local-first AI + optional cloud** — the only editor with high-quality AI that works offline. Competitors either have no AI, or require cloud-only. Our hybrid model (local for privacy/speed, cloud for power) is the best of both worlds and hard to retrofit.
-2. **Native UI quality** — Electron/web-based competitors (Obsidian, Notable, Notion) cannot match native animation performance and platform integration
-3. **Open files + no accounts** — competitors with proprietary storage (Bear, Obsidian, Notion) would have to fundamentally redesign their architecture to match
+**Competitive moat**: Four reinforcing advantages that are hard to replicate:
+1. **AI-native from the ground up** — AI co-authoring, inline refinement, diagram editing, smart completions. Not a bolt-on, not a sidebar — AI is woven into every interaction. The only document tool with high-quality AI that works offline.
+2. **Apple-quality native craft** — Electron/web-based competitors (Obsidian, Notable, Notion, Google Docs) cannot match native animation performance, 120fps scroll, and platform integration. This is what happens when you build for the platform, not around it.
+3. **Open files + no accounts** — competitors with proprietary storage (Bear, Obsidian, Notion, Google Docs, Word) would have to fundamentally redesign their architecture to match. Your files are yours.
+4. **Purpose-built for how markdown is used in 2026** — not a 2015 text editor with AI bolted on. Built for the full workflow: create with AI, receive from AI, refine, render rich content beautifully, share as polished output.
 
-**Relationship to Cursor / VS Code**: We are not competing with IDEs. We are the **complement** — the app developers open when they're done writing code and need to write prose. This is a referral channel, not a battleground. "I use Cursor for code and easy-markdown for everything else" is the target positioning.
+**Relationship to Cursor / VS Code**: We are not competing with IDEs. We are the **complement** — Cursor for code, easy-markdown for everything else. This is a referral channel, not a battleground. "I use Cursor for code and easy-markdown for everything else" is the target positioning.
 
 ---
 
@@ -1026,10 +1135,11 @@ These are the growth levers that take us from "great indie app" to "the default"
 
 | ID | Summary | Section |
 |----|---------|---------|
-| D-MKT-1 | Target: great UI + open files + local AI + affordable | §2 |
-| D-MKT-2 | Position as complement to IDEs, not competitor | §2 |
+| D-MKT-1 | Cursor for prose: Apple-quality native UI + open files + AI-native editing + purpose-built for 2026 markdown workflows | §2 |
+| D-MKT-2 | Cursor for code, easy-markdown for everything else — complement, not competitor | §2 |
+| D-MKT-3 | Markdown is the document format for 99% of knowledge work in the AI age; full workflow (create, receive, refine, render, share) is first-class | §2 |
 | D-MD-1 | CommonMark + GFM baseline | §6 |
-| D-MD-2 | Extended syntax render-only, Phase 3 | §6 |
+| D-MD-2 | Mermaid P1 core (render + AI editing); KaTeX/footnotes Phase 3 | §6 |
 | D-MD-3 | No custom syntax extensions | §6 |
 | D-EDIT-1 | Intelligent editing built-in and on by default | §6 |
 | D-EDIT-2 | Rich text editor with source toggle | §6 |
@@ -1081,9 +1191,9 @@ These are the growth levers that take us from "great indie app" to "the default"
 | D-UX-2 | Last-open file restoration | §8 |
 | D-UX-3 | The Render is a named, protected signature interaction | §4 |
 | D-GROWTH-1 | Design for over-the-shoulder impact | §8, §12 |
-| D-USER-1 | Primary persona: Everyday Markdown Writer | §3 |
-| D-USER-2 | Developer-Writer served, not optimized for | §3 |
-| D-USER-3 | No explicit import/migration tools | §3 |
+| D-USER-1 | Primary persona: AI-Native Knowledge Worker | §3 |
+| D-USER-2 | Secondary persona: The Builder — served with deep investment | §3 |
+| D-USER-3 | Tertiary persona: Content Creator — served naturally | §3 |
 | D-USER-4 | Global audience, i18n from day one | §3 |
 | D-SCOPE-1 | No plugin/extension system | §2 |
 | D-BIZ-5 | Pro AI positioned as enhancement, no dark patterns | §11 |

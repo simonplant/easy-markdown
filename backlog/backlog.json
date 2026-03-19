@@ -216,7 +216,7 @@
       "id": "FEAT-011",
       "title": "F-025a: AI Improve Writing",
       "intent": "Select text, tap Improve, get a better version. This is the primary AI interaction and the one we demo to sell the product.",
-      "description": "Depends on: FEAT-041 (AI Model Pipeline), FEAT-054 (AI Action Bar). Select text, see Improve in floating action bar, tap it. AI produces improved version with grammar, clarity, and conciseness fixes. Shows inline diff preview: original with strikethrough, suggestion in green. User taps Accept (text replaced, haptic), edits suggestion, or dismisses. Undoable with Cmd+Z. Streams progressively. First token <500ms, full response <3s. Works offline.",
+      "description": "Depends on: FEAT-041 (AI Model Pipeline), FEAT-054 (AI Action Bar). Select text, see Improve in floating action bar, tap it. AI produces improved version with grammar, clarity, and conciseness fixes. Shows inline diff preview: original with strikethrough, suggestion in green. User taps Accept (text replaced, haptic), edits suggestion, or dismisses. Undoable with Cmd+Z. Streams progressively. First token <500ms, full response <3s. Works offline. AI is content-aware: understands whether selection is prose, a diagram block, or a table, and adapts its suggestions accordingly.",
       "priority": "must",
       "category": "AI",
       "steps": [],
@@ -578,20 +578,25 @@
     },
     {
       "id": "FEAT-030",
-      "title": "F-022: Extended Syntax Rendering",
-      "intent": "Users encounter Mermaid diagrams, math blocks, and footnotes in existing files — we should render them even if we do not generate them",
-      "description": "Render-only support (per D-MD-2) for: Mermaid diagrams, KaTeX/LaTeX math blocks, footnotes. We render these when present in files but never generate or auto-format them. No proprietary syntax.",
-      "priority": "future",
+      "title": "F-022a: Mermaid Diagram Rendering",
+      "intent": "AI agents and builders produce documents with diagrams constantly. If a Mermaid block renders as raw text, the document experience is broken. Diagrams must render beautifully inline.",
+      "description": "Render Mermaid diagram blocks as visual diagrams inline in the editor. Fenced code blocks with mermaid language tag render as visual diagrams in rich view. Supported types: flowcharts, sequence, ER, class, Gantt, pie, state, mind maps. Diagrams adapt to light/dark theme. Included in PDF/print export as vector graphics. The Render animation applies. Malformed Mermaid shows raw code with doctor warning. Depends on: FEAT-038 (Parser).",
+      "priority": "should",
       "category": "Editor",
       "steps": [],
       "acceptanceCriteria": [
-        "User opens a file containing a Mermaid diagram — it renders as a visual diagram",
-        "KaTeX math blocks render as formatted equations",
-        "Editor never generates these syntaxes, only renders them"
+        "User opens a file with a Mermaid flowchart — it renders as a visual diagram inline",
+        "All 8 supported Mermaid diagram types render correctly",
+        "Diagram adapts to light/dark theme",
+        "Malformed Mermaid shows raw code with doctor warning",
+        "Toggle to source shows Mermaid code, toggle back re-renders diagram",
+        "PDF export includes rendered diagrams as vector graphics",
+        "Diagram renders within 500ms of file open",
+        "VoiceOver reads diagram type and text labels"
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": false
+      "readyForSprint": true
     },
     {
       "id": "FEAT-031",
@@ -1259,6 +1264,65 @@
       "status": "todo",
       "passes": false,
       "readyForSprint": true
+    },
+    {
+      "id": "FEAT-066",
+      "title": "F-022b: AI-Assisted Diagram Editing",
+      "intent": "AI is the interface for editing diagrams — select a diagram, describe a change in natural language, AI rewrites the code and the diagram re-renders. No visual editor needed.",
+      "description": "When user selects or taps a rendered Mermaid diagram, a contextual action bar appears with Edit with AI. User describes change in natural language. AI rewrites the Mermaid code, diagram re-renders. Shows inline diff with rendered preview. Uses same AI infrastructure as F-025. Depends on: FEAT-030 (Mermaid Rendering), FEAT-041 (AI Model Pipeline).",
+      "priority": "should",
+      "category": "AI",
+      "steps": [],
+      "acceptanceCriteria": [
+        "User taps a rendered flowchart, describes a change, AI updates the Mermaid code and diagram re-renders",
+        "Inline diff shows before/after Mermaid code alongside rendered preview",
+        "User can accept, edit manually, or dismiss the AI suggestion",
+        "Works with local AI for simple changes, Pro AI for complex modifications",
+        "Undo reverts the diagram to its pre-AI state"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": false
+    },
+    {
+      "id": "FEAT-067",
+      "title": "F-022c: Extended Syntax Rendering (KaTeX, Footnotes)",
+      "intent": "Users encounter math blocks and footnotes in existing files — we should render them even if we do not generate them",
+      "description": "Render-only support for: KaTeX/LaTeX math blocks (inline and display), footnotes. We render these when present but never generate or auto-format them. No proprietary syntax. Per D-MD-2 Phase 3.",
+      "priority": "future",
+      "category": "Editor",
+      "steps": [],
+      "acceptanceCriteria": [
+        "KaTeX math blocks render as formatted equations inline and in display mode",
+        "Footnotes render with superscript references and a footnotes section at bottom",
+        "Editor never generates these syntaxes, only renders them"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": false
+    },
+    {
+      "id": "FEAT-068",
+      "title": "F-037: Voice Control — Intent-Based Editing",
+      "intent": "Users should be able to speak what they want their document to become — not dictate content, but describe changes. AI interprets the intent and executes. This is hands-free, AI-native document editing.",
+      "description": "Hold mic button (or Cmd+Shift+J) to activate. User speaks an editing intent in natural language. AI interprets and maps to an operation: rewrite for conciseness, add a section, change tone, restructure, generate content at cursor, analyze the document. Shows same inline diff preview as touch/keyboard AI — user accepts, edits, or dismisses. Uses iOS Speech framework (on-device recognition, no network required on iOS 17+). Context-aware: operates on current selection or cursor position. Voice never modifies without confirmation. Depends on: FEAT-041 (AI Model Pipeline), FEAT-054 (AI Action Bar).",
+      "priority": "should",
+      "category": "AI",
+      "steps": [],
+      "acceptanceCriteria": [
+        "User holds mic button, says \"make this paragraph shorter\", releases — AI shows inline diff within 3 seconds",
+        "Speech recognition begins within 200ms of activation",
+        "Transcription shown in real-time as user speaks",
+        "Voice commands work on current selection (if selected) or current paragraph",
+        "All voice-initiated changes show inline diff preview — never modifies without confirmation",
+        "Works offline using on-device speech recognition (iOS 17+)",
+        "Cmd+Shift+J keyboard shortcut activates voice on iPad with external keyboard",
+        "VoiceOver users can distinguish between VoiceOver navigation and voice editing commands",
+        "Chained voice commands (speak, accept, speak again) work fluidly without re-activating"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": false
     }
   ],
   "_dependsOn_docs": "Items may include an optional 'dependsOn' array of item ID strings (e.g. \"dependsOn\": [\"FEAT-001\"]). Auto-pick skips items whose dependencies are not yet done."
