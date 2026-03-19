@@ -1468,6 +1468,91 @@
       "status": "todo",
       "passes": false,
       "readyForSprint": true
+    },
+    {
+      "id": "SPIKE-009",
+      "title": "SPIKE: libgit2 Swift Bindings for iOS",
+      "intent": "Evaluate libgit2 Swift bindings for git operations on iOS — clone, commit, push — to validate the GitHub storage approach",
+      "description": "Evaluate SwiftGit2 or similar libgit2 Swift wrapper for iOS. Build a prototype that clones a GitHub repo, modifies a file, commits, and pushes. Measure: binary size impact, clone performance on Wi-Fi and cellular, commit+push latency, and SPM build compatibility. Verify App Store compliance (libgit2 is used by Working Copy and other shipped apps). Assess OAuth device flow for GitHub auth. Blocks FEAT-070, FEAT-071, FEAT-072 (GitHub Storage). Updates architecture decision [A-064].",
+      "priority": "should",
+      "category": "Research",
+      "steps": [],
+      "acceptanceCriteria": [
+        "Prototype clones a GitHub repo, modifies a file, commits, and pushes successfully",
+        "Binary size impact of libgit2 measured",
+        "Clone and push performance measured on Wi-Fi and cellular",
+        "SPM build compatibility verified",
+        "GitHub OAuth device flow prototyped and working",
+        "Written finding committed to docs/spikes/SPIKE-009.md",
+        "Architecture decision [A-064] updated based on findings"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
+    },
+    {
+      "id": "FEAT-070",
+      "title": "GitHub Storage — Clone and Open",
+      "intent": "Users can open markdown files directly from their GitHub repos with the same ease as opening from iCloud or Dropbox",
+      "description": "Phase 2. 'Open from GitHub' option on home screen alongside 'Open File'. User authenticates via GitHub OAuth device flow (one-time). Browses their repos, selects a file. EMGit clones the repo (or pulls if already cloned) to a local app container directory. File opens in the editor via EMFile — editing is identical to any local file. Cloned repos cached locally; repos not accessed in 30 days offered for cleanup in Settings.",
+      "priority": "should",
+      "category": "File Management",
+      "dependsOn": ["SPIKE-009"],
+      "steps": [],
+      "acceptanceCriteria": [
+        "User taps Open from GitHub, authenticates once, browses repos, and opens a .md file",
+        "File opens in the editor and is editable immediately — identical to opening from iCloud",
+        "Re-opening the same file uses the local clone without re-cloning",
+        "Clone progress shown for first-time repos",
+        "User without GitHub account sees no GitHub option (graceful absence)",
+        "Large repo (>100MB) shows progress and does not freeze the UI"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": false
+    },
+    {
+      "id": "FEAT-071",
+      "title": "GitHub Storage — Auto-Commit and Push",
+      "intent": "Changes to files in GitHub repos are automatically committed and pushed so the user never has to think about git operations",
+      "description": "Phase 2. When user closes a file or the app backgrounds: auto-save fires, then EMGit commits the change ('Update filename.md') and pushes to the remote. Pull-with-rebase before push to detect conflicts. If push fails (network, conflict): non-modal banner, changes remain committed locally and push on next opportunity. Subtle toolbar indicator shows when there are unpushed local commits. User can tap the indicator to push manually at any time without closing the file. Conflict on pull surfaces via the same external-change flow as file conflict detection (FEAT-045).",
+      "priority": "should",
+      "category": "File Management",
+      "dependsOn": ["SPIKE-009", "FEAT-070"],
+      "steps": [],
+      "acceptanceCriteria": [
+        "User edits a file from a GitHub repo, backgrounds the app — changes are committed and pushed automatically",
+        "Push failure shows non-modal banner — changes are safe in local commit",
+        "Unpushed changes indicator appears in toolbar when local commits exist",
+        "User can tap indicator to push manually before closing",
+        "Conflict during pull shows reload-or-keep prompt (same as FEAT-045)",
+        "Auto-commit message is sensible: 'Update filename.md'",
+        "Network offline: changes accumulate locally, push when back online"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": false
+    },
+    {
+      "id": "FEAT-072",
+      "title": "GitHub Storage — Auth and Repo Browser",
+      "intent": "GitHub authentication must be seamless (one-time OAuth) and repo browsing must feel as natural as the system file picker",
+      "description": "Phase 2. GitHub OAuth device flow: user enters a code at github.com/login/device — no web view required in the app. Token stored in Keychain (not UserDefaults). Token refresh handled automatically. Sign out available in Settings. Repo browser: list user's repos (personal + orgs), search/filter, show last updated date. Navigate into repo to browse .md files. Repo list cached for offline access to previously cloned repos.",
+      "priority": "should",
+      "category": "File Management",
+      "dependsOn": ["SPIKE-009"],
+      "steps": [],
+      "acceptanceCriteria": [
+        "OAuth device flow completes without a web view embedded in the app",
+        "Token persists in Keychain across app launches",
+        "Repo browser shows personal and org repos",
+        "User can search/filter repos by name",
+        "Sign out in Settings clears token and offers to delete local clones",
+        "Expired token triggers re-auth flow automatically"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": false
     }
   ],
   "_dependsOn_docs": "Items may include an optional 'dependsOn' array of item ID strings (e.g. \"dependsOn\": [\"FEAT-001\"]). Auto-pick skips items whose dependencies are not yet done."

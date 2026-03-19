@@ -29,6 +29,7 @@ EasyMarkdown.xcworkspace
 ├── EMFile/                — File coordination, bookmarks, auto-save
 ├── EMAI/                  — AI provider protocol, all provider implementations
 ├── EMCloud/               — StoreKit 2 purchases, subscription management
+├── EMGit/                 — Git operations, GitHub auth, clone/pull/commit/push (Phase 2)
 ├── EMSettings/            — Settings model, UserDefaults persistence, counters
 ├── EMApp/                 — SwiftUI app shell, navigation, scenes, error presentation
 └── Tests/                 — Test targets per package
@@ -145,6 +146,7 @@ What goes in UserDefaults:
 | `swift-markdown` | Markdown parser (CommonMark + GFM) | apple/swift-markdown |
 | tree-sitter + grammars | Syntax highlighting for code blocks | `[RESEARCH-needed]` SPIKE-007 |
 | `mermaid.js` | Diagram rendering (bundled JS, not a Swift dep) | mermaid-js/mermaid |
+| libgit2 (via SwiftGit2 or similar) | Git operations for GitHub storage (Phase 2) | `[RESEARCH-needed]` SPIKE-009 |
 
 **Rule**: No third-party dependency may be added without an architecture decision record (`[A-XXX]`) documenting the rationale and alternatives. Per `DP-5`: simplicity is a feature.
 
@@ -163,6 +165,7 @@ EMApp ──────────┬─► EMEditor ──┬─► EMParser 
                 │              └─► EMCore
                 ├─► EMAI ──────►   EMCore
                 ├─► EMCloud ───►   EMCore
+                ├─► EMGit ─────►   EMFile ──► EMCore   (Phase 2)
                 ├─► EMFile ────►   EMCore
                 ├─► EMSettings ►   EMCore
                 └─► EMCore
@@ -181,8 +184,9 @@ EMApp ──────────┬─► EMEditor ──┬─► EMParser 
 | **EMEditor** | EMParser, EMFormatter, EMDoctor, EMCore | EMFile, EMAI, EMCloud, EMSettings, EMApp |
 | **EMFile** | EMCore | EMParser, EMFormatter, EMDoctor, EMEditor, EMAI, EMCloud, EMSettings, EMApp |
 | **EMAI** | EMCore | EMParser, EMFormatter, EMDoctor, EMEditor, EMFile, EMCloud, EMSettings, EMApp |
-| **EMCloud** | EMCore | EMParser, EMFormatter, EMDoctor, EMEditor, EMFile, EMAI, EMSettings, EMApp |
-| **EMSettings** | EMCore | EMParser, EMFormatter, EMDoctor, EMEditor, EMFile, EMAI, EMCloud, EMApp |
+| **EMCloud** | EMCore | EMParser, EMFormatter, EMDoctor, EMEditor, EMFile, EMAI, EMGit, EMSettings, EMApp |
+| **EMGit** | EMFile, EMCore | EMParser, EMFormatter, EMDoctor, EMEditor, EMAI, EMCloud, EMSettings, EMApp |
+| **EMSettings** | EMCore | EMParser, EMFormatter, EMDoctor, EMEditor, EMFile, EMAI, EMCloud, EMGit, EMApp |
 | **EMApp** | All packages | — (composition root) |
 
 **Key design constraint**: EMAI and EMCloud cannot depend on each other. They communicate through protocols defined in EMCore (e.g., `SubscriptionStatus`). EMApp is the composition root that wires them together (see §7).
@@ -262,6 +266,17 @@ EMApp ──────────┬─► EMEditor ──┬─► EMParser 
 - Conforms to `SubscriptionStatus` protocol from EMCore
 - Does NOT perform AI inference — that lives in EMAI
 
+**EMGit** — Git operations and GitHub storage (Phase 2):
+- Git repo detection (is this file inside a `.git` working tree?)
+- Clone, pull, commit, push via libgit2 (SwiftGit2 or similar)
+- GitHub OAuth device flow authentication, credentials in Keychain
+- Repo browser: list user's GitHub repos for the "Open from GitHub" flow
+- Auto-commit on file close / app background (sensible message: "Update filename.md")
+- Manual push affordance (user-initiated when they want to push before closing)
+- Unpushed changes detection and indicator state
+- Pull-before-push with conflict detection (surfaces via EMFile's external change flow)
+- Depends on EMFile for file coordination of the local clone
+
 **EMSettings** — Preferences and counters:
 - Settings model (`@Observable`)
 - UserDefaults read/write
@@ -293,6 +308,9 @@ EMApp ──────────┬─► EMEditor ──┬─► EMParser 
 | FEAT-016 Quick Open | EMApp | EMFile (bookmarks, recents) |
 | FEAT-018 Render/Print/Share | EMApp | EMEditor (rendering), EMFile |
 | FEAT-040 File Coordination Layer | EMFile | EMCore (error types) |
+| FEAT-070 GitHub Storage — Clone & Open | EMGit | EMFile, EMApp (repo browser UI) |
+| FEAT-071 GitHub Storage — Auto-Commit & Push | EMGit | EMFile, EMApp (push indicator) |
+| FEAT-072 GitHub Storage — Auth & Repo Browser | EMGit | EMApp (OAuth flow UI), EMSettings (Keychain) |
 | FEAT-043 Recents & State Restoration | EMApp | EMFile (bookmarks), EMSettings (UserDefaults) |
 | FEAT-045 File Conflict Detection | EMFile | EMApp (conflict UI) |
 | **Editor — Core Rendering** | | |
@@ -750,6 +768,45 @@ When `presentedItemDidChange()` fires:
 ### Multi-Window File Safety
 
 **[A-028]** Each scene owns its own `NSFileCoordinator` and `NSFilePresenter` instance. If two scenes open the same file URL, detect via URL comparison and activate the existing scene instead of opening a duplicate.
+
+### GitHub Storage (Phase 2)
+
+**[A-064]** GitHub as a transparent storage option alongside iCloud, Dropbox, OneDrive, Google Drive. Lives in EMGit. GitHub-only initially; generic git remotes later if demand warrants.
+
+`[RESEARCH-needed]` **SPIKE-009**: Evaluate libgit2 Swift bindings (SwiftGit2 or similar) for iOS. Assess: SPM compatibility, binary size, clone/commit/push performance on cellular, and App Store compliance. Prototype clone + commit + push cycle.
+
+**Core principle**: GitHub is just another place your files live. The user experience should be as friction-free as iCloud. Files are local clones — we edit local files. Git operations happen at the edges.
+
+**How it works**:
+
+1. **Open from GitHub**: Home screen shows "Open from GitHub" alongside "Open File" and "New File". User authenticates once (OAuth device flow, token in Keychain). Browses their repos, picks a file. EMGit clones the repo (or pulls if already cloned) to a local app container directory. File opens in the editor via EMFile — from this point on, editing is identical to any local file.
+
+2. **Auto-save**: Same as any file — debounced 1s write to the local clone via EMFile. No git operations yet.
+
+3. **Auto-commit + push on close/background**: When the user closes the file or the app backgrounds:
+   - If the file has unsaved changes → save first
+   - If the local clone has uncommitted changes → `git add <file>` + `git commit -m "Update filename.md"`
+   - Pull with rebase before push (detect conflicts)
+   - `git push` to remote
+   - If push fails (network, conflict) → non-modal banner, changes remain committed locally and will push next time
+
+4. **Manual push**: A subtle indicator in the toolbar shows when there are unpushed local commits. User can tap to push immediately without closing the file. This gives control for users who want to push at a specific point.
+
+5. **Conflict handling**: If `git pull` reveals a merge conflict, surface it through the same external-change flow as `[A-027]` — "This file was modified on GitHub. Reload remote version or keep yours?" If the user keeps theirs, the next push force-updates the remote. We do not attempt three-way merge — this is a document editor, not a git client.
+
+6. **Clone management**: Cloned repos are cached in the app's container. Metadata (repo URL, clone path, last sync date) stored in UserDefaults. Repos that haven't been accessed in 30 days can be offered for cleanup in Settings to reclaim storage.
+
+**Authentication**:
+- GitHub OAuth device flow (no web view needed — user enters a code at github.com/login/device)
+- Token stored in Keychain (not UserDefaults — these are credentials)
+- Token refresh handled automatically
+- Sign out available in Settings
+
+**What this is NOT**:
+- Not a git GUI (no branch switching, no diff viewer, no merge tool, no commit history)
+- Not multi-branch (operates on the default branch only)
+- Not a sync service (explicit clone → edit → push, not background sync)
+- Does not replace the system file picker for other providers
 
 ---
 
@@ -1234,6 +1291,7 @@ Items requiring prototyping before implementation. Each has a corresponding back
 | **SPIKE-006** | Mermaid WKWebView memory impact | FEAT-030 (Mermaid Rendering) | Prototype offscreen WKWebView rendering. Measure memory with 1, 5, 10 diagrams. Test cache invalidation. | `[A-006]` — validates rendering approach |
 | **SPIKE-007** | tree-sitter Swift integration | FEAT-006 (Syntax Highlighting) | Evaluate swift-tree-sitter package. Build prototype with 3 languages. Measure binary size and parse performance. | `[A-005]` — selects highlighting approach |
 | **SPIKE-008** | Apple platform AI — WWDC 2026 evaluation | FEAT-041 (AI Pipeline) | Evaluate Apple platform AI APIs after WWDC 2026. If on-device writing assistance APIs ship, prototype ApplePlatformAIProvider. | `[A-007]`, `[A-029]` — informs provider strategy |
+| **SPIKE-009** | libgit2 Swift bindings for iOS | FEAT-070, FEAT-071, FEAT-072 (GitHub Storage) | Evaluate SwiftGit2 or similar. Prototype clone + commit + push. Measure binary size and App Store compliance. | `[A-064]` — validates git integration approach |
 
 ### Spike Output Requirements
 
@@ -1312,3 +1370,4 @@ Each spike must produce:
 | A-061 | State restoration via UserDefaults + NSUserActivity | §7.4 |
 | A-062 | Haptic feedback vocabulary | §8.4 |
 | A-063 | Platform type aliases in EMCore | §9 |
+| A-064 | GitHub as transparent storage via EMGit (Phase 2) | §5 |
