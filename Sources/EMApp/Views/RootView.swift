@@ -1,9 +1,12 @@
 import SwiftUI
+import EMCore
 import EMSettings
 
 /// Root view with NavigationStack routing per [A-058].
+/// Error banners and modal alerts are attached here so they cover all navigation destinations.
 public struct RootView: View {
     @State private var router = AppRouter()
+    @Environment(ErrorPresenter.self) private var errorPresenter
 
     public init() {}
 
@@ -29,6 +32,18 @@ public struct RootView: View {
                     .presentationDetents([.medium])
             }
         }
+        .overlay(alignment: .top) {
+            if let banner = errorPresenter.currentBanner {
+                ErrorBannerView(error: banner) {
+                    errorPresenter.dismissBanner()
+                }
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .padding(.top, 8)
+                .zIndex(1)
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: errorPresenter.currentBanner?.id)
+        .errorAlert()
         .environment(router)
     }
 }

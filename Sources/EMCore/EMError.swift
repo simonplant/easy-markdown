@@ -80,4 +80,55 @@ public enum EMError: LocalizedError {
             }
         }
     }
+
+    // MARK: - Error Severity Classification
+
+    /// The severity of this error, determining how it is presented to the user.
+    public var severity: ErrorSeverity {
+        switch self {
+        case .file(let fileError):
+            switch fileError {
+            case .saveFailed:
+                return .recoverable
+            case .externallyDeleted:
+                return .dataLossRisk
+            case .notFound:
+                return .dataLossRisk
+            case .accessDenied:
+                return .recoverable
+            case .notUTF8:
+                return .informational
+            case .tooLarge:
+                return .informational
+            case .bookmarkStale:
+                return .informational
+            }
+
+        case .ai(let aiError):
+            switch aiError {
+            case .inferenceTimeout, .inferenceFailed, .cloudUnavailable:
+                return .recoverable
+            case .modelDownloadFailed:
+                return .recoverable
+            case .modelNotDownloaded, .deviceNotSupported,
+                 .subscriptionRequired, .subscriptionExpired:
+                return .informational
+            }
+
+        case .parse:
+            return .informational
+
+        case .unexpected:
+            return .recoverable
+        }
+    }
+
+    /// Creates a presentable error with optional recovery actions.
+    public func presentable(recoveryActions: [RecoveryAction] = []) -> PresentableError {
+        PresentableError(
+            message: errorDescription ?? "Something went wrong.",
+            severity: severity,
+            recoveryActions: recoveryActions
+        )
+    }
 }

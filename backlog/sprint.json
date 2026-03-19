@@ -1,26 +1,25 @@
 {
-  "sprintId": "sprint-1773954496",
-  "startedAt": "2026-03-19T14:08:16-07:00",
+  "sprintId": "sprint-1773954998",
+  "startedAt": "2026-03-19T14:16:38-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-037",
-    "title": "INFRA: App Shell and Navigation",
-    "intent": "The container for the entire app — launch screen, home screen, toolbar, status bar, settings gear. Nothing can be built without the shell.",
-    "description": "Basic app structure: LaunchScreen, home screen with Open File / New File buttons (per D-UX-1 — no onboarding). Top toolbar (format actions, source toggle, settings gear). Bottom status bar (word count slot, doctor indicator count). Navigation between home, editor, and settings. SwiftUI-based per D-PLAT-2. iOS 17+ per D-PLAT-3.",
+    "id": "FEAT-065",
+    "title": "INFRA: Error Presentation System",
+    "intent": "Every error the user sees must be designed — human-readable, non-modal, recoverable. No raw error codes, no unhandled states.",
+    "description": "Per D-ERR-1 and DP-8. Centralized error presentation layer: non-modal banners for recoverable errors (save failure, network timeout), modal alerts only for data-loss-risk scenarios (file deleted while editing). All error messages are human-written, not technical. Every error includes a recovery action (retry, save elsewhere, dismiss). Error states designed per feature: file I/O errors, AI model errors, network errors, permission errors.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "App launches to home screen with Open File and New File buttons within 1 second (D-PERF-1)",
-      "No onboarding, no tutorial, no account creation screens appear on first launch",
-      "Toolbar, status bar, and settings gear are visible and tappable in the editor view",
-      "VoiceOver can navigate all shell elements",
-      "App runs on iOS 17+ and crashes gracefully with a message on iOS 16"
+      "All error messages are human-readable with no raw error codes or technical jargon",
+      "Recoverable errors appear as non-modal banners with retry action",
+      "Data-loss-risk errors appear as modal alerts with save/recovery options",
+      "No unhandled error state produces a blank screen or crash"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T14:08:16-07:00",
+    "startedAt": "2026-03-19T14:16:38-07:00",
     "status": "passed",
-    "completedAt": "2026-03-19T14:16:29-07:00"
+    "completedAt": "2026-03-19T14:23:41-07:00"
   },
-  "completedAt": "2026-03-19T14:16:29-07:00",
+  "completedAt": "2026-03-19T14:23:41-07:00",
   "attempts": 1
 }

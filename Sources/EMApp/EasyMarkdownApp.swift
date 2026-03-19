@@ -24,14 +24,16 @@ import EMSettings
 @MainActor
 public final class AppShell {
     private let settings: SettingsManager
+    private let errorPresenter: ErrorPresenter
 
     public init() {
         self.settings = SettingsManager()
+        self.errorPresenter = ErrorPresenter()
     }
 
     /// Returns the configured root view with all environment dependencies injected.
     public func rootView() -> some View {
-        AppRootWrapper(settings: settings)
+        AppRootWrapper(settings: settings, errorPresenter: errorPresenter)
     }
 }
 
@@ -39,10 +41,12 @@ public final class AppShell {
 /// Needed because `@Observable` properties require an observing View to trigger updates.
 struct AppRootWrapper: View {
     @State var settings: SettingsManager
+    @State var errorPresenter: ErrorPresenter
 
     var body: some View {
         RootView()
             .environment(settings)
+            .environment(errorPresenter)
             .preferredColorScheme(colorScheme)
     }
 
