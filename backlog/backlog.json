@@ -785,9 +785,10 @@
         "File with CRLF line endings preserved on save (not converted to LF)",
         "File >1MB triggers dismissable warning before opening"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-19T14:34:19-07:00"
     },
     {
       "id": "FEAT-041",

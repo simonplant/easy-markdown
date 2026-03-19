@@ -1,25 +1,27 @@
 {
-  "sprintId": "sprint-1773954998",
-  "startedAt": "2026-03-19T14:16:38-07:00",
+  "sprintId": "sprint-1773955426",
+  "startedAt": "2026-03-19T14:23:46-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-065",
-    "title": "INFRA: Error Presentation System",
-    "intent": "Every error the user sees must be designed — human-readable, non-modal, recoverable. No raw error codes, no unhandled states.",
-    "description": "Per D-ERR-1 and DP-8. Centralized error presentation layer: non-modal banners for recoverable errors (save failure, network timeout), modal alerts only for data-loss-risk scenarios (file deleted while editing). All error messages are human-written, not technical. Every error includes a recovery action (retry, save elsewhere, dismiss). Error states designed per feature: file I/O errors, AI model errors, network errors, permission errors.",
+    "id": "FEAT-040",
+    "title": "INFRA: File Coordination Layer",
+    "intent": "iOS file access is sandboxed and complex — security-scoped URLs, file coordination, and bookmarking must be rock-solid or users lose access to their files.",
+    "description": "Foundation for all file operations. Security-scoped URL handling: obtain, persist, and resolve bookmarks so files remain accessible across app launches (required for recents). NSFileCoordinator integration for safe reads/writes that respect other processes (iCloud, Dropbox, Git). NSFilePresenter for detecting external file changes (D-FILE-5). UTF-8 encoding validation (D-FILE-2). Line ending detection and preservation (D-FILE-3). File size check and warning (D-FILE-4).",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "All error messages are human-readable with no raw error codes or technical jargon",
-      "Recoverable errors appear as non-modal banners with retry action",
-      "Data-loss-risk errors appear as modal alerts with save/recovery options",
-      "No unhandled error state produces a blank screen or crash"
+      "Security-scoped URL bookmark persists across app launches — file reopens without re-picking",
+      "File coordination prevents data corruption when iCloud syncs during a write",
+      "External file change triggers a notification to the editor (reload/keep choice)",
+      "Non-UTF-8 file detected and error shown without crash or corruption",
+      "File with CRLF line endings preserved on save (not converted to LF)",
+      "File >1MB triggers dismissable warning before opening"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T14:16:38-07:00",
+    "startedAt": "2026-03-19T14:23:46-07:00",
     "status": "passed",
-    "completedAt": "2026-03-19T14:23:41-07:00"
+    "completedAt": "2026-03-19T14:34:19-07:00"
   },
-  "completedAt": "2026-03-19T14:23:41-07:00",
+  "completedAt": "2026-03-19T14:34:19-07:00",
   "attempts": 1
 }
