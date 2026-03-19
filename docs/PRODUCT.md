@@ -41,11 +41,9 @@ This is the Amazon "working backwards" press release. It describes the product a
 | Claim | Implication | Constrains |
 |-------|-------------|------------|
 | "Cursor for prose — the document tool for the AI age" | Must be purpose-built for both writing with AI and receiving/refining AI output. The full workflow — create, receive, refine, render, share — is first-class. Rich content (tables, diagrams, code blocks) renders beautifully. | Feature priorities, persona definitions, AI integration |
-| "Apple-quality craft" | UI quality is a shipping requirement. Ship dates slip before UI quality does. This is what separates us from every Electron-based competitor. | Prioritization — quality over scope, always |
+| "Apple-quality craft — outrageously good" | UI quality is a shipping requirement. Ship dates slip before UI quality does. Must be visually remarkable enough to trigger organic sharing — this is our growth engine and what separates us from every Electron-based competitor. | Prioritization — quality over scope, always |
 | "Opens any `.md` file your device can see" | Must use OS-level file access APIs (UIDocument, file providers), not a custom file store | Architecture, file management |
 | "No vault, no library, no sign-up" | Zero-configuration first launch. No onboarding flow, no account creation to start editing. Pro AI uses App Store subscription auth — no separate account. | UX, first-run experience |
-| "The interface is outrageously good" | UI quality is a shipping requirement. Ship dates slip before UI quality does. | Prioritization, resourcing |
-| "The kind of app you show other people" | Must be visually remarkable enough to trigger organic sharing. This is our growth engine. | Design investment, viral coefficient |
 | "You can just talk to it" | Voice-driven intent-based editing using system speech recognition. Speak what you want your document to become. Not dictation — intent interpretation. | AI architecture, speech APIs, interaction design |
 | "Auto-formatting cleans up your markdown as you type" | Real-time, inline formatting — not a batch operation or separate mode | Editor architecture |
 | "Document doctor catches broken links, inconsistent structure" | Background analysis with inline, non-intrusive suggestions | Editor architecture, UX |
@@ -102,7 +100,7 @@ And a third dimension that defines our unique position:
 | # | Pain point | Our response | Decision |
 |---|-----------|--------------|----------|
 | P1 | **Vault/library lock-in** — Obsidian requires a vault. Bear uses proprietary storage. Users don't realize they're locked in until they try to leave. | Use only OS-level file access. Never create a proprietary container. | **[D-FILE-1]** No vault, library, or proprietary file store. Ever. |
-| P2 | **Platform fragmentation** — Typora is desktop-only. 1Writer is iOS-only. Bear is Apple-only. | Build for cross-platform from day one, ship platforms sequentially. | **[D-PLAT-1]** iOS first, then macOS, then Android, then desktop. |
+| P2 | **Platform fragmentation** — Typora is desktop-only. 1Writer is iOS-only. Bear is Apple-only. | Build for cross-platform from day one, ship platforms sequentially. | **[D-PLAT-1]** iOS first, then macOS, then Linux desktop, then Android. |
 | P3 | **Subscription fatigue** — Bear, Ulysses, and Craft charge recurring fees for a text editor. | One-time purchase for the app and local AI. Optional subscription only for cloud AI compute — and the app is fully excellent without it. | **[D-BIZ-1]** One-time paid model for the app. Subscription only for cloud compute costs. |
 | P4 | **Formatting friction** — Most editors are dumb text boxes. Users manually fix indentation, align tables, chase broken links. | Auto-formatting engine + document doctor as core features, not plugins. | **[D-EDIT-1]** Intelligent editing is built-in and on by default. |
 | P5 | **Bloat and complexity** — Obsidian's plugin system is powerful but overwhelming. Notion is a kitchen sink. | Focused feature set. No plugin system. No extensibility API. | **[D-SCOPE-1]** No plugin/extension system. We ship what we ship. |
@@ -177,7 +175,7 @@ The file system is our storage layer. We use the OS file picker to open files an
 - Search is file-system-based, not index-based
 
 ### DP-2: UI is the product
-The interface is the primary differentiator. It is not a wrapper around a markdown parser. Every screen, transition, animation, and micro-interaction is a product decision that receives disproportionate investment. **This is how we become the defacto editor** — the quality has to be so high that people can't go back.
+The interface is the primary differentiator. It is not a wrapper around a markdown parser. Every screen, transition, animation, and micro-interaction is a product decision that receives disproportionate investment. **This is how we become the defacto document tool** — the quality has to be so high that people can't go back.
 
 **What this means in practice**:
 - UI quality is a blocking criterion for every release. A feature does not ship if it doesn't meet the bar.
@@ -812,7 +810,7 @@ Select a Mermaid block → describe a change in natural language → AI rewrites
 | ID | Feature | Ships when |
 |----|---------|-----------|
 | F-018 | Android app (Kotlin, native UI, shared logic via KMP or Rust) | Demand validated via waitlist |
-| F-019 | Windows/Linux app | Demand validated; tech approach TBD |
+| F-019 | Linux desktop app | Demand validated; tech approach TBD |
 | F-020 | Folder browsing sidebar (opt-in, not required) | User feedback requests it |
 | F-021 | Snippet/template system | User feedback requests it |
 | F-022c | Extended syntax rendering: KaTeX/math blocks, footnotes (render-only per [D-MD-2]) | User feedback requests it |
@@ -1099,7 +1097,7 @@ We are not relying solely on word-of-mouth. "Defacto" requires intentional growt
 
 ### Referral mechanics
 
-- **Share sheet**: When exporting PDF/HTML, include a subtle "Made with easy-markdown" watermark (user can disable in settings). Tasteful, not tacky.
+- **Share sheet**: When exporting PDF, include a subtle "Made with easy-markdown" watermark (user can disable in settings). Tasteful, not tacky.
 - **App Store review prompt**: After 7 days of active use AND 10+ AI uses (not before), prompt for review. Only once. Never again.
 - **"The Render" is a built-in demo**: Users will toggle source/rich view to show others. The animation is marketing.
 
@@ -1191,6 +1189,7 @@ These are the growth levers that take us from "great indie app" to "the default"
 | D-UX-2 | Last-open file restoration | §8 |
 | D-UX-3 | The Render is a named, protected signature interaction | §4 |
 | D-GROWTH-1 | Design for over-the-shoulder impact | §8, §12 |
+| D-AI-10 | Voice-driven intent-based editing: speech-to-intent, not dictation. On-device speech recognition. | §1, §7 (F-037) |
 | D-USER-1 | Primary persona: AI-Native Knowledge Worker | §3 |
 | D-USER-2 | Secondary persona: The Builder — served with deep investment | §3 |
 | D-USER-3 | Tertiary persona: Content Creator — served naturally | §3 |

@@ -581,7 +581,7 @@
       "title": "F-022a: Mermaid Diagram Rendering",
       "intent": "AI agents and builders produce documents with diagrams constantly. If a Mermaid block renders as raw text, the document experience is broken. Diagrams must render beautifully inline.",
       "description": "Render Mermaid diagram blocks as visual diagrams inline in the editor. Fenced code blocks with mermaid language tag render as visual diagrams in rich view. Supported types: flowcharts, sequence, ER, class, Gantt, pie, state, mind maps. Diagrams adapt to light/dark theme. Included in PDF/print export as vector graphics. The Render animation applies. Malformed Mermaid shows raw code with doctor warning. Depends on: FEAT-038 (Parser).",
-      "priority": "should",
+      "priority": "must",
       "category": "Editor",
       "steps": [],
       "acceptanceCriteria": [
@@ -1119,26 +1119,7 @@
       "readyForSprint": true
     },
     {
-      "id": "FEAT-059",
-      "title": "INFRA: Performance Regression Test Suite",
-      "intent": "Every build must be automatically validated against performance targets — a regression that crosses any threshold blocks the build, not just gets noticed in a post-launch review.",
-      "description": "Per D-QA-2. Automated performance tests that run on every CI build and block merges on regression. Must measure: cold launch time (D-PERF-1: <1s), keystroke-to-render latency (D-PERF-2: <16ms), scroll FPS (D-PERF-3: 120fps ProMotion / 60fps baseline), memory usage for typical session (D-PERF-5: <100MB). Tests run on device simulators in CI and on physical devices in nightly runs. Test results published as build artifacts. Any target breach fails the build. Baseline captured at first green build and updated only via intentional PR.",
-      "priority": "must",
-      "category": "Infrastructure",
-      "steps": [],
-      "acceptanceCriteria": [
-        "All D-PERF-1 through D-PERF-5 targets have automated tests with pass/fail assertions",
-        "A commit that regresses cold launch above 1s fails the build with a clear message identifying the regression",
-        "Performance test results are visible as build artifacts for every CI run",
-        "Nightly physical-device run validates results match simulator results within 20%",
-        "Baseline is checked into the repo and requires a PR to update"
-      ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
-    },
-    {
-      "id": "FEAT-059",
+      "id": "FEAT-069",
       "title": "App Store Review Prompt",
       "intent": "The review prompt must appear at the right moment — when the user is happy and engaged, never before. One shot, never again.",
       "description": "Per PRODUCT.md §12. Prompt for App Store review only after: 7 days of active use AND 10+ AI feature uses. Uses SKStoreReviewController. Prompt appears at most once, ever. Timing tracked via on-device aggregate counters (FEAT-060). Never interrupts active editing — shown on return to home screen or after completing an AI action.",
@@ -1159,7 +1140,7 @@
       "id": "FEAT-060",
       "title": "INFRA: On-Device Aggregate Counters",
       "intent": "We must know if our AI features are landing without violating privacy — simple local counters tell us enough to make product decisions.",
-      "description": "Per D-BIZ-6. Track simple aggregate counts in UserDefaults: AI improve uses, AI summarize uses, AI continue accepts, doctor fixes accepted, documents opened, days active. Never transmitted off device. Powers App Store review prompt timing (FEAT-059) and status bar stats. No PII, no content, no telemetry — just counts.",
+      "description": "Per D-BIZ-6. Track simple aggregate counts in UserDefaults: AI improve uses, AI summarize uses, AI continue accepts, doctor fixes accepted, documents opened, days active. Never transmitted off device. Powers App Store review prompt timing (FEAT-069) and status bar stats. No PII, no content, no telemetry — just counts.",
       "priority": "must",
       "category": "Infrastructure",
       "steps": [],
