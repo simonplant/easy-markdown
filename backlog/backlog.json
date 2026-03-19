@@ -118,6 +118,7 @@
       "description": "Fenced code blocks with language detection from info string. Min languages: Python, JS/TS, Swift, Go, Rust, HTML/CSS, JSON, YAML, SQL, Bash, Ruby, Java, Kotlin, C/C++, PHP. Monospace font, background differentiation. Editable inline. Colors adapt to dark/light theme.",
       "priority": "must",
       "category": "Editor",
+      "dependsOn": ["SPIKE-007"],
       "steps": [],
       "acceptanceCriteria": [
         "User writes a fenced code block with a language tag — code is syntax-highlighted correctly",
@@ -283,6 +284,7 @@
       "description": "When opening a file or toggling source to rich: # markers shrink as headings scale up, ** dissolves as text boldfaces, list markers morph into styled bullets, code fences fade as blocks materialize, links compact to styled form, blockquote markers become visual borders. ~400ms spring-animated. Reverse plays on rich-to-source. Reduced Motion: instant crossfade 200ms. Uses Core Animation for guaranteed 120fps on ProMotion. VoiceOver unaffected — announces rendered content immediately.",
       "priority": "must",
       "category": "Appearance",
+      "dependsOn": ["SPIKE-004"],
       "steps": [],
       "acceptanceCriteria": [
         "Non-technical observer watching over the shoulder finds the transition visually striking",
@@ -583,6 +585,7 @@
       "description": "Render Mermaid diagram blocks as visual diagrams inline in the editor. Fenced code blocks with mermaid language tag render as visual diagrams in rich view. Supported types: flowcharts, sequence, ER, class, Gantt, pie, state, mind maps. Diagrams adapt to light/dark theme. Included in PDF/print export as vector graphics. The Render animation applies. Malformed Mermaid shows raw code with doctor warning. Depends on: FEAT-038 (Parser).",
       "priority": "must",
       "category": "Editor",
+      "dependsOn": ["SPIKE-006"],
       "steps": [],
       "acceptanceCriteria": [
         "User opens a file with a Mermaid flowchart — it renders as a visual diagram inline",
@@ -720,6 +723,7 @@
       "description": "Integrate or build a CommonMark + GFM compliant parser that produces an AST (per D-MD-1). Must handle: headings, paragraphs, bold/italic/strikethrough, links, images, code spans, fenced code blocks with language info, blockquotes, ordered/unordered lists, task lists, tables, thematic breaks, autolinks. Must handle malformed/incomplete markdown gracefully (partial parse, not crash). Must be fast: parse a 10,000-line document in <100ms. Evaluate: swift-markdown, cmark-gfm Swift wrapper, or custom. AST must support round-trip (AST → markdown preserves original formatting). AST must include source positions (line:column ranges) for doctor indicators and cursor mapping.",
       "priority": "must",
       "category": "Infrastructure",
+      "dependsOn": ["SPIKE-002", "SPIKE-003"],
       "steps": [],
       "acceptanceCriteria": [
         "Parser produces correct AST for all CommonMark + GFM spec examples",
@@ -739,6 +743,7 @@
       "description": "Core text input and rendering engine. Decision needed: TextKit 2 (modern, SwiftUI-friendly, but less mature) vs UITextView with custom NSAttributedString (proven but harder to customize). Must support: text input and editing, attributed string rendering, cursor/selection management, custom text attributes for markdown styling, hooks for auto-formatting (intercept keystrokes before commit), undo manager integration, IME support for CJK input, RTL text layout, Dynamic Type font scaling. Performance: <16ms keystroke-to-render (D-PERF-2), 120fps scroll (D-PERF-3).",
       "priority": "must",
       "category": "Infrastructure",
+      "dependsOn": ["SPIKE-001"],
       "steps": [],
       "acceptanceCriteria": [
         "User types and sees characters appear with <16ms latency (measured via instruments)",
@@ -779,6 +784,7 @@
       "description": "Per D-AI-5 and D-AI-9. Model download: separate from app (<50MB app, ~2-4GB model). Download via ODR or background asset download. Wi-Fi only by default, cellular opt-in. Non-blocking — editor usable during download. Progress indicator. Resume on interruption. Model loading: load into Core ML / MLX on app launch (for capable devices). Memory-mapped to minimize RAM impact. Model inference: token streaming pipeline. First token <500ms (D-PERF-4). Full response <3s. Model update: independent of app updates. Capability detection: check device (A16+/M1+), show/hide AI features accordingly (no broken affordances on unsupported devices).",
       "priority": "must",
       "category": "Infrastructure",
+      "dependsOn": ["SPIKE-005"],
       "steps": [],
       "acceptanceCriteria": [
         "Model downloads in background while user edits — no UI blocking",
@@ -1147,7 +1153,7 @@
       "acceptanceCriteria": [
         "AI feature usage counts increment correctly and persist across launches",
         "Counter data is stored in UserDefaults only — never transmitted",
-        "Counters are accessible for review prompt eligibility check (FEAT-059)",
+        "Counters are accessible for review prompt eligibility check (FEAT-069)",
         "Deleting and reinstalling the app resets counters (no external storage)"
       ],
       "status": "todo",
@@ -1304,6 +1310,164 @@
       "status": "todo",
       "passes": false,
       "readyForSprint": false
+    },
+    {
+      "id": "SPIKE-001",
+      "title": "SPIKE: TextKit 2 Keystroke Latency Validation",
+      "intent": "Validate that TextKit 2 can achieve <16ms keystroke-to-render latency before committing to it as the text engine",
+      "description": "Build a minimal TextKit 2 prototype with NSTextLayoutManager and NSTextContentStorage. Benchmark keystroke-to-render latency with attributed string updates per paragraph on iPhone 15 and iPhone SE (3rd gen). Measure with os_signpost. If TextKit 2 fails the <16ms target, document findings and evaluate TextKit 1 fallback. Blocks FEAT-039 (Text Engine). Updates architecture decision [A-004].",
+      "priority": "must",
+      "category": "Research",
+      "steps": [],
+      "acceptanceCriteria": [
+        "Minimal TextKit 2 prototype runs on iPhone 15 and iPhone SE",
+        "Keystroke-to-render latency measured via os_signpost for 100+ consecutive keystrokes",
+        "Results documented: p50, p95, p99 latency values",
+        "Written finding committed to docs/spikes/SPIKE-001.md",
+        "Architecture decision [A-004] updated based on findings"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
+    },
+    {
+      "id": "SPIKE-002",
+      "title": "SPIKE: swift-markdown Round-Trip Fidelity",
+      "intent": "Validate that swift-markdown can parse markdown, allow AST modifications, and re-emit markdown that preserves original formatting",
+      "description": "Build a test harness that parses markdown via swift-markdown, modifies specific AST nodes (e.g. change heading level, update link URL, rewrite paragraph text), and re-emits markdown. Compare output to expected results. Test with 100+ CommonMark spec examples plus custom GFM cases (tables, task lists, strikethrough). Document any formatting loss. Blocks FEAT-038 (Parser). Updates architecture decision [A-003].",
+      "priority": "must",
+      "category": "Research",
+      "steps": [],
+      "acceptanceCriteria": [
+        "Test harness runs parse → modify → re-emit on 100+ spec examples",
+        "Formatting preservation rate documented (target: >95% of cases)",
+        "Known failure cases cataloged with workarounds",
+        "Written finding committed to docs/spikes/SPIKE-002.md",
+        "Architecture decision [A-003] updated based on findings"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
+    },
+    {
+      "id": "SPIKE-003",
+      "title": "SPIKE: swift-markdown Incremental Parsing",
+      "intent": "Evaluate whether swift-markdown supports incremental parsing and design the debounce + local-update strategy for large documents",
+      "description": "Evaluate swift-markdown for partial/incremental re-parse capability. Benchmark full re-parse time on a 10,000-line markdown document on iPhone 15. If incremental parse is not feasible, design and validate the debounce strategy: full re-parse on ~300ms editing pause on background thread, with lightweight per-paragraph local attribute updates between parses for <16ms keystroke response. Blocks FEAT-038 (Parser). Updates architecture decisions [A-003] and [A-017].",
+      "priority": "must",
+      "category": "Research",
+      "steps": [],
+      "acceptanceCriteria": [
+        "Full re-parse time for 10,000-line document measured on iPhone 15",
+        "Incremental parse feasibility documented (supported or not)",
+        "If not incremental: debounce + local-update strategy validated with prototype",
+        "Written finding committed to docs/spikes/SPIKE-003.md",
+        "Architecture decisions [A-003] and [A-017] updated based on findings"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
+    },
+    {
+      "id": "SPIKE-004",
+      "title": "SPIKE: The Render Animation Feasibility",
+      "intent": "Validate the snapshot-based Core Animation approach for The Render signature transition at 120fps",
+      "description": "Prototype the snapshot-based Core Animation approach for The Render (source-to-rich text transition). Capture layer snapshots, compute target positions, animate with CASpringAnimation (~400ms, damping 0.8, response 0.4). Measure frame rate on iPad Pro (ProMotion) and iPhone SE. Test with documents of varying sizes (10 lines, 100 lines, 1000 lines). Test Reduced Motion crossfade path. Blocks FEAT-014 (Signature Transition). Updates architecture decision [A-020].",
+      "priority": "must",
+      "category": "Research",
+      "steps": [],
+      "acceptanceCriteria": [
+        "Prototype demonstrates source-to-rich animation with at least heading and bold transitions",
+        "Frame rate measured on iPad Pro (target: 120fps) and iPhone SE (target: 60fps)",
+        "Reduced Motion crossfade (200ms) alternative tested",
+        "Performance with 1000-line document documented",
+        "Written finding committed to docs/spikes/SPIKE-004.md",
+        "Architecture decision [A-020] updated based on findings"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
+    },
+    {
+      "id": "SPIKE-005",
+      "title": "SPIKE: Local AI Inference Benchmarks and Device Capability Detection",
+      "intent": "Benchmark MLX Swift vs Core ML for on-device inference, validate device capability detection, and select the local AI framework",
+      "description": "Run inference benchmarks comparing MLX Swift and Core ML on A16 (iPhone 15) and M1 hardware. Test with 1-4GB quantized language models suitable for writing assistance. Measure: first token latency (target <500ms per D-PERF-4), tokens/sec throughput, peak memory usage, and memory-mapped model behavior. Additionally, validate the device capability detection approach (ProcessInfo hardware model → chip family mapping) to correctly identify A16+/M1+ devices. Verify App Store compliance for the model download and inference approach. Blocks FEAT-041 (AI Pipeline). Updates architecture decisions [A-008] and [A-033].",
+      "priority": "must",
+      "category": "Research",
+      "steps": [],
+      "acceptanceCriteria": [
+        "MLX Swift and Core ML benchmarked on A16 and M1 hardware",
+        "First token latency, tokens/sec, and memory measured for each",
+        "Recommended framework selected with rationale",
+        "App Store compliance for model download approach verified",
+        "Device capability detection (A16+/M1+ identification) validated on multiple device models",
+        "Written finding committed to docs/spikes/SPIKE-005.md",
+        "Architecture decisions [A-008] and [A-033] updated based on findings"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
+    },
+    {
+      "id": "SPIKE-006",
+      "title": "SPIKE: Mermaid WKWebView Memory Impact",
+      "intent": "Validate the offscreen WKWebView approach for Mermaid rendering and measure memory impact with multiple diagrams",
+      "description": "Prototype Mermaid diagram rendering using mermaid.js in an offscreen WKWebView. Render SVG output, convert to cached UIImage. Measure memory usage with 1, 5, and 10 diagrams in a single document. Test cache invalidation on content change. Test theme switching (light/dark). Evaluate WKWebView lifecycle (create/destroy vs reuse). Blocks FEAT-030 (Mermaid Rendering). Updates architecture decision [A-006].",
+      "priority": "must",
+      "category": "Research",
+      "steps": [],
+      "acceptanceCriteria": [
+        "Prototype renders at least 3 Mermaid diagram types (flowchart, sequence, ER)",
+        "Memory usage measured with 1, 5, and 10 diagrams",
+        "Cache strategy validated (content hash → image)",
+        "Theme switching (light/dark) tested",
+        "Written finding committed to docs/spikes/SPIKE-006.md",
+        "Architecture decision [A-006] updated based on findings"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
+    },
+    {
+      "id": "SPIKE-007",
+      "title": "SPIKE: tree-sitter Swift Integration",
+      "intent": "Evaluate swift-tree-sitter package for syntax highlighting of fenced code blocks and measure binary size impact",
+      "description": "Evaluate the swift-tree-sitter (or SwiftTreeSitter) package for integration into the EMEditor package. Build a prototype that highlights 3 languages (Swift, Python, JavaScript). Measure: binary size impact of bundling grammars, parse performance on a 500-line code block, and API ergonomics for incremental updates. Assess build system compatibility with SPM. Blocks FEAT-006 (Syntax Highlighting). Updates architecture decision [A-005].",
+      "priority": "must",
+      "category": "Research",
+      "steps": [],
+      "acceptanceCriteria": [
+        "Prototype highlights Swift, Python, and JavaScript code blocks",
+        "Binary size impact of 3 grammars measured (and extrapolated for 15+)",
+        "Parse performance on 500-line code block measured",
+        "SPM build compatibility verified",
+        "Written finding committed to docs/spikes/SPIKE-007.md",
+        "Architecture decision [A-005] updated based on findings"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
+    },
+    {
+      "id": "SPIKE-008",
+      "title": "SPIKE: Apple Platform AI — WWDC 2026 Evaluation",
+      "intent": "Evaluate Apple platform AI APIs after WWDC 2026 and prototype ApplePlatformAIProvider if APIs are available",
+      "description": "Scoped to the WWDC 2026 evaluation window (June 2026). After WWDC, review all new Apple developer documentation for system-level AI APIs (on-device LLM, text generation, writing assistance APIs). If relevant APIs are announced: prototype the ApplePlatformAIProvider implementation against the AIProvider protocol, measure performance, and assess whether it replaces or supplements LocalModelProvider. If no relevant APIs: document findings and close the spike. Updates architecture decisions [A-007] and [A-029].",
+      "priority": "must",
+      "category": "Research",
+      "steps": [],
+      "acceptanceCriteria": [
+        "WWDC 2026 sessions and documentation reviewed for on-device AI APIs",
+        "Finding documented: APIs available (with prototype) or not available (with rationale)",
+        "If APIs available: prototype ApplePlatformAIProvider with performance measurements",
+        "Written finding committed to docs/spikes/SPIKE-008.md",
+        "Architecture decisions [A-007] and [A-029] updated based on findings",
+        "Spike closed with clear resolution (adopt, defer, or not applicable)"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
     }
   ],
   "_dependsOn_docs": "Items may include an optional 'dependsOn' array of item ID strings (e.g. \"dependsOn\": [\"FEAT-001\"]). Auto-pick skips items whose dependencies are not yet done."
