@@ -1188,7 +1188,7 @@ public enum HapticStyle: Sendable {
 }
 ```
 
-Haptics are triggered via a shared utility in EMCore that wraps `UIImpactFeedbackGenerator`. Respects the system "System Haptics" setting — disabled when the user has turned off system haptics. Never gratuitous per `DP-2`.
+Haptics are triggered via a shared utility in EMCore that wraps `UIImpactFeedbackGenerator`. Respects the system "System Haptics" setting — disabled when the user has turned off system haptics. Subtle and purposeful — never gratuitous per `DP-2`.
 
 ### 8.5 Logging
 

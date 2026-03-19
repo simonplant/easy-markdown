@@ -41,7 +41,7 @@ This is the Amazon "working backwards" press release. It describes the product a
 | Claim | Implication | Constrains |
 |-------|-------------|------------|
 | "Cursor for prose — the document tool for the AI age" | Must be purpose-built for both writing with AI and receiving/refining AI output. The full workflow — create, receive, refine, render, share — is first-class. Rich content (tables, diagrams, code blocks) renders beautifully. | Feature priorities, persona definitions, AI integration |
-| "Apple-quality craft — outrageously good" | UI quality is a shipping requirement. Ship dates slip before UI quality does. Must be visually remarkable enough to trigger organic sharing — this is our growth engine and what separates us from every Electron-based competitor. | Prioritization — quality over scope, always |
+| "Apple-quality craft — outrageously good" | UX quality is a shipping requirement — not just the visuals, but the intelligence, the latency, the defaults, the flow. Ship dates slip before experience quality does. Must be experientially remarkable enough to trigger organic sharing — this is our growth engine and what separates us from every other editor. | Prioritization — quality over scope, always |
 | "Opens any `.md` file your device can see" | Must use OS-level file access APIs (UIDocument, file providers), not a custom file store | Architecture, file management |
 | "No vault, no library, no sign-up" | Zero-configuration first launch. No onboarding flow, no account creation to start editing. Pro AI uses App Store subscription auth — no separate account. | UX, first-run experience |
 | "You can just talk to it" | Voice-driven intent-based editing using system speech recognition. Speak what you want your document to become. Not dictation — intent interpretation. | AI architecture, speech APIs, interaction design |
@@ -174,18 +174,20 @@ The file system is our storage layer. We use the OS file picker to open files an
 - Recents list uses OS-provided recent file APIs or a lightweight local preference store (UserDefaults)
 - Search is file-system-based, not index-based
 
-### DP-2: UI is the product
-The interface is the primary differentiator. It is not a wrapper around a markdown parser. Every screen, transition, animation, and micro-interaction is a product decision that receives disproportionate investment. **This is how we become the defacto document tool** — the quality has to be so high that people can't go back.
+### DP-2: The experience is the moat
+The UX — not the UI — is the primary differentiator. Beautiful pixels are table stakes for a premium Apple app. What people can't go back from is the *experience*: opening a file and editing in under a second, lists auto-continuing on Enter, tables aligning as you type, the doctor catching broken links without being asked, AI improving a paragraph with one tap, work saved before you think to save it, state restored exactly where you left off, an AI-generated report with diagrams and tables rendering beautifully on open. The intelligence is invisible until you notice its absence in every other editor. **This is how we become the defacto document tool** — the experience has to be so seamless that every other editor feels broken by comparison.
 
 **What this means in practice**:
-- UI quality is a blocking criterion for every release. A feature does not ship if it doesn't meet the bar.
+- UX quality is a blocking criterion for every release. A feature does not ship if the end-to-end experience doesn't meet the bar — not just the visual design, but the latency, the defaults, the error recovery, the flow.
+- Smart defaults over configuration. The editor should do the right thing without being told.
 - Typography is custom, not system defaults. We choose and license typefaces intentionally.
 - Animations are designed: spring curves, durations, and easing are specified per-interaction. No generic UIKit/SwiftUI defaults.
 - Haptic feedback on key interactions (list completion, doctor fix accepted, file saved confirmation). Subtle and purposeful — never gratuitous.
 - Touch targets, spacing, and color are treated as carefully as feature logic.
 - We allocate design time for every backlog item, not just "feature" items.
+- The Render animation is the *demo* — it makes people ask "what is that?" But what keeps them is everything else working the way they expect, faster and smarter than they expect.
 
-**Decision [D-UI-1]**: We will not ship any feature where the UI has not been explicitly designed, reviewed, and polished. No "we'll clean it up later" — the UI ships finished or it doesn't ship.
+**Decision [D-UI-1]**: We will not ship any feature where the experience has not been explicitly designed, reviewed, and polished. Not just the visuals — the flow, the latency, the defaults, the error states. No "we'll clean it up later" — the experience ships finished or it doesn't ship.
 
 ### DP-3: The editor should be smart
 The gap between "text box" and "intelligent editor" is where we differentiate. Auto-formatting, document doctor, and local AI are not secondary features — they are core to the value proposition.
@@ -294,7 +296,7 @@ These are explicit decisions about what we will **not** build. They exist to pre
 | **Publishing pipelines** (CMS integration, static site generation, blog deployment) | We render, print, and share markdown beautifully — but we don't build publishing pipelines. Write here, publish via your own tools. | **[D-NO-4]** No publishing pipelines. Render/print/share are in scope. |
 | **Proprietary document formats** (Word, Pages, Google Docs, RTF conversion) | Markdown is the format. We never convert to or from proprietary formats. PDF/print is a rendered view of markdown, not a format conversion. | **[D-NO-12]** No proprietary format import/export. |
 | **General-purpose code editing** (multi-language support, LSP, terminal) | We are a markdown editor, not an IDE. Developers have Cursor/VS Code. | **[D-NO-5]** Markdown-first. No general editing. |
-| **Plugin/extension system** | Complexity multiplier. Breaks UI quality guarantee. Obsidian already won this. | **[D-NO-6]** No plugins. No extension API. |
+| **Plugin/extension system** | Complexity multiplier. Breaks UX quality guarantee. Obsidian already won this. | **[D-NO-6]** No plugins. No extension API. |
 | **Free tier or ad-supported model** | Misaligns incentives. We work for the user, not advertisers. | **[D-NO-7]** Paid only. |
 | **Cloud sync** | We don't build sync. Users bring their own (iCloud, Dropbox, Git). | **[D-NO-8]** No proprietary sync. |
 | **Accounts required to use the app** | The editor and local AI work without any account. App Store receipt validates purchase. Pro AI subscribers authenticate via App Store subscription — no separate account system we build/maintain. | **[D-NO-9]** No proprietary account system. App Store handles auth for subscriptions. |
@@ -385,7 +387,7 @@ All significant product and technical decisions are recorded here. Each decision
 
 | ID | Decision | Rationale | Alternatives considered |
 |----|----------|-----------|------------------------|
-| **D-QA-1** | **Every feature passes a 4-gate review before shipping: Design Review → Implementation Review → Device Test Matrix → Accessibility Audit.** Design Review: matches the approved design spec. Implementation Review: code review with performance profiling. Device Test Matrix: tested on iPhone SE, iPhone 15 Pro, iPad Mini, iPad Pro (and macOS equivalents in Phase 2). Accessibility Audit: VoiceOver, Dynamic Type at all sizes, Reduced Motion. | D-UI-1 says "no feature ships with unfinished UI." D-A11Y-1 says "no feature ships without VoiceOver." These promises need enforcement mechanisms, not just principles. | Ship and fix later (violates D-UI-1); Manual spot checks (inconsistent); Automated-only testing (misses design quality). |
+| **D-QA-1** | **Every feature passes a 4-gate review before shipping: Design Review → Implementation Review → Device Test Matrix → Accessibility Audit.** Design Review: matches the approved design spec. Implementation Review: code review with performance profiling. Device Test Matrix: tested on iPhone SE, iPhone 15 Pro, iPad Mini, iPad Pro (and macOS equivalents in Phase 2). Accessibility Audit: VoiceOver, Dynamic Type at all sizes, Reduced Motion. | D-UI-1 says "no feature ships with unfinished experience." D-A11Y-1 says "no feature ships without VoiceOver." These promises need enforcement mechanisms, not just principles. | Ship and fix later (violates D-UI-1); Manual spot checks (inconsistent); Automated-only testing (misses experience quality). |
 | **D-QA-2** | **Performance regression tests run on every build.** Automated tests measure cold launch time, keystroke-to-render latency, scroll FPS, and memory usage against the targets in D-PERF-1 through D-PERF-5. A regression that crosses any threshold blocks the build. | Performance degrades gradually unless actively monitored. "Best in the world" performance requires continuous measurement, not periodic audits. | Manual performance testing (inconsistent, easy to skip); No automation (performance slowly degrades). |
 
 ### App Store Risk
@@ -547,7 +549,7 @@ Full external keyboard support for iPad.
 - **Acceptance**: User with external keyboard performs all common editing, navigation, and AI tasks without touching the screen.
 
 #### F-010: Typography and Layout
-Intentional, beautiful typography per DP-2.
+Intentional, beautiful typography per DP-2 — typography is part of the experience.
 
 - Custom typeface(s) for editor and UI chrome — not system fonts
 - Line height, paragraph spacing, and margins optimized for readability on each device class
@@ -964,7 +966,7 @@ Each phase has explicit exit criteria — conditions that must be true before we
 **Exit criteria to move to Phase 2**:
 - App Store rating ≥ 4.7 (based on first 200+ ratings — "best in the world" means best-in-class ratings)
 - D7 retention ≥ 60%
-- Positive review mentions of editor experience, auto-formatting, AI, or UI quality in ≥ 30% of text reviews
+- Positive review mentions of editor experience, auto-formatting, AI, or UX quality in ≥ 30% of text reviews
 - AI features used by ≥ 50% of users in first week (validates AI is discoverable and useful, not just present)
 - < 5% of support contacts about file access confusion
 - No P0 bugs open for > 48 hours
@@ -1014,10 +1016,10 @@ Each phase has explicit exit criteria — conditions that must be true before we
 **Strategic position**: Cursor showed what AI-native editing could be for code. We are what it should be for everything else — with the craft and polish of the best Apple-native apps. For 99% of the documents people create in 2026, markdown + AI + beautiful rendering is all you need. We're not just competing with markdown editors — we're the reason people stop reaching for Word and Google Docs for briefs, reports, READMEs, and everything that isn't a spreadsheet.
 
 **Competitive moat**: Four reinforcing advantages that are hard to replicate:
-1. **AI-native from the ground up** — AI co-authoring, inline refinement, diagram editing, smart completions. Not a bolt-on, not a sidebar — AI is woven into every interaction. The only document tool with high-quality AI that works offline.
-2. **Apple-quality native craft** — Electron/web-based competitors (Obsidian, Notable, Notion, Google Docs) cannot match native animation performance, 120fps scroll, and platform integration. This is what happens when you build for the platform, not around it.
-3. **Open files + no accounts** — competitors with proprietary storage (Bear, Obsidian, Notion, Google Docs, Word) would have to fundamentally redesign their architecture to match. Your files are yours.
-4. **Purpose-built for how markdown is used in 2026** — not a 2015 text editor with AI bolted on. Built for the full workflow: create with AI, receive from AI, refine, render rich content beautifully, share as polished output.
+1. **The experience is the moat** — Not any single feature, but the compound effect: <1s launch to editing, lists auto-continuing, tables self-aligning, doctor catching issues unprompted, AI improving text with one tap, work always saved, state always restored, AI-generated reports rendering beautifully on open. The intelligence is invisible until you notice its absence in every other editor. This isn't about pretty pixels — it's about an editor that's smarter and faster than users expect, every time they touch it.
+2. **AI-native from the ground up** — AI co-authoring, inline refinement, diagram editing, smart completions. Not a bolt-on, not a sidebar — AI is woven into every interaction. The only document tool with high-quality AI that works offline.
+3. **Open files + no accounts** — competitors with proprietary storage (Bear, Obsidian, Notion, Google Docs, Word) would have to fundamentally redesign their architecture to match. Your files are yours — iCloud, Dropbox, GitHub, wherever.
+4. **Purpose-built for human-AI collaboration on markdown** — not a 2015 text editor with AI bolted on. Built for the full loop: create with AI, receive from AI, refine with AI, render rich content beautifully, share as polished output. The tool where humans and AI meet on the universal document format.
 
 **Relationship to Cursor / VS Code**: We are not competing with IDEs. We are the **complement** — Cursor for code, easy-markdown for everything else. This is a referral channel, not a battleground. "I use Cursor for code and easy-markdown for everything else" is the target positioning.
 
@@ -1184,7 +1186,7 @@ These are the growth levers that take us from "great indie app" to "the default"
 | D-STORE-1 | Subscription terms clearly communicated per Apple guidelines | §6 |
 | D-STORE-2 | AI origin clear in UX, not injected into files | §6 |
 | D-STORE-3 | App fully functional at download (minus model) | §6 |
-| D-UI-1 | No feature ships with unfinished UI | §4 |
+| D-UI-1 | No feature ships with unfinished experience (UX, not just UI) | §4 |
 | D-UX-1 | No onboarding flow | §8 |
 | D-UX-2 | Last-open file restoration | §8 |
 | D-UX-3 | The Render is a named, protected signature interaction | §4 |
