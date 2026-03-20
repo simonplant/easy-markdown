@@ -190,6 +190,9 @@ public struct MarkdownRenderer {
         paragraphStyle.lineSpacing = metrics.lineSpacing(forFontSize: bodySize)
         paragraphStyle.paragraphSpacing = metrics.paragraphSpacing(forFontSize: bodySize)
         paragraphStyle.alignment = .natural
+        // Natural writing direction ensures correct BiDi layout for RTL,
+        // LTR, and mixed-direction text per FEAT-051 AC-2/AC-3.
+        paragraphStyle.baseWritingDirection = .natural
 
         return [
             .font: config.typeScale.body,
@@ -345,6 +348,7 @@ public struct MarkdownRenderer {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = metrics.lineSpacing(forFontSize: headingSize)
         paragraphStyle.alignment = .natural
+        paragraphStyle.baseWritingDirection = .natural
         // More spacing around higher-level headings, scaled from metrics
         let baseSpacing = metrics.paragraphSpacing(forFontSize: headingSize)
         paragraphStyle.paragraphSpacingBefore = level <= 2 ? baseSpacing * 1.5 : baseSpacing * 1.2
@@ -404,6 +408,7 @@ public struct MarkdownRenderer {
         let indent = CGFloat(indentLevel) * 24.0 + 24.0
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .natural
+        paragraphStyle.baseWritingDirection = .natural
         paragraphStyle.lineSpacing = metrics.lineSpacing(forFontSize: bodySize)
         paragraphStyle.headIndent = indent
         paragraphStyle.firstLineHeadIndent = indent - 18.0
@@ -537,6 +542,7 @@ public struct MarkdownRenderer {
         let indent: CGFloat = 16.0
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .natural
+        paragraphStyle.baseWritingDirection = .natural
         paragraphStyle.lineSpacing = metrics.lineSpacing(forFontSize: bodySize)
         paragraphStyle.headIndent = indent
         paragraphStyle.firstLineHeadIndent = indent
@@ -612,6 +618,7 @@ public struct MarkdownRenderer {
         let blockSpacing = metrics.paragraphSpacing(forFontSize: codeSize)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .natural
+        paragraphStyle.baseWritingDirection = .natural
         paragraphStyle.lineSpacing = metrics.lineSpacing(forFontSize: codeSize) * 0.75
         paragraphStyle.paragraphSpacing = blockSpacing
         paragraphStyle.paragraphSpacingBefore = blockSpacing
@@ -727,6 +734,7 @@ public struct MarkdownRenderer {
         let breakSpacing = metrics.paragraphSpacing(forFontSize: bodySize) * 1.2
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
+        paragraphStyle.baseWritingDirection = .natural
         paragraphStyle.paragraphSpacingBefore = breakSpacing
         paragraphStyle.paragraphSpacing = breakSpacing
 
@@ -765,6 +773,7 @@ public struct MarkdownRenderer {
         paragraphStyle.paragraphSpacing = 0
         paragraphStyle.paragraphSpacingBefore = 0
         paragraphStyle.alignment = .natural
+        paragraphStyle.baseWritingDirection = .natural
 
         // Base table attributes: monospace font + subtle background
         attrStr.addAttributes([

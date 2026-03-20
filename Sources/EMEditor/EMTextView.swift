@@ -110,12 +110,21 @@ public final class EMTextView: UITextView {
         smartDashesType = .default
         smartInsertDeleteType = .default
 
-        // CJK IME: UITextView handles markedText natively.
+        // CJK IME: UITextView handles markedText natively per FEAT-051 AC-5.
         // We must not interfere with the input system's composition state.
+        // The text view's insertText/markedText pipeline handles composition display.
 
-        // RTL: enable natural text alignment so the system
-        // picks the correct direction based on content per AC-4.
+        // RTL: enable natural text alignment so the system picks the correct
+        // direction based on content per FEAT-051 AC-2/AC-3. The actual per-paragraph
+        // writing direction is set via NSParagraphStyle.baseWritingDirection = .natural
+        // in the MarkdownRenderer, which allows the Unicode BiDi algorithm to determine
+        // direction from the text content.
         textAlignment = .natural
+
+        // CJK line breaking: TextKit 2 with byWordWrapping (the default) respects
+        // character-boundary breaking for CJK text per FEAT-051 AC-1. CJK ideographs
+        // can break at any character boundary, while Latin text breaks at word boundaries.
+        textContainer.lineBreakMode = .byWordWrapping
 
         // Appearance — default background, overridden by applyThemeBackground
         backgroundColor = .systemBackground
@@ -507,8 +516,15 @@ public final class EMTextView: NSTextView {
         isAutomaticQuoteSubstitutionEnabled = true
         isAutomaticDashSubstitutionEnabled = true
 
-        // RTL: natural alignment
+        // RTL: natural alignment per FEAT-051 AC-2/AC-3. Per-paragraph writing
+        // direction is set via NSParagraphStyle.baseWritingDirection = .natural
+        // in the MarkdownRenderer, allowing Unicode BiDi to determine direction.
         alignment = .natural
+
+        // CJK IME: NSTextView handles marked text natively per FEAT-051 AC-5.
+        // CJK line breaking at character boundaries is handled by TextKit 2's
+        // default line break mode (.byWordWrapping) which breaks CJK at any
+        // ideograph boundary per FEAT-051 AC-1.
 
         // Appearance — default background, overridden by applyThemeBackground
         backgroundColor = .textBackgroundColor
