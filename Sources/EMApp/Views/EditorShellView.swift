@@ -34,6 +34,8 @@ struct EditorShellView: View {
     @State private var currentLineEnding: LineEnding = .lf
     @State private var improveCoordinator: ImproveWritingCoordinator?
     @State private var improveService: ImproveWritingService?
+    @State private var summarizeCoordinator: SummarizeCoordinator?
+    @State private var summarizeService: SummarizeService?
     @State private var showingOpenFilePicker = false
     @State private var showingNewFilePicker = false
     @State private var isProSubscriber = false
@@ -98,6 +100,30 @@ struct EditorShellView: View {
                 // Positioned above the selection via GeometryReader + selectionRect.
                 // Falls back to top-center when selection rect is unavailable.
                 floatingActionBarOverlay
+            }
+
+            // Summary popover per FEAT-055
+            .popover(
+                isPresented: Binding(
+                    get: { summarizeCoordinator?.isPopoverPresented ?? false },
+                    set: { newValue in
+                        if !newValue { summarizeCoordinator?.dismiss() }
+                    }
+                )
+            ) {
+                if let coordinator = summarizeCoordinator {
+                    SummaryPopoverContent(
+                        summaryText: coordinator.summaryText,
+                        isStreaming: coordinator.phase == .streaming,
+                        onInsert: {
+                            coordinator.insert { summary in
+                                insertTextAtCursor(summary)
+                            }
+                        },
+                        onCopy: { coordinator.copyToClipboard() },
+                        onDismiss: { coordinator.dismiss() }
+                    )
+                }
             }
 
             // Doctor indicator bar per FEAT-005 — non-blocking overlay
@@ -220,8 +246,9 @@ struct EditorShellView: View {
         }
         .onDisappear {
             conflictManager?.stopMonitoring()
-            // Cancel any active AI improve session on file close
+            // Cancel any active AI sessions on file close
             improveCoordinator?.cancel()
+            summarizeCoordinator?.cancel()
             // Clear doctor state on file close per FEAT-005 AC-3
             editorState.clearDiagnostics()
             // Save, then release per-scene file coordination resources per [A-028].
@@ -424,13 +451,18 @@ struct EditorShellView: View {
     // MARK: - AI Improve Writing per FEAT-011
 
     /// Creates the improve writing coordinator and service per FEAT-011.
-    /// Wires EMAI → EMEditor via EMCore's ImproveWritingUpdate, maintaining
+    /// Also creates the summarize coordinator and service per FEAT-055.
+    /// Wires EMAI → EMEditor via EMCore update types, maintaining
     /// module isolation per [A-015].
     private func setupImproveWriting() {
         guard aiProviderManager.shouldShowAIUI else { return }
         let coordinator = ImproveWritingCoordinator(editorState: editorState)
         improveCoordinator = coordinator
         improveService = ImproveWritingService(providerManager: aiProviderManager)
+
+        // FEAT-055: Summarize
+        summarizeCoordinator = SummarizeCoordinator(editorState: editorState)
+        summarizeService = SummarizeService(providerManager: aiProviderManager)
     }
 
     /// Starts the AI improve flow per FEAT-011 AC-1.
@@ -512,10 +544,38 @@ struct EditorShellView: View {
         return targetY
     }
 
-    /// Starts the AI summarize flow (stub — full implementation in FEAT-055).
+    // MARK: - AI Summarize per FEAT-055
+
+    /// Starts the AI summarize flow per FEAT-055 AC-1.
+    /// User selects text (or full document), taps Summarize → AI streams summary into popover.
     private func startSummarize() {
-        // FEAT-055 will implement the full summarize pipeline.
-        // For now, this validates the action bar wiring.
+        guard let coordinator = summarizeCoordinator,
+              let service = summarizeService else { return }
+
+        let selectedRange = editorState.selectedRange
+        guard selectedRange.length > 0,
+              let swiftRange = Range(selectedRange, in: text) else { return }
+
+        let selectedText = String(text[swiftRange])
+
+        // Determine if the entire document is selected for longer summary per AC-1.
+        let isFullDocument = selectedRange.length >= (text as NSString).length
+
+        let stream = service.startSummarizing(
+            selectedText: selectedText,
+            isFullDocument: isFullDocument
+        )
+        coordinator.startSummarize(updateStream: stream)
+    }
+
+    /// Inserts text at the current cursor position per FEAT-055 AC-2.
+    /// Uses `Range(NSRange, in:)` for correct UTF-16 → String.Index conversion.
+    private func insertTextAtCursor(_ insertedText: String) {
+        let cursorLocation = editorState.selectedRange.location
+        let nsRange = NSRange(location: cursorLocation, length: 0)
+        guard let insertRange = Range(nsRange, in: text) else { return }
+
+        text.insert(contentsOf: insertedText, at: insertRange.lowerBound)
     }
 
     // MARK: - Link Handling per FEAT-049 AC-3, AC-5
