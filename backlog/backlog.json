@@ -216,9 +216,10 @@
         "Custom typeface renders correctly for Latin, CJK, Arabic, and Devanagari scripts",
         "Extreme Dynamic Type accessibility sizes render without clipping or text overlap"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-19T20:04:31-07:00"
     },
     {
       "id": "FEAT-011",

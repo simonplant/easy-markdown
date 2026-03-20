@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1773974610",
   "startedAt": "2026-03-19T19:43:30-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-010",
     "title": "F-010: Typography and Layout",
@@ -19,6 +19,10 @@
       "Extreme Dynamic Type accessibility sizes render without clipping or text overlap"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T19:43:30-07:00"
-  }
+    "startedAt": "2026-03-19T19:43:30-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-19T20:04:31-07:00"
+  },
+  "completedAt": "2026-03-19T20:04:31-07:00",
+  "attempts": 2
 }
