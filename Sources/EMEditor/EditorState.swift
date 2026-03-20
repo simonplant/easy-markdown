@@ -27,6 +27,9 @@ public final class EditorState {
     /// Word count for the current selection, nil when no selection.
     public private(set) var selectionWordCount: Int?
 
+    /// Full document statistics per [A-055]. Updated on text changes.
+    public private(set) var documentStats: DocumentStats = .zero
+
     public init() {
         self.selectedRange = NSRange(location: 0, length: 0)
         self.isSourceView = false
@@ -39,6 +42,11 @@ public final class EditorState {
     /// Update selection word count. Pass nil to clear.
     public func updateSelectionWordCount(_ count: Int?) {
         selectionWordCount = count
+    }
+
+    /// Update full document statistics.
+    public func updateDocumentStats(_ stats: DocumentStats) {
+        documentStats = stats
     }
 
     /// Update selected range from the text view.

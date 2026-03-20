@@ -191,10 +191,9 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
 
     // MARK: - Word counting
 
-    /// Simple word count for selection stats.
-    /// Full document word count uses NLTokenizer (in EditorShellView for now).
+    /// Word count for selection stats using NLTokenizer for CJK-aware segmentation per [A-055].
     private func wordCount(in text: String) -> Int {
-        text.split(omittingEmptySubsequences: true) { $0.isWhitespace || $0.isNewline }.count
+        DocumentStatsCalculator.countWords(in: text)
     }
 }
 
@@ -400,9 +399,9 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
 
     // MARK: - Word counting
 
-    /// Simple word count for selection stats.
+    /// Word count for selection stats using NLTokenizer for CJK-aware segmentation per [A-055].
     private func wordCount(in text: String) -> Int {
-        text.split(omittingEmptySubsequences: true) { $0.isWhitespace || $0.isNewline }.count
+        DocumentStatsCalculator.countWords(in: text)
     }
 }
 

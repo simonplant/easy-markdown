@@ -260,9 +260,10 @@
         "Status bar does not overlap editor content on iPhone SE screen size",
         "Tapping the status bar expands to show paragraph count, sentence count, and Flesch-Kincaid readability score"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-19T20:15:22-07:00"
     },
     {
       "id": "FEAT-013",

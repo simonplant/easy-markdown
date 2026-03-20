@@ -13,6 +13,7 @@ struct EditorStateTests {
         #expect(state.isSourceView == false)
         #expect(state.scrollOffset == 0)
         #expect(state.selectionWordCount == nil)
+        #expect(state.documentStats == .zero)
     }
 
     @Test("Undo manager has unlimited depth")
@@ -47,6 +48,22 @@ struct EditorStateTests {
 
         state.updateSelectionWordCount(nil)
         #expect(state.selectionWordCount == nil)
+    }
+
+    @Test("Update document stats")
+    func updateDocumentStats() {
+        let state = EditorState()
+        let stats = DocumentStats(
+            wordCount: 42,
+            characterCount: 200,
+            characterCountNoSpaces: 170,
+            readingTimeSeconds: 11,
+            paragraphCount: 3,
+            sentenceCount: 5,
+            fleschKincaidGradeLevel: 8.2
+        )
+        state.updateDocumentStats(stats)
+        #expect(state.documentStats == stats)
     }
 
     @Test("Toggle source view")

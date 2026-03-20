@@ -19,7 +19,6 @@ struct EditorShellView: View {
     @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
     @State private var editorState = EditorState()
     @State private var text = ""
-    @State private var wordCount = 0
     @State private var diagnosticCount = 0
     @State private var conflictManager: FileConflictManager?
     @State private var autoSaveManager: AutoSaveManager?
@@ -63,7 +62,7 @@ struct EditorShellView: View {
                 isEditable: true,
                 isSpellCheckEnabled: settings.isSpellCheckEnabled,
                 onTextChange: { newText in
-                    updateWordCount(newText)
+                    updateDocumentStats(newText)
                     autoSaveManager?.contentDidChange()
                 }
             )
@@ -74,7 +73,11 @@ struct EditorShellView: View {
             Divider()
             FormatBar()
             Divider()
-            StatusBar(wordCount: wordCount, diagnosticCount: diagnosticCount)
+            StatusBar(
+                stats: editorState.documentStats,
+                selectionWordCount: editorState.selectionWordCount,
+                diagnosticCount: diagnosticCount
+            )
         }
         .overlay(alignment: .top) {
             if let manager = conflictManager,
@@ -153,7 +156,7 @@ struct EditorShellView: View {
         guard let content = fileOpenCoordinator.currentFileContent else { return }
         text = content.text
         currentLineEnding = content.lineEnding
-        updateWordCount(content.text)
+        updateDocumentStats(content.text)
     }
 
     /// Sets up the auto-save manager for the current file per FEAT-008 and [A-026].
@@ -184,9 +187,11 @@ struct EditorShellView: View {
         #endif
     }
 
-    private func updateWordCount(_ text: String) {
-        let words = text.split(omittingEmptySubsequences: true) { $0.isWhitespace || $0.isNewline }
-        wordCount = words.count
+    /// Recomputes document stats using NLTokenizer-based calculator per [A-055].
+    /// CJK text is segmented correctly (not space-delimited).
+    private func updateDocumentStats(_ text: String) {
+        let stats = DocumentStatsCalculator.computeFullStats(for: text)
+        editorState.updateDocumentStats(stats)
     }
 
     // MARK: - Conflict Detection per FEAT-045

@@ -1,28 +1,28 @@
 {
-  "sprintId": "sprint-1773974610",
-  "startedAt": "2026-03-19T19:43:30-07:00",
+  "sprintId": "sprint-1773975886",
+  "startedAt": "2026-03-19T20:04:46-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-010",
-    "title": "F-010: Typography and Layout",
-    "intent": "Typography is our silent differentiator — the rendered markdown must be so beautiful that users notice it subconsciously and can never go back to other editors",
-    "description": "Custom typefaces for editor and UI chrome. Line height, paragraph spacing, margins optimized per device class. Responsive layout adapts to screen size. Max content width on large screens (~70-80 chars). Respects Dynamic Type.",
+    "id": "FEAT-012",
+    "title": "F-033: Word Count and Document Stats",
+    "intent": "Writers need to see their progress at a glance — word count and reading time must be always visible without being intrusive",
+    "description": "Compact status bar at bottom: word count, character count (with/without spaces), estimated reading time. Updates in real time. Tap to expand: paragraph count, sentence count, Flesch-Kincaid readability. Selection-aware: shows selection count alongside total.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Designer reviews rendered markdown on iPhone SE, iPhone 15 Pro Max, iPad Mini, and iPad Pro — all feel intentionally designed",
-      "Dynamic Type at default and large sizes renders correctly on all device classes",
-      "Content width is 65-80 characters on iPad landscape and external displays",
-      "Line height is 1.5-1.7x font size, paragraph spacing is at least 0.5x line height",
-      "Minimum margins: 16pt on iPhone, 32pt on iPad",
-      "Custom typeface renders correctly for Latin, CJK, Arabic, and Devanagari scripts",
-      "Extreme Dynamic Type accessibility sizes render without clipping or text overlap"
+      "User sees word count and reading time in status bar at all times while writing",
+      "Selecting text updates stats to show selection count alongside total",
+      "VoiceOver can read current word count and reading time via status bar",
+      "Word count updates cause no perceptible input lag (under 1ms overhead per keystroke)",
+      "CJK text word count uses appropriate segmentation (not space-delimited)",
+      "Status bar does not overlap editor content on iPhone SE screen size",
+      "Tapping the status bar expands to show paragraph count, sentence count, and Flesch-Kincaid readability score"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T19:43:30-07:00",
+    "startedAt": "2026-03-19T20:04:46-07:00",
     "status": "passed",
-    "completedAt": "2026-03-19T20:04:31-07:00"
+    "completedAt": "2026-03-19T20:15:22-07:00"
   },
-  "completedAt": "2026-03-19T20:04:31-07:00",
+  "completedAt": "2026-03-19T20:15:22-07:00",
   "attempts": 2
 }
