@@ -65,6 +65,36 @@ struct DoctorEngineTests {
         let diagnostics = engine.evaluate(ctx)
         #expect(diagnostics.isEmpty)
     }
+
+    @Test("AC-8: Evaluates a 3000-line document within 2 seconds")
+    func performanceLargeDocument() {
+        // Generate a 3000-line markdown document with varied structure
+        var lines: [String] = []
+        for i in 1...3000 {
+            switch i % 30 {
+            case 0:
+                lines.append("## Section \(i / 30)")
+            case 1:
+                lines.append("")
+            case 15:
+                lines.append("### Subsection \(i)")
+            case 16:
+                lines.append("")
+            default:
+                lines.append("This is paragraph text on line \(i) with some content to make it realistic.")
+            }
+        }
+        let text = lines.joined(separator: "\n")
+        let ctx = context(for: text)
+        let engine = DoctorEngine()
+
+        let clock = ContinuousClock()
+        let elapsed = clock.measure {
+            _ = engine.evaluate(ctx)
+        }
+
+        #expect(elapsed < .seconds(2), "Doctor evaluation of 3000-line document took \(elapsed), exceeds 2s limit")
+    }
 }
 
 @Suite("HeadingHierarchyRule")
