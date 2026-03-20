@@ -259,6 +259,34 @@ public final class EMTextView: NSTextView {
     public override var undoManager: UndoManager? {
         editorState?.undoManager ?? super.undoManager
     }
+
+    // MARK: - Spell Check Suppression per [A-054]
+
+    /// Overrides the system spell check indicator to skip ranges marked
+    /// with `.spellCheckExcluded` (code blocks, code spans, URLs, images).
+    public override func setSpellingState(_ value: Int, range charRange: NSRange) {
+        guard let textStorage else {
+            super.setSpellingState(value, range: charRange)
+            return
+        }
+
+        // Check if the target range overlaps with any spell-check-excluded range.
+        // If so, don't apply the spelling state (effectively suppressing the underline).
+        var isExcluded = false
+        textStorage.enumerateAttribute(
+            .spellCheckExcluded,
+            in: charRange,
+            options: []
+        ) { attrValue, _, stop in
+            if attrValue as? Bool == true {
+                isExcluded = true
+                stop.pointee = true
+            }
+        }
+
+        guard !isExcluded else { return }
+        super.setSpellingState(value, range: charRange)
+    }
 }
 
 #endif
