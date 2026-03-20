@@ -1,6 +1,7 @@
 /// SwiftUI bridge for EMTextView per [A-004].
 /// Wraps the TextKit 2 text view as a UIViewRepresentable (iOS) / NSViewRepresentable (macOS)
 /// for embedding in the SwiftUI view hierarchy.
+/// Integrates MarkdownRenderer for rich text rendering per FEAT-003 and [A-018].
 
 import SwiftUI
 import EMCore
@@ -16,6 +17,7 @@ import EMCore
 /// TextViewBridge(
 ///     text: $text,
 ///     editorState: editorState,
+///     renderConfig: config,
 ///     isEditable: true,
 ///     onTextChange: { newText in ... }
 /// )
@@ -23,6 +25,7 @@ import EMCore
 public struct TextViewBridge: UIViewRepresentable {
     @SwiftUI.Binding public var text: String
     public var editorState: EditorState
+    public var renderConfig: RenderConfiguration?
     public var isEditable: Bool
     public var isSpellCheckEnabled: Bool
     public var onTextChange: ((String) -> Void)?
@@ -30,12 +33,14 @@ public struct TextViewBridge: UIViewRepresentable {
     public init(
         text: SwiftUI.Binding<String>,
         editorState: EditorState,
+        renderConfig: RenderConfiguration? = nil,
         isEditable: Bool = true,
         isSpellCheckEnabled: Bool = true,
         onTextChange: ((String) -> Void)? = nil
     ) {
         self._text = text
         self.editorState = editorState
+        self.renderConfig = renderConfig
         self.isEditable = isEditable
         self.isSpellCheckEnabled = isSpellCheckEnabled
         self.onTextChange = onTextChange
@@ -55,12 +60,25 @@ public struct TextViewBridge: UIViewRepresentable {
         )
 
         context.coordinator.onTextChange = onTextChange
+        context.coordinator.renderConfig = renderConfig
+
+        // Initial render if config is available
+        if renderConfig != nil {
+            context.coordinator.requestRender(for: textView)
+        }
+
         return textView
     }
 
     public func updateUIView(_ textView: EMTextView, context: Context) {
-        // Update text from binding (e.g., file load)
-        context.coordinator.updateTextView(textView, with: text)
+        let coordinator = context.coordinator
+
+        // Track whether we need to re-render
+        let textChanged = coordinator.updateTextView(textView, with: text)
+        let configChanged = coordinator.renderConfig?.isSourceView != renderConfig?.isSourceView
+
+        // Update render configuration
+        coordinator.renderConfig = renderConfig
 
         // Update editable state
         textView.isEditable = isEditable
@@ -69,6 +87,11 @@ public struct TextViewBridge: UIViewRepresentable {
         let spellType: UITextSpellCheckingType = isSpellCheckEnabled ? .yes : .no
         if textView.spellCheckingType != spellType {
             textView.spellCheckingType = spellType
+        }
+
+        // Re-render if text loaded from binding or view mode toggled
+        if (textChanged || configChanged), renderConfig != nil {
+            coordinator.requestRender(for: textView)
         }
     }
 
@@ -91,6 +114,7 @@ public struct TextViewBridge: UIViewRepresentable {
 public struct TextViewBridge: NSViewRepresentable {
     @SwiftUI.Binding public var text: String
     public var editorState: EditorState
+    public var renderConfig: RenderConfiguration?
     public var isEditable: Bool
     public var isSpellCheckEnabled: Bool
     public var onTextChange: ((String) -> Void)?
@@ -98,12 +122,14 @@ public struct TextViewBridge: NSViewRepresentable {
     public init(
         text: SwiftUI.Binding<String>,
         editorState: EditorState,
+        renderConfig: RenderConfiguration? = nil,
         isEditable: Bool = true,
         isSpellCheckEnabled: Bool = true,
         onTextChange: ((String) -> Void)? = nil
     ) {
         self._text = text
         self.editorState = editorState
+        self.renderConfig = renderConfig
         self.isEditable = isEditable
         self.isSpellCheckEnabled = isSpellCheckEnabled
         self.onTextChange = onTextChange
@@ -129,9 +155,15 @@ public struct TextViewBridge: NSViewRepresentable {
         ))
 
         context.coordinator.onTextChange = onTextChange
+        context.coordinator.renderConfig = renderConfig
 
         // Observe scroll position changes
         context.coordinator.observeScrollView(scrollView)
+
+        // Initial render if config is available
+        if renderConfig != nil {
+            context.coordinator.requestRender(for: textView)
+        }
 
         return scrollView
     }
@@ -139,9 +171,17 @@ public struct TextViewBridge: NSViewRepresentable {
     public func updateNSView(_ scrollView: NSScrollView, context: Context) {
         guard let textView = scrollView.documentView as? EMTextView else { return }
 
-        context.coordinator.updateTextView(textView, with: text)
+        let coordinator = context.coordinator
+        let textChanged = coordinator.updateTextView(textView, with: text)
+        let configChanged = coordinator.renderConfig?.isSourceView != renderConfig?.isSourceView
+
+        coordinator.renderConfig = renderConfig
         textView.isEditable = isEditable
         textView.isContinuousSpellCheckingEnabled = isSpellCheckEnabled
+
+        if (textChanged || configChanged), renderConfig != nil {
+            coordinator.requestRender(for: textView)
+        }
     }
 
     public func makeCoordinator() -> TextViewCoordinator {

@@ -41,7 +41,7 @@ let package = Package(
         .testTarget(name: "EMCoreTests", dependencies: ["EMCore"]),
         .testTarget(name: "EMParserTests", dependencies: ["EMParser", "EMCore"]),
         .testTarget(name: "EMFileTests", dependencies: ["EMFile", "EMCore"]),
-        .testTarget(name: "EMEditorTests", dependencies: ["EMEditor", "EMCore"]),
+        .testTarget(name: "EMEditorTests", dependencies: ["EMEditor", "EMParser", "EMCore"]),
         .testTarget(name: "EMSettingsTests", dependencies: ["EMSettings", "EMCore"]),
         .testTarget(name: "EMAppTests", dependencies: ["EMApp", "EMSettings", "EMCore"]),
     ]
