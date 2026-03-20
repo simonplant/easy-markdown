@@ -1,27 +1,26 @@
 {
-  "sprintId": "sprint-1773955426",
-  "startedAt": "2026-03-19T14:23:46-07:00",
+  "sprintId": "sprint-1773964335",
+  "startedAt": "2026-03-19T16:52:15-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-040",
-    "title": "INFRA: File Coordination Layer",
-    "intent": "iOS file access is sandboxed and complex — security-scoped URLs, file coordination, and bookmarking must be rock-solid or users lose access to their files.",
-    "description": "Foundation for all file operations. Security-scoped URL handling: obtain, persist, and resolve bookmarks so files remain accessible across app launches (required for recents). NSFileCoordinator integration for safe reads/writes that respect other processes (iCloud, Dropbox, Git). NSFilePresenter for detecting external file changes (D-FILE-5). UTF-8 encoding validation (D-FILE-2). Line ending detection and preservation (D-FILE-3). File size check and warning (D-FILE-4).",
+    "id": "FEAT-038",
+    "title": "INFRA: Markdown Parser (CommonMark + GFM)",
+    "intent": "The parser is the foundation — every rendering, formatting, doctor, and export feature depends on a correct AST. Get this wrong and everything downstream is broken.",
+    "description": "Integrate or build a CommonMark + GFM compliant parser that produces an AST (per D-MD-1). Must handle: headings, paragraphs, bold/italic/strikethrough, links, images, code spans, fenced code blocks with language info, blockquotes, ordered/unordered lists, task lists, tables, thematic breaks, autolinks. Must handle malformed/incomplete markdown gracefully (partial parse, not crash). Must be fast: parse a 10,000-line document in <100ms. Evaluate: swift-markdown, cmark-gfm Swift wrapper, or custom. AST must support round-trip (AST → markdown preserves original formatting). AST must include source positions (line:column ranges) for doctor indicators and cursor mapping.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Security-scoped URL bookmark persists across app launches — file reopens without re-picking",
-      "File coordination prevents data corruption when iCloud syncs during a write",
-      "External file change triggers a notification to the editor (reload/keep choice)",
-      "Non-UTF-8 file detected and error shown without crash or corruption",
-      "File with CRLF line endings preserved on save (not converted to LF)",
-      "File >1MB triggers dismissable warning before opening"
+      "Parser produces correct AST for all CommonMark + GFM spec examples",
+      "Malformed markdown produces a partial AST without crashing",
+      "10,000-line document parses in <100ms on iPhone 15",
+      "AST round-trips to identical markdown (AST → markdown → AST produces same tree)",
+      "AST nodes include source position ranges (line:column start/end)"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T14:23:46-07:00",
+    "startedAt": "2026-03-19T16:52:15-07:00",
     "status": "passed",
-    "completedAt": "2026-03-19T14:34:19-07:00"
+    "completedAt": "2026-03-19T17:09:11-07:00"
   },
-  "completedAt": "2026-03-19T14:34:19-07:00",
-  "attempts": 1
+  "completedAt": "2026-03-19T17:09:11-07:00",
+  "attempts": 2
 }

@@ -742,9 +742,10 @@
         "AST round-trips to identical markdown (AST → markdown → AST produces same tree)",
         "AST nodes include source position ranges (line:column start/end)"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-19T17:09:11-07:00"
     },
     {
       "id": "FEAT-039",
