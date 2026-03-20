@@ -14,6 +14,7 @@ public actor ModelLoader {
 
     private let storage: ModelStorageManager
     private let logger = Logger(subsystem: "com.easymarkdown.emai", category: "model")
+    private let signposter = OSSignposter(subsystem: "com.easymarkdown.emai", category: "inference")
 
     /// Maximum memory budget for model loading per AC-5 (100MB editing session budget).
     /// The model itself is memory-mapped separately and does not count against this.
@@ -22,8 +23,19 @@ public actor ModelLoader {
     /// Handle to the memory-mapped model data.
     private var modelData: Data?
 
+    /// The inference engine, set when a runtime is configured post SPIKE-005.
+    /// Callers provide this via `setInferenceEngine(_:)` once the
+    /// MLX Swift or Core ML runtime is selected.
+    private var inferenceEngine: InferenceEngine?
+
     public init(storage: ModelStorageManager) {
         self.storage = storage
+    }
+
+    /// Registers the inference engine to use for token generation.
+    /// Called once the runtime is determined by SPIKE-005 (MLX Swift or Core ML).
+    public func setInferenceEngine(_ engine: InferenceEngine) {
+        self.inferenceEngine = engine
     }
 
     /// Loads the model into memory using memory-mapping.
@@ -59,27 +71,55 @@ public actor ModelLoader {
 
     /// Runs inference on the loaded model, streaming tokens.
     /// First token target: <500ms per [D-PERF-4] and AC-4.
+    ///
+    /// The pipeline:
+    /// 1. Validates model is loaded and inference engine is configured
+    /// 2. Begins os_signpost interval for first-token latency measurement
+    /// 3. Delegates to the InferenceEngine for tokenization and forward pass
+    /// 4. Streams generated tokens back to the caller
     public func runInference(prompt: String) -> AsyncThrowingStream<String, Error> {
-        AsyncThrowingStream { continuation in
-            guard isLoaded, modelData != nil else {
+        let loadedData = modelData
+        let engine = inferenceEngine
+        let signposter = self.signposter
+        let logger = self.logger
+
+        return AsyncThrowingStream { continuation in
+            guard loadedData != nil else {
                 continuation.finish(throwing: EMError.ai(.modelNotDownloaded))
                 return
             }
 
-            // Inference implementation depends on SPIKE-005 results.
-            // This is the integration point for MLX Swift or Core ML.
-            // The architecture is in place — the actual model format and
-            // inference runtime will be determined by the spike.
-            //
-            // When implementing:
-            // 1. Tokenize input with the model's tokenizer
-            // 2. Run forward pass, streaming output tokens
-            // 3. Measure first token latency with os_signpost
-            // 4. Target <500ms first token on A16+/M1+
-            //
-            // For now, this signals that inference is not yet available
-            // until the spike completes and a real model is integrated.
-            continuation.finish(throwing: EMError.ai(.modelNotDownloaded))
+            guard let engine else {
+                // Model is loaded but no inference runtime configured yet.
+                // SPIKE-005 must complete to determine MLX Swift vs Core ML.
+                continuation.finish(throwing: EMError.ai(.inferenceFailed(
+                    underlying: InferenceEngineError.noEngineConfigured
+                )))
+                return
+            }
+
+            Task {
+                let signpostID = signposter.makeSignpostID()
+                let state = signposter.beginInterval("inference", id: signpostID)
+                var firstTokenEmitted = false
+
+                do {
+                    let tokenStream = engine.generateTokens(prompt: prompt)
+                    for try await token in tokenStream {
+                        if !firstTokenEmitted {
+                            signposter.emitEvent("first-token", id: signpostID)
+                            firstTokenEmitted = true
+                        }
+                        continuation.yield(token)
+                    }
+                    signposter.endInterval("inference", state)
+                    continuation.finish()
+                } catch {
+                    signposter.endInterval("inference", state)
+                    logger.error("Inference failed: \(error.localizedDescription)")
+                    continuation.finish(throwing: EMError.ai(.inferenceFailed(underlying: error)))
+                }
+            }
         }
     }
 }
