@@ -77,14 +77,15 @@ public final class AppShell {
     }
 }
 
-/// Internal wrapper that reactively applies color scheme preference.
-/// Needed because `@Observable` properties require an observing View to trigger updates.
+/// Internal wrapper that reactively applies color scheme preference per FEAT-007.
+/// Theme changes animate with a 200ms crossfade; Reduced Motion triggers instant switch.
 struct AppRootWrapper: View {
     @State var settings: SettingsManager
     @State var errorPresenter: ErrorPresenter
     @State var recentsManager: RecentsManager
     @State var fileOpenCoordinator: FileOpenCoordinator
     @State var fileCreateCoordinator: FileCreateCoordinator
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         RootView()
@@ -94,13 +95,21 @@ struct AppRootWrapper: View {
             .environment(fileOpenCoordinator)
             .environment(fileCreateCoordinator)
             .preferredColorScheme(colorScheme)
+            .animation(themeTransition, value: colorScheme)
     }
 
+    /// Maps user preference to SwiftUI color scheme.
     private var colorScheme: ColorScheme? {
         switch settings.preferredColorScheme {
         case .system: nil
         case .light: .light
         case .dark: .dark
         }
+    }
+
+    /// 200ms crossfade for theme transitions per FEAT-007 AC-6.
+    /// Instant switch when Reduced Motion is enabled per AC-7.
+    private var themeTransition: Animation? {
+        reduceMotion ? nil : .easeInOut(duration: 0.2)
     }
 }

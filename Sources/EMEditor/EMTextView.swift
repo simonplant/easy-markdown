@@ -9,6 +9,7 @@ import UIKit
 #elseif canImport(AppKit)
 import AppKit
 #endif
+import EMCore
 
 private let logger = Logger(subsystem: "com.easymarkdown.emeditor", category: "textview")
 
@@ -72,7 +73,7 @@ public final class EMTextView: UITextView {
         // picks the correct direction based on content per AC-4.
         textAlignment = .natural
 
-        // Appearance
+        // Appearance — default background, overridden by applyThemeBackground
         backgroundColor = .systemBackground
         textContainerInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
 
@@ -96,6 +97,23 @@ public final class EMTextView: UITextView {
     /// Return the EditorState's undo manager for unlimited depth per [A-022].
     public override var undoManager: UndoManager? {
         editorState?.undoManager ?? super.undoManager
+    }
+
+    // MARK: - Theme
+
+    /// Updates the text view's background color to match the current theme per FEAT-007.
+    /// Animated with a 200ms crossfade unless Reduced Motion is enabled.
+    public func applyThemeBackground(_ color: PlatformColor, animated: Bool) {
+        if animated && !UIAccessibility.isReduceMotionEnabled {
+            UIView.transition(
+                with: self,
+                duration: 0.2,
+                options: .transitionCrossDissolve,
+                animations: { self.backgroundColor = color }
+            )
+        } else {
+            backgroundColor = color
+        }
     }
 
     // MARK: - Layout
@@ -167,7 +185,7 @@ public final class EMTextView: NSTextView {
         // RTL: natural alignment
         alignment = .natural
 
-        // Appearance
+        // Appearance — default background, overridden by applyThemeBackground
         backgroundColor = .textBackgroundColor
         textContainerInset = NSSize(width: 16, height: 16)
 
@@ -180,6 +198,21 @@ public final class EMTextView: NSTextView {
             "Document editor",
             comment: "Accessibility label for the main text editing area"
         ))
+    }
+
+    // MARK: - Theme
+
+    /// Updates the text view's background color to match the current theme per FEAT-007.
+    /// Animated with a 200ms crossfade unless Reduced Motion is enabled.
+    public func applyThemeBackground(_ color: PlatformColor, animated: Bool) {
+        if animated && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.2
+                self.animator().backgroundColor = color
+            }
+        } else {
+            backgroundColor = color
+        }
     }
 
     /// Return the EditorState's undo manager for unlimited depth per [A-022].

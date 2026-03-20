@@ -27,11 +27,14 @@ public struct RenderConfiguration: Sendable {
     public let typeScale: TypeScale
     public let colors: ThemeColors
     public let isSourceView: Bool
+    /// Identifies the color variant (e.g. "light" or "dark") for change detection.
+    public let colorVariant: String
 
-    public init(typeScale: TypeScale, colors: ThemeColors, isSourceView: Bool) {
+    public init(typeScale: TypeScale, colors: ThemeColors, isSourceView: Bool, colorVariant: String = "light") {
         self.typeScale = typeScale
         self.colors = colors
         self.isSourceView = isSourceView
+        self.colorVariant = colorVariant
     }
 }
 

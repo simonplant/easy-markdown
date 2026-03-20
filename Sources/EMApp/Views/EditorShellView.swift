@@ -27,12 +27,14 @@ struct EditorShellView: View {
     @State private var currentLineEnding: LineEnding = .lf
     @Environment(\.colorScheme) private var colorScheme
 
-    /// Rendering configuration for the current view mode per FEAT-003.
+    /// Rendering configuration for the current view mode per FEAT-003 and FEAT-007.
     private var renderConfig: RenderConfiguration {
-        RenderConfiguration(
+        let isDark = colorScheme == .dark
+        return RenderConfiguration(
             typeScale: .default,
-            colors: Theme.default.colors(isDark: colorScheme == .dark),
-            isSourceView: editorState.isSourceView
+            colors: Theme.default.colors(isDark: isDark),
+            isSourceView: editorState.isSourceView,
+            colorVariant: isDark ? "dark" : "light"
         )
     }
 

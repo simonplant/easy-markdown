@@ -62,6 +62,11 @@ public struct TextViewBridge: UIViewRepresentable {
         context.coordinator.onTextChange = onTextChange
         context.coordinator.renderConfig = renderConfig
 
+        // Apply initial theme background per FEAT-007
+        if let colors = renderConfig?.colors {
+            textView.backgroundColor = colors.background
+        }
+
         // Initial render if config is available
         if renderConfig != nil {
             context.coordinator.requestRender(for: textView)
@@ -75,7 +80,10 @@ public struct TextViewBridge: UIViewRepresentable {
 
         // Track whether we need to re-render
         let textChanged = coordinator.updateTextView(textView, with: text)
-        let configChanged = coordinator.renderConfig?.isSourceView != renderConfig?.isSourceView
+        let previousVariant = coordinator.renderConfig?.colorVariant
+        let viewModeChanged = coordinator.renderConfig?.isSourceView != renderConfig?.isSourceView
+        let colorChanged = previousVariant != nil && previousVariant != renderConfig?.colorVariant
+        let configChanged = viewModeChanged || colorChanged
 
         // Update render configuration
         coordinator.renderConfig = renderConfig
@@ -89,7 +97,12 @@ public struct TextViewBridge: UIViewRepresentable {
             textView.spellCheckingType = spellType
         }
 
-        // Re-render if text loaded from binding or view mode toggled
+        // Apply theme background color per FEAT-007
+        if let colors = renderConfig?.colors {
+            textView.applyThemeBackground(colors.background, animated: colorChanged)
+        }
+
+        // Re-render if text loaded from binding or view/theme changed
         if (textChanged || configChanged), renderConfig != nil {
             coordinator.requestRender(for: textView)
         }
@@ -157,6 +170,11 @@ public struct TextViewBridge: NSViewRepresentable {
         context.coordinator.onTextChange = onTextChange
         context.coordinator.renderConfig = renderConfig
 
+        // Apply initial theme background per FEAT-007
+        if let colors = renderConfig?.colors {
+            textView.backgroundColor = colors.background
+        }
+
         // Observe scroll position changes
         context.coordinator.observeScrollView(scrollView)
 
@@ -173,11 +191,19 @@ public struct TextViewBridge: NSViewRepresentable {
 
         let coordinator = context.coordinator
         let textChanged = coordinator.updateTextView(textView, with: text)
-        let configChanged = coordinator.renderConfig?.isSourceView != renderConfig?.isSourceView
+        let previousVariant = coordinator.renderConfig?.colorVariant
+        let viewModeChanged = coordinator.renderConfig?.isSourceView != renderConfig?.isSourceView
+        let colorChanged = previousVariant != nil && previousVariant != renderConfig?.colorVariant
+        let configChanged = viewModeChanged || colorChanged
 
         coordinator.renderConfig = renderConfig
         textView.isEditable = isEditable
         textView.isContinuousSpellCheckingEnabled = isSpellCheckEnabled
+
+        // Apply theme background color per FEAT-007
+        if let colors = renderConfig?.colors {
+            textView.applyThemeBackground(colors.background, animated: colorChanged)
+        }
 
         if (textChanged || configChanged), renderConfig != nil {
             coordinator.requestRender(for: textView)
