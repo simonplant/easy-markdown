@@ -134,9 +134,10 @@
         "Empty code block renders correctly with background but no content",
         "Code block inside a blockquote renders with both blockquote border and code background"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T10:53:18-07:00"
     },
     {
       "id": "FEAT-007",

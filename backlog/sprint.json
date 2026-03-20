@@ -1,28 +1,26 @@
 {
-  "sprintId": "sprint-1774026860",
-  "startedAt": "2026-03-20T10:14:20-07:00",
+  "sprintId": "sprint-1774028395",
+  "startedAt": "2026-03-20T10:39:55-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-041",
-    "title": "INFRA: AI Model Pipeline",
-    "intent": "The local AI model must download, load, and run inference reliably — a failed model download or slow inference kills the entire AI value proposition.",
-    "description": "Per D-AI-5 and D-AI-9. Model download: separate from app (<50MB app, ~2-4GB model). Download via ODR or background asset download. Wi-Fi only by default, cellular opt-in. Non-blocking — editor usable during download. Progress indicator. Resume on interruption. Model loading: load into Core ML / MLX on app launch (for capable devices). Memory-mapped to minimize RAM impact. Model inference: token streaming pipeline. First token <500ms (D-PERF-4). Full response <3s. Model update: independent of app updates. Capability detection: check device (A16+/M1+), show/hide AI features accordingly (no broken affordances on unsupported devices).",
+    "id": "FEAT-006",
+    "title": "F-006: Syntax Highlighting",
+    "intent": "Code blocks must look good — syntax highlighting makes markdown files with code feel professional and readable",
+    "description": "Fenced code blocks with language detection from info string. Min languages: Python, JS/TS, Swift, Go, Rust, HTML/CSS, JSON, YAML, SQL, Bash, Ruby, Java, Kotlin, C/C++, PHP. Monospace font, background differentiation. Editable inline. Colors adapt to dark/light theme.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Model downloads in background while user edits — no UI blocking",
-      "Download interrupted at 50% resumes from where it left off",
-      "Cellular download requires explicit user opt-in",
-      "Model loads and first inference completes with first token in <500ms on iPhone 15",
-      "Memory usage with model loaded stays under 100MB for editing session (D-PERF-5, model may be memory-mapped separately)",
-      "iPhone 14 shows no AI-related UI elements (buttons, ghost text, action bar items)",
-      "Device running low on storage shows clear message and option to skip/delete model"
+      "User writes a fenced code block with a language tag — code is syntax-highlighted correctly",
+      "Highlighting adapts correctly in both light and dark modes",
+      "Unknown or unsupported language tag falls back to plain monospace, no broken rendering",
+      "Empty code block renders correctly with background but no content",
+      "Code block inside a blockquote renders with both blockquote border and code background"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T10:14:20-07:00",
+    "startedAt": "2026-03-20T10:39:55-07:00",
     "status": "passed",
-    "completedAt": "2026-03-20T10:39:47-07:00"
+    "completedAt": "2026-03-20T10:53:18-07:00"
   },
-  "completedAt": "2026-03-20T10:39:47-07:00",
-  "attempts": 2
+  "completedAt": "2026-03-20T10:53:18-07:00",
+  "attempts": 1
 }
