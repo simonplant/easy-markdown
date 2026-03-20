@@ -11,7 +11,9 @@ struct HomeView: View {
     @Environment(AppRouter.self) private var router
     @Environment(RecentsManager.self) private var recentsManager
     @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
+    @Environment(FileCreateCoordinator.self) private var fileCreateCoordinator
     @State private var showingFilePicker = false
+    @State private var showingSavePicker = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -75,6 +77,17 @@ struct HomeView: View {
                 }
             )
         }
+        .sheet(isPresented: $showingSavePicker) {
+            SavePickerView(
+                onSave: { url in
+                    showingSavePicker = false
+                    handleFileCreated(url)
+                },
+                onCancel: {
+                    showingSavePicker = false
+                }
+            )
+        }
         #endif
     }
 
@@ -87,8 +100,30 @@ struct HomeView: View {
     }
 
     private func newFile() {
-        // File creation will come with FEAT-002.
-        router.openEditor()
+        #if os(iOS)
+        showingSavePicker = true
+        #else
+        newFileViaNSSavePanel()
+        #endif
+    }
+
+    private func handleFileCreated(_ url: URL) {
+        // Close any currently open file before creating a new one
+        fileOpenCoordinator.closeCurrentFile()
+
+        let attempt = fileCreateCoordinator.createFile(at: url)
+        switch attempt {
+        case .created:
+            // Transfer created file to the open coordinator so the editor can use it
+            if let content = fileCreateCoordinator.createdFileContent {
+                fileOpenCoordinator.setFileContent(content, url: url)
+                fileCreateCoordinator.clearCreatedFile()
+            }
+            router.openEditor()
+        case .failed:
+            // Error already presented by FileCreateCoordinator.
+            break
+        }
     }
 
     private func handleFilePicked(_ url: URL) {
@@ -116,6 +151,19 @@ struct HomeView: View {
             guard response == .OK, let url = panel.url else { return }
             Task { @MainActor in
                 handleFilePicked(url)
+            }
+        }
+    }
+
+    private func newFileViaNSSavePanel() {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = MarkdownExtensions.utTypes
+        panel.nameFieldStringValue = "Untitled.md"
+        panel.canCreateDirectories = true
+        panel.begin { response in
+            guard response == .OK, let url = panel.url else { return }
+            Task { @MainActor in
+                handleFileCreated(url)
             }
         }
     }

@@ -113,6 +113,17 @@ public final class FileOpenCoordinator {
         }
     }
 
+    /// Sets the current file content directly (used by FEAT-002 create flow).
+    ///
+    /// When a new file is created, the create coordinator hands off the content
+    /// to the open coordinator so the editor shell can load it.
+    public func setFileContent(_ content: FileContent, url: URL) {
+        closeCurrentFile()
+        currentFileContent = content
+        currentFileURL = url
+        openFileRegistry.register(url)
+    }
+
     /// Closes the currently open file, releasing resources.
     public func closeCurrentFile() {
         guard let url = currentFileURL else { return }
