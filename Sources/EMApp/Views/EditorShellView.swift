@@ -19,7 +19,7 @@ struct EditorShellView: View {
     @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
     @State private var editorState = EditorState()
     @State private var text = ""
-    @State private var diagnosticCount = 0
+    @State private var showDoctorPopover = false
     @State private var conflictManager: FileConflictManager?
     @State private var autoSaveManager: AutoSaveManager?
     @State private var showingSaveElsewherePanel = false
@@ -70,13 +70,36 @@ struct EditorShellView: View {
             .accessibilityLabel("Document editor")
             .accessibilityHint("Edit your markdown document here")
 
+            // Doctor indicator bar per FEAT-005 — non-blocking overlay
+            if !editorState.diagnostics.isEmpty {
+                Divider()
+                DoctorIndicatorBar(
+                    diagnostics: editorState.diagnostics,
+                    onTap: { showDoctorPopover = true }
+                )
+                .popover(isPresented: $showDoctorPopover) {
+                    DoctorPopoverContent(
+                        diagnostics: editorState.diagnostics,
+                        onFix: { diagnostic in
+                            handleDoctorFix(diagnostic)
+                        },
+                        onDismiss: { diagnostic in
+                            editorState.dismissDiagnostic(diagnostic)
+                            #if canImport(UIKit)
+                            HapticFeedback.trigger(.doctorFixApplied)
+                            #endif
+                        }
+                    )
+                }
+            }
+
             Divider()
             FormatBar()
             Divider()
             StatusBar(
                 stats: editorState.documentStats,
                 selectionWordCount: editorState.selectionWordCount,
-                diagnosticCount: diagnosticCount
+                diagnosticCount: editorState.diagnostics.count
             )
         }
         .overlay(alignment: .top) {
@@ -133,6 +156,8 @@ struct EditorShellView: View {
                 autoSaveManager?.stop()
             }
             conflictManager?.stopMonitoring()
+            // Clear doctor state on file close per FEAT-005 AC-3
+            editorState.clearDiagnostics()
         }
         .onChange(of: autoSaveManager?.savedWhileInBackground) { _, newValue in
             if newValue == true {
@@ -185,6 +210,30 @@ struct EditorShellView: View {
         #if canImport(UIKit)
         HapticFeedback.trigger(.toggleView)
         #endif
+    }
+
+    /// Applies a doctor fix by replacing text at the specified range per FEAT-005.
+    private func handleDoctorFix(_ diagnostic: Diagnostic) {
+        guard let fix = diagnostic.fix else { return }
+        let fixRange = fix.range
+
+        // Convert UTF-8 offset to String.Index
+        let utf8 = text.utf8
+        guard let startIdx = utf8.index(utf8.startIndex, offsetBy: fixRange.startOffset, limitedBy: utf8.endIndex),
+              let endIdx = utf8.index(startIdx, offsetBy: fixRange.length, limitedBy: utf8.endIndex) else {
+            return
+        }
+        let stringStart = String.Index(startIdx, within: text) ?? text.startIndex
+        let stringEnd = String.Index(endIdx, within: text) ?? text.endIndex
+
+        text.replaceSubrange(stringStart..<stringEnd, with: fix.replacement)
+        editorState.dismissDiagnostic(diagnostic)
+
+        #if canImport(UIKit)
+        HapticFeedback.trigger(.doctorFixApplied)
+        #endif
+
+        settings.recordDoctorFixAccept()
     }
 
     /// Recomputes document stats using NLTokenizer-based calculator per [A-055].

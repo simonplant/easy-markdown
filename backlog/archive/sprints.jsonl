@@ -17,3 +17,4 @@
 {"date":"2026-03-19","sprintId":"sprint-1773975886","itemId":"FEAT-012","status":"complete","attempts":2,"filesChanged":1,"linesAdded":4,"linesRemoved":5,"duration":636,"priority":"must","category":"Editor"}
 {"date":"2026-03-19","sprintId":"sprint-1773978941","itemId":"FEAT-013","status":"complete","attempts":1,"filesChanged":4,"linesAdded":8,"linesRemoved":0,"duration":743,"priority":"must","category":"Editor"}
 {"date":"2026-03-20","sprintId":"sprint-1774023621","itemId":"FEAT-004","status":"complete","attempts":2,"filesChanged":5,"linesAdded":6,"linesRemoved":6,"duration":1766,"priority":"must","category":"Editor"}
+{"date":"2026-03-20","sprintId":"sprint-1774025393","itemId":"FEAT-005","status":"complete","attempts":3,"filesChanged":2,"linesAdded":7,"linesRemoved":0,"duration":1456,"priority":"must","category":"Editor"}

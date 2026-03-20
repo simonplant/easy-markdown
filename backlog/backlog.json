@@ -111,9 +111,10 @@
         "Doctor runs in both rich text and source view",
         "Doctor evaluates a 3000-line document within 2 seconds"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T10:14:09-07:00"
     },
     {
       "id": "FEAT-006",

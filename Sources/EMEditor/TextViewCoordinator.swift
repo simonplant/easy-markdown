@@ -11,6 +11,7 @@ import UIKit
 import AppKit
 #endif
 import EMCore
+import EMDoctor
 import EMFormatter
 import EMParser
 
@@ -57,6 +58,12 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
 
     /// Debounce interval for full re-parse (300ms per [A-017]).
     private let parseDebounceInterval: UInt64 = 300_000_000
+
+    /// Document Doctor coordinator per FEAT-005.
+    lazy var doctorCoordinator = DoctorCoordinator(editorState: editorState)
+
+    /// Whether this is the first render (triggers immediate doctor evaluation).
+    private var isFirstRender = true
 
     init(text: ValueBinding<String>, editorState: EditorState) {
         self.text = text
@@ -255,6 +262,14 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         currentAST = parseResult.ast
 
         applyRendering(to: textView, ast: parseResult.ast, sourceText: sourceText, config: config)
+
+        // Run Document Doctor after parse per FEAT-005
+        if isFirstRender {
+            isFirstRender = false
+            doctorCoordinator.evaluateImmediately(text: sourceText, ast: parseResult.ast)
+        } else {
+            doctorCoordinator.scheduleEvaluation(text: sourceText, ast: parseResult.ast)
+        }
     }
 
     /// Schedules a debounced parse and render after text changes per [A-017].
@@ -371,6 +386,12 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
 
     /// Debounce interval for full re-parse (300ms per [A-017]).
     private let parseDebounceInterval: UInt64 = 300_000_000
+
+    /// Document Doctor coordinator per FEAT-005.
+    lazy var doctorCoordinator = DoctorCoordinator(editorState: editorState)
+
+    /// Whether this is the first render (triggers immediate doctor evaluation).
+    private var isFirstRender = true
 
     init(text: ValueBinding<String>, editorState: EditorState) {
         self.text = text
@@ -577,6 +598,14 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         currentAST = parseResult.ast
 
         applyRendering(to: textView, ast: parseResult.ast, sourceText: sourceText, config: config)
+
+        // Run Document Doctor after parse per FEAT-005
+        if isFirstRender {
+            isFirstRender = false
+            doctorCoordinator.evaluateImmediately(text: sourceText, ast: parseResult.ast)
+        } else {
+            doctorCoordinator.scheduleEvaluation(text: sourceText, ast: parseResult.ast)
+        }
     }
 
     /// Schedules a debounced parse and render after text changes per [A-017].
