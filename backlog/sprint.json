@@ -1,26 +1,26 @@
 {
-  "sprintId": "sprint-1773967512",
-  "startedAt": "2026-03-19T17:45:12-07:00",
+  "sprintId": "sprint-1773968171",
+  "startedAt": "2026-03-19T17:56:11-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-044",
-    "title": "INFRA: First-Run Experience",
-    "intent": "First launch must be instant and self-evident — open the app and you're writing within 30 seconds, with AI model downloading silently in the background.",
-    "description": "Per D-UX-1 (no onboarding) and D-AI-9 (model download). First launch flow: app opens to home screen (Open/New buttons). No splash screen beyond system launch image. On capable devices (A16+/M1+): after 2 seconds, a non-modal banner offers AI model download ('Download AI assistant? ~3GB, Wi-Fi recommended'). User can accept (download starts in background), dismiss (asked again next launch), or go to settings. User can open/create a file immediately regardless of model download state. AI features hidden until model ready.",
+    "id": "FEAT-045",
+    "title": "INFRA: File Conflict Detection",
+    "intent": "When a file changes on disk while open in the editor, the user must know — silent data loss from sync conflicts is unacceptable.",
+    "description": "Per D-FILE-5. Uses NSFilePresenter to monitor the open file for external changes. When detected: pause auto-save, show non-modal notification with file diff summary ('This file was modified by another app. Reload external changes or keep your version?'). Options: Reload (discard editor state, load new file), Keep Mine (continue with editor version, next save overwrites), View Diff (show what changed — stretch goal). If file is deleted externally: notify user, offer to save to a new location.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "First launch to editor-ready state (file open and cursor active) in <30 seconds including user interaction",
-      "No onboarding screens, tutorials, or account prompts appear",
-      "AI model download prompt appears non-modally and is dismissable",
-      "User can edit a file while model downloads in background",
-      "On unsupported devices (pre-A16), no AI download prompt appears"
+      "File modified externally while open triggers a visible notification within 5 seconds",
+      "User can choose to reload external changes (editor updates to new content)",
+      "User can choose to keep their version (next save overwrites external changes)",
+      "File deleted externally triggers notification with option to save elsewhere",
+      "No data is silently lost in any conflict scenario"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T17:45:12-07:00",
+    "startedAt": "2026-03-19T17:56:11-07:00",
     "status": "passed",
-    "completedAt": "2026-03-19T17:56:05-07:00"
+    "completedAt": "2026-03-19T18:10:42-07:00"
   },
-  "completedAt": "2026-03-19T17:56:05-07:00",
-  "attempts": 1
+  "completedAt": "2026-03-19T18:10:42-07:00",
+  "attempts": 2
 }
