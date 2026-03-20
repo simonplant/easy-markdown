@@ -1,28 +1,25 @@
 {
-  "sprintId": "sprint-1774045600",
-  "startedAt": "2026-03-20T15:26:40-07:00",
+  "sprintId": "sprint-1774047618",
+  "startedAt": "2026-03-20T16:00:18-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-054",
-    "title": "F-025b: AI Floating Action Bar",
-    "intent": "The AI action bar is the interaction hub — it must feel like a native extension of text selection, not a separate AI mode",
-    "description": "Depends on: FEAT-039 (Text Engine). When user selects text, a floating action bar appears above the selection. Contains: standard format actions (Bold, Italic, Link) AND AI actions (Improve, Summarize). Pro AI actions (Translate, Tone) appear with Pro badge for subscribers or as discoverable options for non-subscribers. Bar follows selection, dismisses on deselect. Keyboard shortcut Cmd+J focuses the AI section of the bar. Bar adapts to available width. VoiceOver announces all actions.",
+    "id": "FEAT-055",
+    "title": "F-025c: AI Summarize",
+    "intent": "One-tap summarization — select a section or full document and get a concise summary you can insert or copy",
+    "description": "Depends on: FEAT-041 (AI Model Pipeline), FEAT-054 (AI Action Bar). Select text or full document, tap Summarize. AI generates 1-3 sentence summary (for section) or 1 paragraph (for full doc). Summary appears in a popover. User can: Insert at cursor, Copy to clipboard, or Dismiss. Works offline on supported devices. First token <500ms, full response <3s.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Floating bar appears within 200ms of text selection",
-      "Bar contains both formatting (Bold, Italic) and AI (Improve, Summarize) actions",
-      "Pro AI actions show subtle Pro badge for subscribers",
-      "Non-subscriber tapping a Pro action sees a non-intrusive upgrade explanation",
-      "Bar dismisses cleanly on deselect with no ghost UI",
-      "Cmd+J invokes AI assist when text is selected",
-      "VoiceOver can navigate and activate all bar actions"
+      "Selected section produces 1-3 sentence summary in a popover within 3 seconds",
+      "User can insert summary at cursor position",
+      "User can copy summary to clipboard",
+      "Works offline on iPhone 15 and newer"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T15:26:40-07:00",
+    "startedAt": "2026-03-20T16:00:18-07:00",
     "status": "passed",
-    "completedAt": "2026-03-20T16:00:17-07:00"
+    "completedAt": "2026-03-20T16:13:36-07:00"
   },
-  "completedAt": "2026-03-20T16:00:17-07:00",
-  "attempts": 2
+  "completedAt": "2026-03-20T16:13:36-07:00",
+  "attempts": 1
 }
