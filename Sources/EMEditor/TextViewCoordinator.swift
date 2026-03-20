@@ -81,6 +81,11 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         self.text = text
         self.editorState = editorState
         super.init()
+
+        // Wire image loader callback to trigger re-render when async images complete per FEAT-048.
+        renderer.imageLoader.onImageLoaded = { [weak self] _ in
+            self?.requestRerender()
+        }
     }
 
     // MARK: - UITextViewDelegate
@@ -592,6 +597,11 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         self.text = text
         self.editorState = editorState
         super.init()
+
+        // Wire image loader callback to trigger re-render when async images complete per FEAT-048.
+        renderer.imageLoader.onImageLoaded = { [weak self] _ in
+            self?.requestRerender()
+        }
     }
 
     // MARK: - NSTextViewDelegate

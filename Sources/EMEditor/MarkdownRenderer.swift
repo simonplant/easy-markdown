@@ -31,19 +31,23 @@ public struct RenderConfiguration: Sendable {
     public let colorVariant: String
     /// Device-aware layout metrics for spacing and typography per FEAT-010.
     public let layoutMetrics: LayoutMetrics
+    /// URL of the current document file, used to resolve relative image paths per [A-053].
+    public let documentURL: URL?
 
     public init(
         typeScale: TypeScale,
         colors: ThemeColors,
         isSourceView: Bool,
         colorVariant: String = "light",
-        layoutMetrics: LayoutMetrics = .current
+        layoutMetrics: LayoutMetrics = .current,
+        documentURL: URL? = nil
     ) {
         self.typeScale = typeScale
         self.colors = colors
         self.isSourceView = isSourceView
         self.colorVariant = colorVariant
         self.layoutMetrics = layoutMetrics
+        self.documentURL = documentURL
     }
 }
 
@@ -70,6 +74,13 @@ extension NSAttributedString.Key {
     /// Marks a range as excluded from spell checking per [A-054].
     static let spellCheckExcluded = NSAttributedString.Key("em.spellCheckExcluded")
 
+    /// Marks a range as an inline image per FEAT-048.
+    /// Value is the resolved URL string of the image source.
+    static let imageSource = NSAttributedString.Key("em.imageSource")
+
+    /// Alt text for an inline image per FEAT-048.
+    static let imageAltText = NSAttributedString.Key("em.imageAltText")
+
     /// Language identifier attribute for spell check suppression.
     /// "NSLanguage" is the CoreText/Foundation key recognized by the text system
     /// on both iOS and macOS for per-range language identification.
@@ -92,6 +103,9 @@ public struct MarkdownRenderer {
         subsystem: "com.easymarkdown.emeditor",
         category: "render"
     )
+
+    /// Image loader for inline image rendering per [A-053] and FEAT-048.
+    public let imageLoader = ImageLoader()
 
     public init() {}
 
@@ -958,6 +972,17 @@ public struct MarkdownRenderer {
                 lineOffsets: lineOffsets
             )
 
+        case .image(let source):
+            renderImage(
+                node,
+                source: source,
+                nsRange: nsRange,
+                into: attrStr,
+                sourceText: sourceText,
+                config: config,
+                lineOffsets: lineOffsets
+            )
+
         case .softBreak, .lineBreak, .text:
             break // Use base attributes
 
@@ -1146,6 +1171,172 @@ public struct MarkdownRenderer {
         }
     }
 
+    // MARK: - Images (FEAT-048)
+
+    /// Default content width for image scaling when no container width is available.
+    private static let defaultContentWidth: CGFloat = 600
+
+    /// Renders an inline image in rich view per [A-053] and FEAT-048.
+    ///
+    /// - Resolves the image source against the document URL.
+    /// - If the image is cached, inserts an `NSTextAttachment` on the first character
+    ///   and hides the rest of the image syntax.
+    /// - If not cached, kicks off async loading and shows a styled placeholder
+    ///   with the alt text visible.
+    /// - Broken images show alt text with warning styling per AC-3.
+    private func renderImage(
+        _ node: MarkdownNode,
+        source: String?,
+        nsRange: NSRange,
+        into attrStr: NSMutableAttributedString,
+        sourceText: String,
+        config: RenderConfiguration,
+        lineOffsets: [Int]
+    ) {
+        let altText = extractAltText(from: node)
+
+        // Resolve image URL
+        let resolvedURL: URL?
+        if let source, !source.isEmpty {
+            resolvedURL = ImageLoader.resolveImageURL(source: source, documentURL: config.documentURL)
+        } else {
+            resolvedURL = nil
+        }
+
+        // Mark the entire range with image metadata attributes
+        attrStr.addAttributes([
+            .markdownNodeType: "image",
+            .imageAltText: altText,
+        ], range: nsRange)
+
+        if let url = resolvedURL {
+            attrStr.addAttribute(.imageSource, value: url.absoluteString, range: nsRange)
+        }
+
+        // Check cache for loaded image
+        if let url = resolvedURL, let cached = imageLoader.cachedImage(for: url) {
+            switch cached {
+            case .success(let image, let imageSize):
+                renderLoadedImage(
+                    image: image,
+                    imageSize: imageSize,
+                    nsRange: nsRange,
+                    into: attrStr,
+                    config: config
+                )
+                return
+
+            case .failure:
+                renderBrokenImage(
+                    altText: altText,
+                    nsRange: nsRange,
+                    into: attrStr,
+                    config: config
+                )
+                return
+            }
+        }
+
+        // No URL or not yet cached — show placeholder and trigger async load
+        if let url = resolvedURL {
+            imageLoader.loadImageIfNeeded(from: url, maxWidth: Self.defaultContentWidth)
+        }
+
+        renderBrokenImage(
+            altText: altText,
+            nsRange: nsRange,
+            into: attrStr,
+            config: config
+        )
+    }
+
+    /// Renders a successfully loaded image as an NSTextAttachment.
+    private func renderLoadedImage(
+        image: PlatformImage,
+        imageSize: CGSize,
+        nsRange: NSRange,
+        into attrStr: NSMutableAttributedString,
+        config: RenderConfiguration
+    ) {
+        let displaySize = ImageLoader.displaySize(
+            for: imageSize,
+            maxWidth: Self.defaultContentWidth
+        )
+
+        let attachment = ImageTextAttachment(image: image, displaySize: displaySize)
+
+        // Apply the attachment to the first character of the range
+        if nsRange.length > 0 {
+            attrStr.addAttribute(.attachment, value: attachment, range: NSRange(location: nsRange.location, length: 1))
+        }
+
+        // Hide the remaining characters of the image syntax
+        if nsRange.length > 1 {
+            let hideRange = NSRange(location: nsRange.location + 1, length: nsRange.length - 1)
+            applySyntaxHiding(to: hideRange, in: attrStr)
+        }
+    }
+
+    /// Renders a broken/missing image with placeholder icon and alt text per AC-3.
+    private func renderBrokenImage(
+        altText: String,
+        nsRange: NSRange,
+        into attrStr: NSMutableAttributedString,
+        config: RenderConfiguration
+    ) {
+        guard nsRange.length > 0 else { return }
+
+        // Insert placeholder icon on the first character via NSTextAttachment
+        let placeholderImage = ImageLoader.brokenImagePlaceholder()
+        let placeholderSize = CGSize(width: 40, height: 40)
+        let attachment = ImageTextAttachment(image: placeholderImage, displaySize: placeholderSize)
+        attrStr.addAttribute(.attachment, value: attachment, range: NSRange(location: nsRange.location, length: 1))
+
+        // Hide remaining syntax characters after the placeholder
+        if nsRange.length > 1 {
+            let restRange = NSRange(location: nsRange.location + 1, length: nsRange.length - 1)
+            applySyntaxHiding(to: restRange, in: attrStr)
+        }
+
+        // Find the alt text range and make it visible with placeholder styling
+        let text = attrStr.string
+        guard let swiftRange = Range(nsRange, in: text) else { return }
+        let content = text[swiftRange]
+
+        // Alt text is between "![" and "]("
+        if let altStart = content.range(of: "!["),
+           let altEnd = content.range(of: "](") {
+            let altContentStart = altStart.upperBound
+            let altContentEnd = altEnd.lowerBound
+
+            if altContentStart < altContentEnd {
+                let altNSRange = NSRange(altContentStart..<altContentEnd, in: text)
+
+                // Make the alt text visible with placeholder styling
+                attrStr.addAttributes([
+                    .font: config.typeScale.caption,
+                    .foregroundColor: config.colors.blockquoteForeground,
+                ], range: altNSRange)
+
+                // Add italic trait for visual distinction
+                if let font = attrStr.attribute(.font, at: altNSRange.location, effectiveRange: nil) as? PlatformFont {
+                    let italicFont = fontWithTrait(font, trait: .traitItalic)
+                    attrStr.addAttribute(.font, value: italicFont, range: altNSRange)
+                }
+            }
+        }
+    }
+
+    /// Extracts alt text from an image node's children.
+    private func extractAltText(from node: MarkdownNode) -> String {
+        node.children.compactMap { child -> String? in
+            if case .text = child.type {
+                return child.literalText
+            }
+            return nil
+        }.joined()
+    }
+
     // MARK: - Source View Rendering
 
     private func renderSourceView(
@@ -1269,6 +1460,10 @@ public struct MarkdownRenderer {
             ], range: nsRange)
 
         case .link:
+            attrStr.addAttribute(.foregroundColor, value: config.colors.link, range: nsRange)
+
+        case .image:
+            // Source view: color image syntax like links for visual identification
             attrStr.addAttribute(.foregroundColor, value: config.colors.link, range: nsRange)
 
         default:
