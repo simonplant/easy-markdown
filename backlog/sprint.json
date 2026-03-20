@@ -1,27 +1,24 @@
 {
-  "sprintId": "sprint-1773970285",
-  "startedAt": "2026-03-19T18:31:25-07:00",
-  "status": "completed",
+  "sprintId": "sprint-1773970855",
+  "startedAt": "2026-03-19T18:40:55-07:00",
+  "status": "in_progress",
   "item": {
-    "id": "FEAT-002",
-    "title": "F-002: Create File",
-    "intent": "Users must be able to create new markdown files anywhere they have write access — no app-specific folders, no restrictions",
-    "description": "Create new .md file via system file picker save dialog. LF line endings. Default filename Untitled.md. File immediately opened for editing after creation.",
+    "id": "FEAT-008",
+    "title": "F-008: Auto-Save",
+    "intent": "Users must never lose work — saving is automatic, continuous, and invisible",
+    "description": "Save triggers: 1s after last keystroke (debounced), on app background, on file close. Uses file coordination APIs. No save button/indicator/confirmation. Non-modal error with retry on failure. Subtle haptic pulse on background save.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "User creates a new .md file in any accessible location and begins writing immediately",
-      "New file uses LF line endings",
-      "Default filename is Untitled.md, user can rename in picker",
-      "User cancels save picker and returns to previous state with no side effects",
-      "Write failure (disk full, permissions) shows error with no corrupt or empty file left behind",
-      "Creating a file with an existing name at that location prompts for overwrite or rename"
+      "User edits a file, switches to another app, switches back — all changes preserved",
+      "User force-quits the app — content saved up to last debounce is preserved",
+      "Save failure shows non-modal error with retry option",
+      "External file change during editing triggers conflict detection (FEAT-045)",
+      "Auto-save on a 500KB file completes within 100ms with no perceptible input lag",
+      "Disk full during save shows non-modal error and retains in-memory content",
+      "Subtle haptic pulse confirms background save when app is foregrounded"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T18:31:25-07:00",
-    "status": "passed",
-    "completedAt": "2026-03-19T18:40:49-07:00"
-  },
-  "completedAt": "2026-03-19T18:40:49-07:00",
-  "attempts": 1
+    "startedAt": "2026-03-19T18:40:55-07:00"
+  }
 }
