@@ -1,28 +1,26 @@
 {
-  "sprintId": "sprint-1774035962",
-  "startedAt": "2026-03-20T12:46:02-07:00",
+  "sprintId": "sprint-1774036737",
+  "startedAt": "2026-03-20T12:58:57-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-015",
-    "title": "F-036a: iPad Multi-Window and Stage Manager",
-    "intent": "iPad multi-window is what makes easy-markdown a serious writing tool — two documents side by side, or easy-markdown next to Safari for research",
-    "description": "Depends on: FEAT-037 (App Shell). Full Stage Manager support: resizable windows, multiple instances. UIScene-based lifecycle. Each window is an independent editor with its own file. Memory managed across windows. Minimum iPad: iPad Air 4th gen (M1 for Stage Manager, but basic multi-window on older iPads via Split View).",
+    "id": "FEAT-048",
+    "title": "F-003c: Image Rendering",
+    "intent": "Images referenced in markdown must render inline in rich view — broken paths must show a clear placeholder, not a blank space",
+    "description": "Depends on: FEAT-038 (Parser), FEAT-003 (Core Rendering). Render images from relative and absolute paths inline in rich view. Images scale to fit content width with aspect ratio preserved. Broken/missing image paths show a placeholder icon with the alt text. Supports common formats: PNG, JPEG, GIF, WebP, SVG (render as bitmap).",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "iPad Pro user with Magic Keyboard and external display uses easy-markdown as primary writing environment for a full day",
-      "Stage Manager multi-window works with two easy-markdown documents side by side",
-      "Split View at 1/3, 1/2, and 2/3 widths reflows content gracefully",
-      "Trackpad hover states appear on doctor indicators, AI action bar, and toolbar buttons",
-      "Two easy-markdown windows open side by side in Stage Manager with independent files",
-      "No crashes or memory warnings during 2-hour session with 2 windows open",
-      "Closing one window does not affect the other"
+      "Image with valid relative path renders inline at appropriate size",
+      "Image scales to content width and preserves aspect ratio",
+      "Broken image path shows placeholder icon with alt text displayed",
+      "Very large image (5000x5000px) does not cause memory spike or lag",
+      "GIF renders as static first frame (animated GIF support is P2)"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T12:46:02-07:00",
+    "startedAt": "2026-03-20T12:58:57-07:00",
     "status": "passed",
-    "completedAt": "2026-03-20T12:58:55-07:00"
+    "completedAt": "2026-03-20T13:25:16-07:00"
   },
-  "completedAt": "2026-03-20T12:58:55-07:00",
-  "attempts": 1
+  "completedAt": "2026-03-20T13:25:16-07:00",
+  "attempts": 3
 }
