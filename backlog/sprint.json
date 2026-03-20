@@ -1,26 +1,26 @@
 {
-  "sprintId": "sprint-1774032860",
-  "startedAt": "2026-03-20T11:54:20-07:00",
+  "sprintId": "sprint-1774034942",
+  "startedAt": "2026-03-20T12:29:02-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-049",
-    "title": "F-003d: Interactive Elements (Checkboxes and Links)",
-    "intent": "Task list checkboxes must be tappable and links must be clickable — these are the elements that make the rich view feel alive, not static",
-    "description": "Depends on: FEAT-003 (Core Rendering). Task list checkboxes: rendered as interactive checkboxes. Tapping toggles the checkbox AND updates the underlying markdown (- [ ] to - [x]). Links: rendered as styled tappable text. Tap opens URL in system browser. Long-press shows URL preview and copy option. Link text styled with color and subtle underline.",
+    "id": "FEAT-009",
+    "title": "F-009: Keyboard Support",
+    "intent": "iPad with external keyboard must be a first-class writing experience — every action reachable without touching the screen",
+    "description": "Text editing: Cmd+B/I/K, Cmd+Shift+K. Navigation: Cmd+Up/Down, Option+arrows, Cmd+arrows. App: Cmd+O/N/W, Cmd+Shift+P (source toggle). AI: Cmd+J. Cmd-hold shows shortcut overlay.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Tapping a task list checkbox toggles it and updates the markdown source",
-      "Toggling a checkbox is a single undo step",
-      "Tapping a link opens the URL in Safari/system browser",
-      "Long-pressing a link shows the URL and a copy option",
-      "Links to relative files open the file in easy-markdown (if .md) or system handler"
+      "User with external keyboard performs all common editing, navigation, and AI tasks without touching the screen",
+      "Cmd-hold shows keyboard shortcut overlay",
+      "All 15+ documented shortcuts (Cmd+B/I/K, Cmd+O/N/W, Cmd+J, Cmd+Shift+P, etc.) work in both rich and source view",
+      "No shortcuts conflict with iOS system shortcuts",
+      "Cmd-hold overlay lists ALL registered shortcuts organized by category"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T11:54:20-07:00",
+    "startedAt": "2026-03-20T12:29:02-07:00",
     "status": "passed",
-    "completedAt": "2026-03-20T12:23:17-07:00"
+    "completedAt": "2026-03-20T12:46:01-07:00"
   },
-  "completedAt": "2026-03-20T12:23:17-07:00",
-  "attempts": 2
+  "completedAt": "2026-03-20T12:46:01-07:00",
+  "attempts": 1
 }

@@ -35,6 +35,19 @@ public struct TextViewBridge: UIViewRepresentable {
     /// Optional improve writing coordinator to wire as text view delegate per FEAT-011.
     public var improveCoordinator: ImproveWritingCoordinator?
 
+    // MARK: - App-level keyboard shortcut handlers per FEAT-009
+
+    /// Called when Cmd+J is pressed (AI assist).
+    public var onAIAssist: (() -> Void)?
+    /// Called when Cmd+Shift+P is pressed (toggle source view).
+    public var onToggleSourceView: (() -> Void)?
+    /// Called when Cmd+O is pressed (open file).
+    public var onOpenFile: (() -> Void)?
+    /// Called when Cmd+N is pressed (new file).
+    public var onNewFile: (() -> Void)?
+    /// Called when Cmd+W is pressed (close file).
+    public var onCloseFile: (() -> Void)?
+
     public init(
         text: SwiftUI.Binding<String>,
         editorState: EditorState,
@@ -43,7 +56,12 @@ public struct TextViewBridge: UIViewRepresentable {
         isSpellCheckEnabled: Bool = true,
         onTextChange: ((String) -> Void)? = nil,
         onLinkTap: ((URL) -> Void)? = nil,
-        improveCoordinator: ImproveWritingCoordinator? = nil
+        improveCoordinator: ImproveWritingCoordinator? = nil,
+        onAIAssist: (() -> Void)? = nil,
+        onToggleSourceView: (() -> Void)? = nil,
+        onOpenFile: (() -> Void)? = nil,
+        onNewFile: (() -> Void)? = nil,
+        onCloseFile: (() -> Void)? = nil
     ) {
         self._text = text
         self.editorState = editorState
@@ -53,6 +71,11 @@ public struct TextViewBridge: UIViewRepresentable {
         self.onTextChange = onTextChange
         self.onLinkTap = onLinkTap
         self.improveCoordinator = improveCoordinator
+        self.onAIAssist = onAIAssist
+        self.onToggleSourceView = onToggleSourceView
+        self.onOpenFile = onOpenFile
+        self.onNewFile = onNewFile
+        self.onCloseFile = onCloseFile
     }
 
     public func makeUIView(context: Context) -> EMTextView {
@@ -92,6 +115,31 @@ public struct TextViewBridge: UIViewRepresentable {
         textView.onLinkTap = { [weak coordinator = context.coordinator] url in
             coordinator?.handleLinkTap(url: url)
         }
+
+        // Wire formatting shortcut handlers per FEAT-009
+        textView.onBold = { [weak coordinator = context.coordinator, weak textView] in
+            guard let coordinator, let textView else { return }
+            coordinator.handleBold(in: textView)
+        }
+        textView.onItalic = { [weak coordinator = context.coordinator, weak textView] in
+            guard let coordinator, let textView else { return }
+            coordinator.handleItalic(in: textView)
+        }
+        textView.onCode = { [weak coordinator = context.coordinator, weak textView] in
+            guard let coordinator, let textView else { return }
+            coordinator.handleCode(in: textView)
+        }
+        textView.onInsertLink = { [weak coordinator = context.coordinator, weak textView] in
+            guard let coordinator, let textView else { return }
+            coordinator.handleLinkInsert(in: textView)
+        }
+
+        // Wire app-level shortcut handlers per FEAT-009
+        textView.onAIAssist = onAIAssist
+        textView.onToggleSourceView = onToggleSourceView
+        textView.onOpenFile = onOpenFile
+        textView.onNewFile = onNewFile
+        textView.onCloseFile = onCloseFile
 
         // Apply initial layout metrics per FEAT-010
         if let config = renderConfig {
@@ -190,6 +238,19 @@ public struct TextViewBridge: NSViewRepresentable {
     /// Optional improve writing coordinator to wire as text view delegate per FEAT-011.
     public var improveCoordinator: ImproveWritingCoordinator?
 
+    // MARK: - App-level keyboard shortcut handlers per FEAT-009
+
+    /// Called when Cmd+J is pressed (AI assist).
+    public var onAIAssist: (() -> Void)?
+    /// Called when Cmd+Shift+P is pressed (toggle source view).
+    public var onToggleSourceView: (() -> Void)?
+    /// Called when Cmd+O is pressed (open file).
+    public var onOpenFile: (() -> Void)?
+    /// Called when Cmd+N is pressed (new file).
+    public var onNewFile: (() -> Void)?
+    /// Called when Cmd+W is pressed (close file).
+    public var onCloseFile: (() -> Void)?
+
     public init(
         text: SwiftUI.Binding<String>,
         editorState: EditorState,
@@ -198,7 +259,12 @@ public struct TextViewBridge: NSViewRepresentable {
         isSpellCheckEnabled: Bool = true,
         onTextChange: ((String) -> Void)? = nil,
         onLinkTap: ((URL) -> Void)? = nil,
-        improveCoordinator: ImproveWritingCoordinator? = nil
+        improveCoordinator: ImproveWritingCoordinator? = nil,
+        onAIAssist: (() -> Void)? = nil,
+        onToggleSourceView: (() -> Void)? = nil,
+        onOpenFile: (() -> Void)? = nil,
+        onNewFile: (() -> Void)? = nil,
+        onCloseFile: (() -> Void)? = nil
     ) {
         self._text = text
         self.editorState = editorState
@@ -208,6 +274,11 @@ public struct TextViewBridge: NSViewRepresentable {
         self.onTextChange = onTextChange
         self.onLinkTap = onLinkTap
         self.improveCoordinator = improveCoordinator
+        self.onAIAssist = onAIAssist
+        self.onToggleSourceView = onToggleSourceView
+        self.onOpenFile = onOpenFile
+        self.onNewFile = onNewFile
+        self.onCloseFile = onCloseFile
     }
 
     public func makeNSView(context: Context) -> NSScrollView {
@@ -253,6 +324,31 @@ public struct TextViewBridge: NSViewRepresentable {
         textView.onLinkTap = { [weak coordinator = context.coordinator] url in
             coordinator?.handleLinkTap(url: url)
         }
+
+        // Wire formatting shortcut handlers per FEAT-009
+        textView.onBold = { [weak coordinator = context.coordinator, weak textView] in
+            guard let coordinator, let textView else { return }
+            coordinator.handleBold(in: textView)
+        }
+        textView.onItalic = { [weak coordinator = context.coordinator, weak textView] in
+            guard let coordinator, let textView else { return }
+            coordinator.handleItalic(in: textView)
+        }
+        textView.onCode = { [weak coordinator = context.coordinator, weak textView] in
+            guard let coordinator, let textView else { return }
+            coordinator.handleCode(in: textView)
+        }
+        textView.onInsertLink = { [weak coordinator = context.coordinator, weak textView] in
+            guard let coordinator, let textView else { return }
+            coordinator.handleLinkInsert(in: textView)
+        }
+
+        // Wire app-level shortcut handlers per FEAT-009
+        textView.onAIAssist = onAIAssist
+        textView.onToggleSourceView = onToggleSourceView
+        textView.onOpenFile = onOpenFile
+        textView.onNewFile = onNewFile
+        textView.onCloseFile = onCloseFile
 
         // Apply initial layout metrics per FEAT-010
         if let config = renderConfig {

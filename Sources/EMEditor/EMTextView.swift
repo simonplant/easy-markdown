@@ -43,6 +43,27 @@ public final class EMTextView: UITextView {
     /// The view shows the URL and a copy option.
     public var onLinkLongPress: ((URL) -> Void)?
 
+    // MARK: - Keyboard Shortcut Handlers per FEAT-009
+
+    /// Handler for bold formatting (Cmd+B).
+    public var onBold: (() -> Void)?
+    /// Handler for italic formatting (Cmd+I).
+    public var onItalic: (() -> Void)?
+    /// Handler for code formatting (Cmd+Shift+K).
+    public var onCode: (() -> Void)?
+    /// Handler for link insertion (Cmd+K).
+    public var onInsertLink: (() -> Void)?
+    /// Handler for AI assist (Cmd+J) per [A-023].
+    public var onAIAssist: (() -> Void)?
+    /// Handler for source view toggle (Cmd+Shift+P).
+    public var onToggleSourceView: (() -> Void)?
+    /// Handler for open file (Cmd+O).
+    public var onOpenFile: (() -> Void)?
+    /// Handler for new file (Cmd+N).
+    public var onNewFile: (() -> Void)?
+    /// Handler for close file (Cmd+W).
+    public var onCloseFile: (() -> Void)?
+
     /// Current layout metrics for device-aware spacing per FEAT-010.
     public var layoutMetrics: LayoutMetrics = .current {
         didSet { applyLayoutMetrics() }
@@ -231,27 +252,73 @@ public final class EMTextView: UITextView {
         editorState?.undoManager ?? super.undoManager
     }
 
-    // MARK: - Key Commands per [A-060]
+    // MARK: - Key Commands per [A-060] and FEAT-009
 
-    /// Shift-Tab key command for list outdent per FEAT-004.
+    /// All keyboard shortcuts registered via UIKeyCommand.
+    /// The system Cmd-hold overlay on iPad lists these automatically via `discoverabilityTitle`.
     public override var keyCommands: [UIKeyCommand]? {
-        let shiftTab = UIKeyCommand(
-            input: "\t",
-            modifierFlags: .shift,
-            action: #selector(handleShiftTab)
-        )
-        shiftTab.discoverabilityTitle = NSLocalizedString(
-            "Outdent List Item",
-            comment: "Shift-Tab keyboard shortcut description"
-        )
-        return (super.keyCommands ?? []) + [shiftTab]
+        var commands = super.keyCommands ?? []
+
+        // List outdent (FEAT-004)
+        let shiftTab = UIKeyCommand(input: "\t", modifierFlags: .shift, action: #selector(handleShiftTab))
+        shiftTab.discoverabilityTitle = NSLocalizedString("Outdent List Item", comment: "Keyboard shortcut")
+        commands.append(shiftTab)
+
+        // Text formatting per FEAT-009
+        let bold = UIKeyCommand(input: "B", modifierFlags: .command, action: #selector(handleBold))
+        bold.discoverabilityTitle = NSLocalizedString("Bold", comment: "Keyboard shortcut")
+        commands.append(bold)
+
+        let italic = UIKeyCommand(input: "I", modifierFlags: .command, action: #selector(handleItalic))
+        italic.discoverabilityTitle = NSLocalizedString("Italic", comment: "Keyboard shortcut")
+        commands.append(italic)
+
+        let link = UIKeyCommand(input: "K", modifierFlags: .command, action: #selector(handleInsertLink))
+        link.discoverabilityTitle = NSLocalizedString("Insert Link", comment: "Keyboard shortcut")
+        commands.append(link)
+
+        let code = UIKeyCommand(input: "K", modifierFlags: [.command, .shift], action: #selector(handleCode))
+        code.discoverabilityTitle = NSLocalizedString("Code", comment: "Keyboard shortcut")
+        commands.append(code)
+
+        // AI per FEAT-009 and [A-023]
+        let ai = UIKeyCommand(input: "J", modifierFlags: .command, action: #selector(handleAIAssist))
+        ai.discoverabilityTitle = NSLocalizedString("AI Assist", comment: "Keyboard shortcut")
+        commands.append(ai)
+
+        // App navigation per FEAT-009
+        let toggleSource = UIKeyCommand(input: "P", modifierFlags: [.command, .shift], action: #selector(handleToggleSource))
+        toggleSource.discoverabilityTitle = NSLocalizedString("Toggle Source View", comment: "Keyboard shortcut")
+        commands.append(toggleSource)
+
+        let openFile = UIKeyCommand(input: "O", modifierFlags: .command, action: #selector(handleOpenFile))
+        openFile.discoverabilityTitle = NSLocalizedString("Open File", comment: "Keyboard shortcut")
+        commands.append(openFile)
+
+        let newFile = UIKeyCommand(input: "N", modifierFlags: .command, action: #selector(handleNewFile))
+        newFile.discoverabilityTitle = NSLocalizedString("New File", comment: "Keyboard shortcut")
+        commands.append(newFile)
+
+        let closeFile = UIKeyCommand(input: "W", modifierFlags: .command, action: #selector(handleCloseFile))
+        closeFile.discoverabilityTitle = NSLocalizedString("Close File", comment: "Keyboard shortcut")
+        commands.append(closeFile)
+
+        return commands
     }
 
     @objc private func handleShiftTab() {
-        if onShiftTab?() != true {
-            // Not consumed — do nothing (no default Shift-Tab behavior)
-        }
+        if onShiftTab?() != true { /* Not consumed */ }
     }
+
+    @objc private func handleBold() { onBold?() }
+    @objc private func handleItalic() { onItalic?() }
+    @objc private func handleInsertLink() { onInsertLink?() }
+    @objc private func handleCode() { onCode?() }
+    @objc private func handleAIAssist() { onAIAssist?() }
+    @objc private func handleToggleSource() { onToggleSourceView?() }
+    @objc private func handleOpenFile() { onOpenFile?() }
+    @objc private func handleNewFile() { onNewFile?() }
+    @objc private func handleCloseFile() { onCloseFile?() }
 
     // MARK: - Theme
 
@@ -380,6 +447,27 @@ public final class EMTextView: NSTextView {
     /// Handler for link long-press per FEAT-049 AC-4 (unused on macOS, right-click menu used instead).
     public var onLinkLongPress: ((URL) -> Void)?
 
+    // MARK: - Keyboard Shortcut Handlers per FEAT-009
+
+    /// Handler for bold formatting (Cmd+B).
+    public var onBold: (() -> Void)?
+    /// Handler for italic formatting (Cmd+I).
+    public var onItalic: (() -> Void)?
+    /// Handler for code formatting (Cmd+Shift+K).
+    public var onCode: (() -> Void)?
+    /// Handler for link insertion (Cmd+K).
+    public var onInsertLink: (() -> Void)?
+    /// Handler for AI assist (Cmd+J) per [A-023].
+    public var onAIAssist: (() -> Void)?
+    /// Handler for source view toggle (Cmd+Shift+P).
+    public var onToggleSourceView: (() -> Void)?
+    /// Handler for open file (Cmd+O).
+    public var onOpenFile: (() -> Void)?
+    /// Handler for new file (Cmd+N).
+    public var onNewFile: (() -> Void)?
+    /// Handler for close file (Cmd+W).
+    public var onCloseFile: (() -> Void)?
+
     /// Current layout metrics for device-aware spacing per FEAT-010.
     public var layoutMetrics: LayoutMetrics = .current {
         didSet { applyLayoutMetrics() }
@@ -444,12 +532,42 @@ public final class EMTextView: NSTextView {
         textContainerInset = layoutMetrics.textContainerInset
     }
 
-    // MARK: - Key Commands per [A-060]
+    // MARK: - Key Commands per [A-060] and FEAT-009
 
     /// Override backtab (Shift-Tab) for list outdent per FEAT-004.
     public override func insertBacktab(_ sender: Any?) {
         if onShiftTab?() != true {
             super.insertBacktab(sender)
+        }
+    }
+
+    /// Intercepts keyboard shortcuts for formatting, AI, and navigation per FEAT-009.
+    public override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        guard event.type == .keyDown else { return super.performKeyEquivalent(with: event) }
+        let flags = event.modifierFlags.intersection([.command, .shift, .option, .control])
+        let key = event.charactersIgnoringModifiers?.lowercased() ?? ""
+
+        switch (key, flags) {
+        case ("b", .command):
+            onBold?(); return true
+        case ("i", .command):
+            onItalic?(); return true
+        case ("k", .command):
+            onInsertLink?(); return true
+        case ("k", [.command, .shift]):
+            onCode?(); return true
+        case ("j", .command):
+            onAIAssist?(); return true
+        case ("p", [.command, .shift]):
+            onToggleSourceView?(); return true
+        case ("o", .command):
+            onOpenFile?(); return true
+        case ("n", .command):
+            onNewFile?(); return true
+        case ("w", .command):
+            onCloseFile?(); return true
+        default:
+            return super.performKeyEquivalent(with: event)
         }
     }
 

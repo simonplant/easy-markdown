@@ -12,6 +12,7 @@ struct EditorToolbar: ToolbarContent {
             Button(action: onToggleSource) {
                 Image(systemName: isSourceView ? "eye" : "chevron.left.forwardslash.chevron.right")
             }
+            .keyboardShortcut("p", modifiers: [.command, .shift])
             .accessibilityLabel(isSourceView ? "Switch to rich text view" : "Switch to source view")
             .accessibilityHint("Toggles between formatted and raw markdown views")
 

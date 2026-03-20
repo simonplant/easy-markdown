@@ -20,6 +20,7 @@ struct EditorShellView: View {
     @Environment(SettingsManager.self) private var settings
     @Environment(ErrorPresenter.self) private var errorPresenter
     @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
+    @Environment(FileCreateCoordinator.self) private var fileCreateCoordinator
     @Environment(AIProviderManager.self) private var aiProviderManager
     @State private var editorState = EditorState()
     @State private var text = ""
@@ -30,6 +31,8 @@ struct EditorShellView: View {
     @State private var currentLineEnding: LineEnding = .lf
     @State private var improveCoordinator: ImproveWritingCoordinator?
     @State private var improveService: ImproveWritingService?
+    @State private var showingOpenFilePicker = false
+    @State private var showingNewFilePicker = false
     @Environment(\.colorScheme) private var colorScheme
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -72,7 +75,12 @@ struct EditorShellView: View {
                     autoSaveManager?.contentDidChange()
                 },
                 onLinkTap: { url in handleLinkTap(url) },
-                improveCoordinator: improveCoordinator
+                improveCoordinator: improveCoordinator,
+                onAIAssist: { startImprove() },
+                onToggleSourceView: { toggleSourceView() },
+                onOpenFile: { openFileFromEditor() },
+                onNewFile: { newFileFromEditor() },
+                onCloseFile: { closeFile() }
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .accessibilityLabel("Document editor")
@@ -174,6 +182,26 @@ struct EditorShellView: View {
                 errorPresenter.present(.unexpected(underlying: error))
             }
         }
+        #if os(iOS)
+        .sheet(isPresented: $showingOpenFilePicker) {
+            DocumentPickerView(
+                onPick: { url in
+                    showingOpenFilePicker = false
+                    handleFilePickedFromEditor(url)
+                },
+                onCancel: { showingOpenFilePicker = false }
+            )
+        }
+        .sheet(isPresented: $showingNewFilePicker) {
+            SavePickerView(
+                onSave: { url in
+                    showingNewFilePicker = false
+                    handleFileCreatedFromEditor(url)
+                },
+                onCancel: { showingNewFilePicker = false }
+            )
+        }
+        #endif
         .onAppear {
             loadFileContent()
             startConflictMonitoring()
@@ -243,6 +271,102 @@ struct EditorShellView: View {
         HapticFeedback.trigger(.toggleView)
         #endif
     }
+
+    // MARK: - File Navigation Shortcuts per FEAT-009
+
+    /// Opens the file picker from the editor (Cmd+O).
+    private func openFileFromEditor() {
+        #if os(iOS)
+        showingOpenFilePicker = true
+        #else
+        openFileViaNSOpenPanel()
+        #endif
+    }
+
+    /// Shows the save picker for a new file from the editor (Cmd+N).
+    private func newFileFromEditor() {
+        #if os(iOS)
+        showingNewFilePicker = true
+        #else
+        newFileViaNSSavePanel()
+        #endif
+    }
+
+    /// Closes the current file and returns to the home screen (Cmd+W).
+    private func closeFile() {
+        Task {
+            await autoSaveManager?.saveNow()
+            fileOpenCoordinator.closeCurrentFile()
+            router.popToHome()
+        }
+    }
+
+    /// Handles a file picked via Cmd+O from the editor.
+    private func handleFilePickedFromEditor(_ url: URL) {
+        // Close current file before opening the new one
+        fileOpenCoordinator.closeCurrentFile()
+        autoSaveManager?.stop()
+        conflictManager?.stopMonitoring()
+
+        let attempt = fileOpenCoordinator.openFile(url: url)
+        switch attempt {
+        case .opened, .alreadyOpen:
+            loadFileContent()
+            startConflictMonitoring()
+            startAutoSave()
+        case .failed:
+            router.popToHome()
+        }
+    }
+
+    /// Handles a file created via Cmd+N from the editor.
+    private func handleFileCreatedFromEditor(_ url: URL) {
+        fileOpenCoordinator.closeCurrentFile()
+        autoSaveManager?.stop()
+        conflictManager?.stopMonitoring()
+
+        let attempt = fileCreateCoordinator.createFile(at: url)
+        switch attempt {
+        case .created:
+            if let content = fileCreateCoordinator.createdFileContent {
+                fileOpenCoordinator.setFileContent(content, url: url)
+                fileCreateCoordinator.clearCreatedFile()
+            }
+            loadFileContent()
+            startConflictMonitoring()
+            startAutoSave()
+        case .failed:
+            router.popToHome()
+        }
+    }
+
+    #if os(macOS)
+    private func openFileViaNSOpenPanel() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = MarkdownExtensions.utTypes
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.begin { response in
+            guard response == .OK, let url = panel.url else { return }
+            Task { @MainActor in
+                handleFilePickedFromEditor(url)
+            }
+        }
+    }
+
+    private func newFileViaNSSavePanel() {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = MarkdownExtensions.utTypes
+        panel.nameFieldStringValue = "Untitled.md"
+        panel.canCreateDirectories = true
+        panel.begin { response in
+            guard response == .OK, let url = panel.url else { return }
+            Task { @MainActor in
+                handleFileCreatedFromEditor(url)
+            }
+        }
+    }
+    #endif
 
     /// Applies a doctor fix by replacing text at the specified range per FEAT-005.
     private func handleDoctorFix(_ diagnostic: Diagnostic) {

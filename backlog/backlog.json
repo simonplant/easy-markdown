@@ -198,12 +198,13 @@
         "No shortcuts conflict with iOS system shortcuts",
         "Cmd-hold overlay lists ALL registered shortcuts organized by category"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "lastFailReason": "Validator agent rejected implementation",
       "lastFailAt": "2026-03-19T20:55:28-07:00",
-      "failCount": 1
+      "failCount": 1,
+      "completedAt": "2026-03-20T12:46:01-07:00"
     },
     {
       "id": "FEAT-010",

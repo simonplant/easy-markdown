@@ -244,6 +244,36 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         return true
     }
 
+    // MARK: - Formatting Shortcuts per FEAT-009
+
+    /// Toggles bold markdown markers around the selection.
+    func handleBold(in textView: UITextView) {
+        if let mutation = inlineMarkerMutation(marker: "**", fullText: textView.text ?? "", selectedRange: textView.selectedRange) {
+            applyMutation(mutation, to: textView)
+        }
+    }
+
+    /// Toggles italic markdown markers around the selection.
+    func handleItalic(in textView: UITextView) {
+        if let mutation = inlineMarkerMutation(marker: "*", fullText: textView.text ?? "", selectedRange: textView.selectedRange) {
+            applyMutation(mutation, to: textView)
+        }
+    }
+
+    /// Toggles inline code markers around the selection.
+    func handleCode(in textView: UITextView) {
+        if let mutation = inlineMarkerMutation(marker: "`", fullText: textView.text ?? "", selectedRange: textView.selectedRange) {
+            applyMutation(mutation, to: textView)
+        }
+    }
+
+    /// Inserts a markdown link around the selection.
+    func handleLinkInsert(in textView: UITextView) {
+        if let mutation = linkInsertMutation(fullText: textView.text ?? "", selectedRange: textView.selectedRange) {
+            applyMutation(mutation, to: textView)
+        }
+    }
+
     // MARK: - Interactive Elements (FEAT-049)
 
     /// Handler for link taps. When set, receives all link taps (including relative links).
@@ -693,6 +723,36 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         return true
     }
 
+    // MARK: - Formatting Shortcuts per FEAT-009
+
+    /// Toggles bold markdown markers around the selection.
+    func handleBold(in textView: NSTextView) {
+        if let mutation = inlineMarkerMutation(marker: "**", fullText: textView.string, selectedRange: textView.selectedRange()) {
+            applyMutation(mutation, to: textView)
+        }
+    }
+
+    /// Toggles italic markdown markers around the selection.
+    func handleItalic(in textView: NSTextView) {
+        if let mutation = inlineMarkerMutation(marker: "*", fullText: textView.string, selectedRange: textView.selectedRange()) {
+            applyMutation(mutation, to: textView)
+        }
+    }
+
+    /// Toggles inline code markers around the selection.
+    func handleCode(in textView: NSTextView) {
+        if let mutation = inlineMarkerMutation(marker: "`", fullText: textView.string, selectedRange: textView.selectedRange()) {
+            applyMutation(mutation, to: textView)
+        }
+    }
+
+    /// Inserts a markdown link around the selection.
+    func handleLinkInsert(in textView: NSTextView) {
+        if let mutation = linkInsertMutation(fullText: textView.string, selectedRange: textView.selectedRange()) {
+            applyMutation(mutation, to: textView)
+        }
+    }
+
     // MARK: - Interactive Elements (FEAT-049)
 
     /// Handler for link clicks. When set, receives all link clicks (including relative links).
@@ -983,3 +1043,97 @@ public struct ValueBinding<Value> {
 }
 
 #endif
+
+// MARK: - Shared Formatting Helpers per FEAT-009
+
+/// Computes the mutation for toggling an inline markdown marker around a selection.
+///
+/// With selection: if already wrapped with the marker, unwraps. Otherwise wraps.
+/// Without selection: inserts paired markers with cursor positioned between them.
+func inlineMarkerMutation(
+    marker: String,
+    fullText: String,
+    selectedRange: NSRange
+) -> TextMutation? {
+    guard let swiftRange = Range(selectedRange, in: fullText) else { return nil }
+    let markerCount = marker.count
+
+    if selectedRange.length > 0 {
+        let selectedText = String(fullText[swiftRange])
+
+        // Already wrapped → unwrap
+        if selectedText.count >= markerCount * 2
+            && selectedText.hasPrefix(marker)
+            && selectedText.hasSuffix(marker) {
+            let inner = String(selectedText.dropFirst(markerCount).dropLast(markerCount))
+            return makeFormattingMutation(
+                fullText: fullText, range: swiftRange,
+                replacement: inner, cursorOffsetInReplacement: inner.count
+            )
+        }
+
+        // Not wrapped → wrap
+        let wrapped = marker + selectedText + marker
+        return makeFormattingMutation(
+            fullText: fullText, range: swiftRange,
+            replacement: wrapped, cursorOffsetInReplacement: wrapped.count
+        )
+    } else {
+        // No selection: insert paired markers, cursor between them
+        let paired = marker + marker
+        return makeFormattingMutation(
+            fullText: fullText, range: swiftRange,
+            replacement: paired, cursorOffsetInReplacement: markerCount
+        )
+    }
+}
+
+/// Computes the mutation for inserting a markdown link.
+///
+/// With selection: wraps as `[selected text]()` with cursor between the parentheses.
+/// Without selection: inserts `[]()` with cursor between the brackets.
+func linkInsertMutation(
+    fullText: String,
+    selectedRange: NSRange
+) -> TextMutation? {
+    guard let swiftRange = Range(selectedRange, in: fullText) else { return nil }
+
+    if selectedRange.length > 0 {
+        let selectedText = String(fullText[swiftRange])
+        let linkText = "[" + selectedText + "]()"
+        // Cursor between the parentheses (before closing paren)
+        return makeFormattingMutation(
+            fullText: fullText, range: swiftRange,
+            replacement: linkText, cursorOffsetInReplacement: linkText.count - 1
+        )
+    } else {
+        let linkText = "[]()"
+        // Cursor between the brackets
+        return makeFormattingMutation(
+            fullText: fullText, range: swiftRange,
+            replacement: linkText, cursorOffsetInReplacement: 1
+        )
+    }
+}
+
+/// Builds a `TextMutation` with the cursor placed at a character offset within the replacement.
+private func makeFormattingMutation(
+    fullText: String,
+    range: Range<String.Index>,
+    replacement: String,
+    cursorOffsetInReplacement: Int
+) -> TextMutation {
+    let resultText = String(fullText[..<range.lowerBound])
+        + replacement
+        + String(fullText[range.upperBound...])
+    let prefixCount = fullText.distance(from: fullText.startIndex, to: range.lowerBound)
+    let cursorAfter = resultText.index(
+        resultText.startIndex,
+        offsetBy: prefixCount + cursorOffsetInReplacement
+    )
+    return TextMutation(
+        range: range,
+        replacement: replacement,
+        cursorAfter: cursorAfter
+    )
+}

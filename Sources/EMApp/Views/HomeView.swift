@@ -31,6 +31,7 @@ struct HomeView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
+                    .keyboardShortcut("o", modifiers: .command)
                     .accessibilityHint("Opens the file picker to choose a markdown file")
 
                     Button(action: newFile) {
@@ -39,6 +40,7 @@ struct HomeView: View {
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.large)
+                    .keyboardShortcut("n", modifiers: .command)
                     .accessibilityHint("Creates a new empty markdown document")
                 }
 
