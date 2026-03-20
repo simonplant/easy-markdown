@@ -197,7 +197,10 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": true
+      "readyForSprint": true,
+      "lastFailReason": "Validator agent rejected implementation",
+      "lastFailAt": "2026-03-19T20:55:28-07:00",
+      "failCount": 1
     },
     {
       "id": "FEAT-010",
