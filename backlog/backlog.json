@@ -88,9 +88,10 @@
         "Tab indents a list item one level, Shift-Tab outdents",
         "Performance: auto-format completes within same frame as keystroke on a 500-item list"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T09:49:47-07:00"
     },
     {
       "id": "FEAT-005",

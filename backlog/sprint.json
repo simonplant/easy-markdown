@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774023621",
   "startedAt": "2026-03-20T09:20:21-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-004",
     "title": "F-004a: Auto-Format Lists",
@@ -20,6 +20,10 @@
       "Performance: auto-format completes within same frame as keystroke on a 500-item list"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T09:20:21-07:00"
-  }
+    "startedAt": "2026-03-20T09:20:21-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-20T09:49:47-07:00"
+  },
+  "completedAt": "2026-03-20T09:49:47-07:00",
+  "attempts": 2
 }
