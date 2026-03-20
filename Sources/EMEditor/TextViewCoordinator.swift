@@ -50,6 +50,9 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
     /// Renderer for AST → styled attributes per [A-018].
     private let renderer = MarkdownRenderer()
 
+    /// Cursor mapper for view toggle per FEAT-050 and [A-021].
+    private let cursorMapper = CursorMapper()
+
     /// Most recent AST from a full parse.
     private var currentAST: MarkdownAST?
 
@@ -64,6 +67,12 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
 
     /// Whether this is the first render (triggers immediate doctor evaluation).
     private var isFirstRender = true
+
+    /// Signpost for toggle latency measurement per FEAT-050.
+    private let toggleSignpost = OSSignpost(
+        subsystem: "com.easymarkdown.emeditor",
+        category: "toggle"
+    )
 
     init(text: ValueBinding<String>, editorState: EditorState) {
         self.text = text
@@ -251,6 +260,52 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         return true
     }
 
+    // MARK: - View Mode Toggle per FEAT-050
+
+    /// Performs a view mode toggle with cursor mapping per [A-021].
+    /// Called from TextViewBridge when `isSourceView` changes.
+    func handleViewModeToggle(for textView: EMTextView, toSourceView: Bool) {
+        toggleSignpost.begin("toggle")
+        defer { toggleSignpost.end("toggle") }
+
+        guard let config = renderConfig else { return }
+
+        let sourceText = textView.text ?? ""
+
+        // Re-parse to get fresh AST for cursor mapping
+        let parseResult = parser.parse(sourceText)
+        currentAST = parseResult.ast
+
+        // Map cursor position between views per [A-021]
+        let currentSelection = textView.selectedRange
+        let mappedSelection: NSRange
+        if toSourceView {
+            mappedSelection = cursorMapper.mapRichToSource(
+                selectedRange: currentSelection,
+                text: sourceText,
+                ast: parseResult.ast
+            )
+        } else {
+            mappedSelection = cursorMapper.mapSourceToRich(
+                selectedRange: currentSelection,
+                text: sourceText,
+                ast: parseResult.ast
+            )
+        }
+
+        // Apply new rendering with mapped cursor
+        applyRendering(
+            to: textView,
+            ast: parseResult.ast,
+            sourceText: sourceText,
+            config: config,
+            restoringSelection: mappedSelection
+        )
+
+        // Run Document Doctor after toggle
+        doctorCoordinator.scheduleEvaluation(text: sourceText, ast: parseResult.ast)
+    }
+
     // MARK: - Rendering per FEAT-003
 
     /// Requests an immediate parse and render. Called on initial load and view mode toggle.
@@ -295,14 +350,30 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         sourceText: String,
         config: RenderConfiguration
     ) {
+        applyRendering(
+            to: textView,
+            ast: ast,
+            sourceText: sourceText,
+            config: config,
+            restoringSelection: textView.selectedRange
+        )
+    }
+
+    /// Applies rendered attributes to the text view's text storage,
+    /// restoring the given selection and scroll position.
+    private func applyRendering(
+        to textView: EMTextView,
+        ast: MarkdownAST,
+        sourceText: String,
+        config: RenderConfiguration,
+        restoringSelection: NSRange
+    ) {
         let textStorage = textView.textStorage
         guard textStorage.length == sourceText.utf16.count else {
             logger.warning("Text storage length mismatch — skipping render")
             return
         }
 
-        // Preserve selection and scroll position
-        let selectedRange = textView.selectedRange
         let scrollOffset = textView.contentOffset
 
         textStorage.beginEditing()
@@ -315,7 +386,7 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         textStorage.endEditing()
 
         // Restore selection and scroll
-        textView.selectedRange = selectedRange
+        textView.selectedRange = restoringSelection
         textView.setContentOffset(scrollOffset, animated: false)
     }
 
@@ -378,6 +449,9 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
     /// Renderer for AST → styled attributes per [A-018].
     private let renderer = MarkdownRenderer()
 
+    /// Cursor mapper for view toggle per FEAT-050 and [A-021].
+    private let cursorMapper = CursorMapper()
+
     /// Most recent AST from a full parse.
     private var currentAST: MarkdownAST?
 
@@ -392,6 +466,12 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
 
     /// Whether this is the first render (triggers immediate doctor evaluation).
     private var isFirstRender = true
+
+    /// Signpost for toggle latency measurement per FEAT-050.
+    private let toggleSignpost = OSSignpost(
+        subsystem: "com.easymarkdown.emeditor",
+        category: "toggle"
+    )
 
     init(text: ValueBinding<String>, editorState: EditorState) {
         self.text = text
@@ -587,6 +667,52 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         return true
     }
 
+    // MARK: - View Mode Toggle per FEAT-050
+
+    /// Performs a view mode toggle with cursor mapping per [A-021].
+    /// Called from TextViewBridge when `isSourceView` changes.
+    func handleViewModeToggle(for textView: EMTextView, toSourceView: Bool) {
+        toggleSignpost.begin("toggle")
+        defer { toggleSignpost.end("toggle") }
+
+        guard let config = renderConfig else { return }
+
+        let sourceText = textView.string
+
+        // Re-parse to get fresh AST for cursor mapping
+        let parseResult = parser.parse(sourceText)
+        currentAST = parseResult.ast
+
+        // Map cursor position between views per [A-021]
+        let currentSelection = textView.selectedRange()
+        let mappedSelection: NSRange
+        if toSourceView {
+            mappedSelection = cursorMapper.mapRichToSource(
+                selectedRange: currentSelection,
+                text: sourceText,
+                ast: parseResult.ast
+            )
+        } else {
+            mappedSelection = cursorMapper.mapSourceToRich(
+                selectedRange: currentSelection,
+                text: sourceText,
+                ast: parseResult.ast
+            )
+        }
+
+        // Apply new rendering with mapped cursor
+        applyRendering(
+            to: textView,
+            ast: parseResult.ast,
+            sourceText: sourceText,
+            config: config,
+            restoringSelection: mappedSelection
+        )
+
+        // Run Document Doctor after toggle
+        doctorCoordinator.scheduleEvaluation(text: sourceText, ast: parseResult.ast)
+    }
+
     // MARK: - Rendering per FEAT-003
 
     /// Requests an immediate parse and render.
@@ -631,13 +757,29 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         sourceText: String,
         config: RenderConfiguration
     ) {
+        applyRendering(
+            to: textView,
+            ast: ast,
+            sourceText: sourceText,
+            config: config,
+            restoringSelection: textView.selectedRange()
+        )
+    }
+
+    /// Applies rendered attributes to the text view's text storage,
+    /// restoring the given selection.
+    private func applyRendering(
+        to textView: EMTextView,
+        ast: MarkdownAST,
+        sourceText: String,
+        config: RenderConfiguration,
+        restoringSelection: NSRange
+    ) {
         guard let textStorage = textView.textStorage else { return }
         guard textStorage.length == sourceText.utf16.count else {
             logger.warning("Text storage length mismatch — skipping render")
             return
         }
-
-        let selectedRange = textView.selectedRange()
 
         textStorage.beginEditing()
         renderer.render(
@@ -648,7 +790,7 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         )
         textStorage.endEditing()
 
-        textView.setSelectedRange(selectedRange)
+        textView.setSelectedRange(restoringSelection)
     }
 
     // MARK: - Word counting

@@ -1,26 +1,22 @@
 {
-  "sprintId": "sprint-1774028395",
-  "startedAt": "2026-03-20T10:39:55-07:00",
-  "status": "completed",
+  "sprintId": "sprint-1774029203",
+  "startedAt": "2026-03-20T10:53:23-07:00",
+  "status": "in_progress",
   "item": {
-    "id": "FEAT-006",
-    "title": "F-006: Syntax Highlighting",
-    "intent": "Code blocks must look good — syntax highlighting makes markdown files with code feel professional and readable",
-    "description": "Fenced code blocks with language detection from info string. Min languages: Python, JS/TS, Swift, Go, Rust, HTML/CSS, JSON, YAML, SQL, Bash, Ruby, Java, Kotlin, C/C++, PHP. Monospace font, background differentiation. Editable inline. Colors adapt to dark/light theme.",
+    "id": "FEAT-050",
+    "title": "F-003e: Source Toggle with Cursor Mapping",
+    "intent": "Switching between rich and source view must preserve context — the user should land on the same paragraph, not the top of the document",
+    "description": "Depends on: FEAT-003 (Core Rendering), FEAT-038 (Parser). Toggle button in toolbar switches between rich text view and raw markdown source view. Cursor position maps between views using AST source positions — same paragraph, best-effort same line. Changes made in source view are reflected when returning to rich view (re-parse and re-render). Toggle latency (tap to first frame of new view) under 50ms excluding The Render animation. The Render animation (FEAT-014) triggers on this toggle.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "User writes a fenced code block with a language tag — code is syntax-highlighted correctly",
-      "Highlighting adapts correctly in both light and dark modes",
-      "Unknown or unsupported language tag falls back to plain monospace, no broken rendering",
-      "Empty code block renders correctly with background but no content",
-      "Code block inside a blockquote renders with both blockquote border and code background"
+      "Toggling from rich to source shows raw markdown with cursor at the corresponding line",
+      "Toggling from source to rich shows styled view with cursor at the corresponding paragraph",
+      "Edits in source view are correctly reflected when toggling back to rich view",
+      "Toggle latency under 50ms (excluding Render animation)",
+      "Toggle works correctly on an empty document"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T10:39:55-07:00",
-    "status": "passed",
-    "completedAt": "2026-03-20T10:53:18-07:00"
-  },
-  "completedAt": "2026-03-20T10:53:18-07:00",
-  "attempts": 1
+    "startedAt": "2026-03-20T10:53:23-07:00"
+  }
 }
