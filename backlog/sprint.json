@@ -1,26 +1,27 @@
 {
-  "sprintId": "sprint-1774038317",
-  "startedAt": "2026-03-20T13:25:17-07:00",
+  "sprintId": "sprint-1774039142",
+  "startedAt": "2026-03-20T13:39:02-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-051",
-    "title": "F-003f: i18n Text Support (CJK, RTL, Emoji)",
-    "intent": "The editor must handle every writing system correctly — CJK, Arabic, Hebrew, Devanagari, emoji. A global editor that breaks on non-Latin text is not the best in the world.",
-    "description": "Depends on: FEAT-039 (Text Engine). CJK text: correct rendering, line breaking at character boundaries (not mid-character), IME composition display. RTL text: correct bidirectional layout, cursor moves right-to-left, mixed LTR/RTL in same line. Emoji: correct grapheme cluster handling (cursor treats multi-codepoint emoji as single unit). Accented characters: correct rendering and cursor behavior. All writing systems work in both rich and source view.",
+    "id": "FEAT-052",
+    "title": "F-004b: Auto-Format Tables",
+    "intent": "Tables should format themselves — columns align as you type, Tab moves between cells, new rows appear automatically",
+    "description": "Depends on: FEAT-039 (Text Engine), FEAT-047 (Table Rendering). Auto-align table columns with space padding as user types. Tab key moves to next cell (or creates new column). Enter in last cell of last row adds a new row. Auto-add missing header separator row when user types a second row. Each operation is discrete undo step. Does NOT fire inside code blocks.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Chinese/Japanese/Korean text renders correctly and line-breaks at character boundaries",
-      "Arabic and Hebrew text displays right-to-left with correct cursor direction",
-      "Mixed LTR and RTL text in the same line renders with correct bidirectional ordering",
-      "Multi-codepoint emoji (flags, skin tones, ZWJ sequences) treated as single cursor unit",
-      "IME composition for CJK shows partial input correctly before commit"
+      "Table columns auto-align with space padding as user types in any cell",
+      "Tab moves cursor to next cell, Shift-Tab to previous cell",
+      "Enter in last cell of last row creates a new row with correct column count",
+      "Missing header separator row is auto-inserted when second row is typed",
+      "Each auto-format is independently undoable",
+      "Table with 20 columns auto-aligns without perceptible lag"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T13:25:17-07:00",
+    "startedAt": "2026-03-20T13:39:02-07:00",
     "status": "passed",
-    "completedAt": "2026-03-20T13:39:01-07:00"
+    "completedAt": "2026-03-20T14:24:14-07:00"
   },
-  "completedAt": "2026-03-20T13:39:01-07:00",
-  "attempts": 1
+  "completedAt": "2026-03-20T14:24:14-07:00",
+  "attempts": 2
 }

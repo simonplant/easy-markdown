@@ -1048,9 +1048,10 @@
         "Each auto-format is independently undoable",
         "Table with 20 columns auto-aligns without perceptible lag"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T14:24:14-07:00"
     },
     {
       "id": "FEAT-053",
