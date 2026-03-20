@@ -59,6 +59,14 @@ extension NSAttributedString.Key {
 
     /// Marks a range with its markdown node type for accessibility.
     static let markdownNodeType = NSAttributedString.Key("em.markdownNodeType")
+
+    /// Marks a range as excluded from spell checking per [A-054].
+    static let spellCheckExcluded = NSAttributedString.Key("em.spellCheckExcluded")
+
+    /// Language identifier attribute for spell check suppression.
+    /// "NSLanguage" is the CoreText/Foundation key recognized by the text system
+    /// on both iOS and macOS for per-range language identification.
+    static let spellCheckLanguage = NSAttributedString.Key("NSLanguage")
 }
 
 // MARK: - Markdown Renderer
@@ -124,6 +132,16 @@ public struct MarkdownRenderer {
                 lineOffsets: lineOffsets
             )
         }
+
+        // Apply spell check exclusions per [A-054].
+        // Marks code blocks, code spans, URLs, and image paths with
+        // language "zxx" (BCP 47: no linguistic content) so the system
+        // spell checker skips them.
+        applySpellCheckExclusions(
+            to: attributedString,
+            ast: ast,
+            sourceText: sourceText
+        )
     }
 
     /// Pre-computes UTF-16 offsets for each line start for fast range conversion.
@@ -1005,6 +1023,32 @@ public struct MarkdownRenderer {
             length: delimiterLength
         )
         applySyntaxHiding(to: trailRange, in: attrStr)
+    }
+
+    // MARK: - Spell Check Exclusion per [A-054]
+
+    /// Applies spell check suppression attributes to ranges that should not
+    /// be spell-checked: code blocks, code spans, URLs, and image paths.
+    private func applySpellCheckExclusions(
+        to attrStr: NSMutableAttributedString,
+        ast: MarkdownAST,
+        sourceText: String
+    ) {
+        let exclusions = SpellCheckExclusionCalculator.exclusionRanges(
+            from: ast,
+            sourceText: sourceText
+        )
+
+        for range in exclusions {
+            guard range.location >= 0,
+                  range.location + range.length <= attrStr.length else {
+                continue
+            }
+            // Mark as excluded for custom attribute queries
+            attrStr.addAttribute(.spellCheckExcluded, value: true, range: range)
+            // BCP 47 "zxx" = no linguistic content — system spell checker skips these ranges
+            attrStr.addAttribute(.spellCheckLanguage, value: "zxx", range: range)
+        }
     }
 
     // MARK: - Font Utilities

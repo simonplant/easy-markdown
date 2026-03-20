@@ -1,28 +1,28 @@
 {
-  "sprintId": "sprint-1773975886",
-  "startedAt": "2026-03-19T20:04:46-07:00",
+  "sprintId": "sprint-1773978941",
+  "startedAt": "2026-03-19T20:55:41-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-012",
-    "title": "F-033: Word Count and Document Stats",
-    "intent": "Writers need to see their progress at a glance — word count and reading time must be always visible without being intrusive",
-    "description": "Compact status bar at bottom: word count, character count (with/without spaces), estimated reading time. Updates in real time. Tap to expand: paragraph count, sentence count, Flesch-Kincaid readability. Selection-aware: shows selection count alongside total.",
+    "id": "FEAT-013",
+    "title": "F-034: Spell Check",
+    "intent": "Spell check is table stakes for any writing tool — it must work out of the box using the system spell checker",
+    "description": "Uses UITextChecker (iOS) / NSSpellChecker (macOS). Red underline on misspelled words. Tap/right-click for correction suggestions. Respects system language and custom dictionary. Coexists with document doctor indicators without visual conflict. Works in both rich text and source view. On by default, toggleable.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "User sees word count and reading time in status bar at all times while writing",
-      "Selecting text updates stats to show selection count alongside total",
-      "VoiceOver can read current word count and reading time via status bar",
-      "Word count updates cause no perceptible input lag (under 1ms overhead per keystroke)",
-      "CJK text word count uses appropriate segmentation (not space-delimited)",
-      "Status bar does not overlap editor content on iPhone SE screen size",
-      "Tapping the status bar expands to show paragraph count, sentence count, and Flesch-Kincaid readability score"
+      "User types a misspelled word — red underline appears",
+      "Tapping the underlined word shows correction suggestions",
+      "Spell check works in both rich text and source view",
+      "Spell check and doctor indicators do not visually conflict",
+      "Spell check does NOT flag words inside code blocks, code spans, or URLs",
+      "Spell check works for the users system language, not just English",
+      "Custom dictionary additions persist across app launches"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T20:04:46-07:00",
+    "startedAt": "2026-03-19T20:55:41-07:00",
     "status": "passed",
-    "completedAt": "2026-03-19T20:15:22-07:00"
+    "completedAt": "2026-03-19T21:08:04-07:00"
   },
-  "completedAt": "2026-03-19T20:15:22-07:00",
-  "attempts": 2
+  "completedAt": "2026-03-19T21:08:04-07:00",
+  "attempts": 1
 }

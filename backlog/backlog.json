@@ -282,9 +282,10 @@
         "Spell check works for the users system language, not just English",
         "Custom dictionary additions persist across app launches"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-19T21:08:04-07:00"
     },
     {
       "id": "FEAT-014",
