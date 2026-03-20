@@ -119,7 +119,13 @@ public struct TextViewBridge: UIViewRepresentable {
         }
 
         // Re-render if text loaded from binding or view/theme changed
-        if (textChanged || configChanged), renderConfig != nil {
+        if viewModeChanged, renderConfig != nil {
+            // Use cursor-mapping toggle path per FEAT-050
+            coordinator.handleViewModeToggle(
+                for: textView,
+                toSourceView: renderConfig?.isSourceView ?? false
+            )
+        } else if (textChanged || configChanged), renderConfig != nil {
             coordinator.requestRender(for: textView)
         }
     }
@@ -238,7 +244,13 @@ public struct TextViewBridge: NSViewRepresentable {
             textView.applyThemeBackground(colors.background, animated: colorChanged)
         }
 
-        if (textChanged || configChanged), renderConfig != nil {
+        if viewModeChanged, renderConfig != nil {
+            // Use cursor-mapping toggle path per FEAT-050
+            coordinator.handleViewModeToggle(
+                for: textView,
+                toSourceView: renderConfig?.isSourceView ?? false
+            )
+        } else if (textChanged || configChanged), renderConfig != nil {
             coordinator.requestRender(for: textView)
         }
     }

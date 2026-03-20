@@ -1001,9 +1001,10 @@
         "Toggle latency under 50ms (excluding Render animation)",
         "Toggle works correctly on an empty document"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T11:02:37-07:00"
     },
     {
       "id": "FEAT-051",
