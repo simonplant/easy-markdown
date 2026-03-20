@@ -153,9 +153,10 @@
         "Theme transition animates with 200ms crossfade between modes",
         "Reduced Motion setting triggers instant switch instead of animated crossfade"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-19T19:43:25-07:00"
     },
     {
       "id": "FEAT-008",
