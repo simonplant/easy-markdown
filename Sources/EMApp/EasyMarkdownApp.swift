@@ -31,6 +31,9 @@ public final class AppShell {
     private let fileCreateCoordinator: FileCreateCoordinator
 
     public init() {
+        // Register custom bundled typefaces before any UI is created per [A-052].
+        FontRegistration.registerFonts()
+
         let settings = SettingsManager()
         let errorPresenter = ErrorPresenter()
         let recentsManager = RecentsManager(settings: settings)

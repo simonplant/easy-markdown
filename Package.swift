@@ -20,7 +20,12 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-markdown.git", from: "0.4.0"),
     ],
     targets: [
-        .target(name: "EMCore"),
+        .target(
+            name: "EMCore",
+            resources: [
+                .copy("Resources/Fonts"),
+            ]
+        ),
         .target(
             name: "EMParser",
             dependencies: [
