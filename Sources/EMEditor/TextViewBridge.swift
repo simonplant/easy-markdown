@@ -35,6 +35,15 @@ public struct TextViewBridge: UIViewRepresentable {
     /// Optional improve writing coordinator to wire as text view delegate per FEAT-011.
     public var improveCoordinator: ImproveWritingCoordinator?
 
+    // MARK: - Formatting settings per FEAT-053 AC-6
+
+    /// Whether heading spacing auto-format is enabled.
+    public var isAutoFormatHeadingSpacing: Bool
+    /// Whether blank line separation auto-format is enabled.
+    public var isAutoFormatBlankLineSeparation: Bool
+    /// Whether trailing whitespace trimming on Enter is enabled.
+    public var isAutoFormatTrailingWhitespaceTrim: Bool
+
     // MARK: - App-level keyboard shortcut handlers per FEAT-009
 
     /// Called when Cmd+J is pressed (AI assist).
@@ -57,6 +66,9 @@ public struct TextViewBridge: UIViewRepresentable {
         onTextChange: ((String) -> Void)? = nil,
         onLinkTap: ((URL) -> Void)? = nil,
         improveCoordinator: ImproveWritingCoordinator? = nil,
+        isAutoFormatHeadingSpacing: Bool = true,
+        isAutoFormatBlankLineSeparation: Bool = true,
+        isAutoFormatTrailingWhitespaceTrim: Bool = true,
         onAIAssist: (() -> Void)? = nil,
         onToggleSourceView: (() -> Void)? = nil,
         onOpenFile: (() -> Void)? = nil,
@@ -71,6 +83,9 @@ public struct TextViewBridge: UIViewRepresentable {
         self.onTextChange = onTextChange
         self.onLinkTap = onLinkTap
         self.improveCoordinator = improveCoordinator
+        self.isAutoFormatHeadingSpacing = isAutoFormatHeadingSpacing
+        self.isAutoFormatBlankLineSeparation = isAutoFormatBlankLineSeparation
+        self.isAutoFormatTrailingWhitespaceTrim = isAutoFormatTrailingWhitespaceTrim
         self.onAIAssist = onAIAssist
         self.onToggleSourceView = onToggleSourceView
         self.onOpenFile = onOpenFile
@@ -192,6 +207,13 @@ public struct TextViewBridge: UIViewRepresentable {
             textView.spellCheckingType = spellType
         }
 
+        // Update formatting settings per FEAT-053 AC-6
+        coordinator.updateFormattingSettings(
+            isHeadingSpacingEnabled: isAutoFormatHeadingSpacing,
+            isBlankLineSeparationEnabled: isAutoFormatBlankLineSeparation,
+            isTrailingWhitespaceTrimEnabled: isAutoFormatTrailingWhitespaceTrim
+        )
+
         // Apply theme background color per FEAT-007
         if let colors = renderConfig?.colors {
             textView.applyThemeBackground(colors.background, animated: colorChanged)
@@ -238,6 +260,15 @@ public struct TextViewBridge: NSViewRepresentable {
     /// Optional improve writing coordinator to wire as text view delegate per FEAT-011.
     public var improveCoordinator: ImproveWritingCoordinator?
 
+    // MARK: - Formatting settings per FEAT-053 AC-6
+
+    /// Whether heading spacing auto-format is enabled.
+    public var isAutoFormatHeadingSpacing: Bool
+    /// Whether blank line separation auto-format is enabled.
+    public var isAutoFormatBlankLineSeparation: Bool
+    /// Whether trailing whitespace trimming on Enter is enabled.
+    public var isAutoFormatTrailingWhitespaceTrim: Bool
+
     // MARK: - App-level keyboard shortcut handlers per FEAT-009
 
     /// Called when Cmd+J is pressed (AI assist).
@@ -260,6 +291,9 @@ public struct TextViewBridge: NSViewRepresentable {
         onTextChange: ((String) -> Void)? = nil,
         onLinkTap: ((URL) -> Void)? = nil,
         improveCoordinator: ImproveWritingCoordinator? = nil,
+        isAutoFormatHeadingSpacing: Bool = true,
+        isAutoFormatBlankLineSeparation: Bool = true,
+        isAutoFormatTrailingWhitespaceTrim: Bool = true,
         onAIAssist: (() -> Void)? = nil,
         onToggleSourceView: (() -> Void)? = nil,
         onOpenFile: (() -> Void)? = nil,
@@ -274,6 +308,9 @@ public struct TextViewBridge: NSViewRepresentable {
         self.onTextChange = onTextChange
         self.onLinkTap = onLinkTap
         self.improveCoordinator = improveCoordinator
+        self.isAutoFormatHeadingSpacing = isAutoFormatHeadingSpacing
+        self.isAutoFormatBlankLineSeparation = isAutoFormatBlankLineSeparation
+        self.isAutoFormatTrailingWhitespaceTrim = isAutoFormatTrailingWhitespaceTrim
         self.onAIAssist = onAIAssist
         self.onToggleSourceView = onToggleSourceView
         self.onOpenFile = onOpenFile
@@ -397,6 +434,13 @@ public struct TextViewBridge: NSViewRepresentable {
 
         textView.isEditable = isEditable
         textView.isContinuousSpellCheckingEnabled = isSpellCheckEnabled
+
+        // Update formatting settings per FEAT-053 AC-6
+        coordinator.updateFormattingSettings(
+            isHeadingSpacingEnabled: isAutoFormatHeadingSpacing,
+            isBlankLineSeparationEnabled: isAutoFormatBlankLineSeparation,
+            isTrailingWhitespaceTrimEnabled: isAutoFormatTrailingWhitespaceTrim
+        )
 
         // Apply theme background color per FEAT-007
         if let colors = renderConfig?.colors {

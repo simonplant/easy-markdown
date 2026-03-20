@@ -96,6 +96,14 @@ struct SettingsView: View {
                 Toggle("Heading Spacing", isOn: settings.isAutoFormatHeadingSpacing)
                     .accessibilityHint("Normalize spacing around headings")
                     .padding(.leading, 16)
+
+                Toggle("Blank Line Separation", isOn: settings.isAutoFormatBlankLineSeparation)
+                    .accessibilityHint("Auto-insert blank lines between block elements")
+                    .padding(.leading, 16)
+
+                Toggle("Trailing Newline on Save", isOn: settings.isAutoFormatEnsureTrailingNewline)
+                    .accessibilityHint("Ensure file ends with exactly one newline on save")
+                    .padding(.leading, 16)
             }
 
             Picker("Trailing Whitespace", selection: settings.trailingWhitespaceBehavior) {

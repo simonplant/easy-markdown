@@ -8,6 +8,7 @@ import AppKit
 import EMCore
 import EMEditor
 import EMFile
+import EMFormatter
 import EMSettings
 import EMAI
 
@@ -78,6 +79,9 @@ struct EditorShellView: View {
                 },
                 onLinkTap: { url in handleLinkTap(url) },
                 improveCoordinator: improveCoordinator,
+                isAutoFormatHeadingSpacing: settings.isAutoFormatHeadingSpacing,
+                isAutoFormatBlankLineSeparation: settings.isAutoFormatBlankLineSeparation,
+                isAutoFormatTrailingWhitespaceTrim: settings.trailingWhitespaceBehavior == .strip,
                 onAIAssist: { startImprove() },
                 onToggleSourceView: { toggleSourceView() },
                 onOpenFile: { openFileFromEditor() },
@@ -262,7 +266,13 @@ struct EditorShellView: View {
             conflictManager: manager,
             initialContent: text
         )
-        autoSave.contentProvider = { [self] in text }
+        autoSave.contentProvider = { [self] in
+            var content = text
+            if settings.isAutoFormatEnsureTrailingNewline {
+                content = ensureTrailingNewline(content)
+            }
+            return content
+        }
         autoSave.onSaveError = { [weak autoSave] error in
             errorPresenter.present(error, recoveryActions: [
                 RecoveryAction(label: "Try Again") {

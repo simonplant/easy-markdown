@@ -42,7 +42,32 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
     weak var managedTextView: EMTextView?
 
     /// Formatting engine for auto-formatting per FEAT-004, FEAT-052, and [A-051].
-    private let formattingEngine = FormattingEngine.defaultFormattingEngine()
+    /// Rebuilt when formatting settings change via `updateFormattingSettings`.
+    private var formattingEngine = FormattingEngine.defaultFormattingEngine()
+
+    /// Cached formatting setting values for change detection.
+    private var cachedHeadingSpacing: Bool = true
+    private var cachedBlankLineSeparation: Bool = true
+    private var cachedTrailingWhitespaceTrim: Bool = true
+
+    /// Updates the formatting engine when settings change per FEAT-053 AC-6.
+    func updateFormattingSettings(
+        isHeadingSpacingEnabled: Bool,
+        isBlankLineSeparationEnabled: Bool,
+        isTrailingWhitespaceTrimEnabled: Bool
+    ) {
+        guard isHeadingSpacingEnabled != cachedHeadingSpacing
+           || isBlankLineSeparationEnabled != cachedBlankLineSeparation
+           || isTrailingWhitespaceTrimEnabled != cachedTrailingWhitespaceTrim else { return }
+        cachedHeadingSpacing = isHeadingSpacingEnabled
+        cachedBlankLineSeparation = isBlankLineSeparationEnabled
+        cachedTrailingWhitespaceTrim = isTrailingWhitespaceTrimEnabled
+        formattingEngine = FormattingEngine.defaultFormattingEngine(
+            isHeadingSpacingEnabled: isHeadingSpacingEnabled,
+            isBlankLineSeparationEnabled: isBlankLineSeparationEnabled,
+            isTrailingWhitespaceTrimEnabled: isTrailingWhitespaceTrimEnabled
+        )
+    }
 
     /// Prevents feedback loops when programmatically updating text.
     private var isUpdatingFromBinding = false
@@ -567,7 +592,32 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
     weak var managedTextView: EMTextView?
 
     /// Formatting engine for auto-formatting per FEAT-004, FEAT-052, and [A-051].
-    private let formattingEngine = FormattingEngine.defaultFormattingEngine()
+    /// Rebuilt when formatting settings change via `updateFormattingSettings`.
+    private var formattingEngine = FormattingEngine.defaultFormattingEngine()
+
+    /// Cached formatting setting values for change detection.
+    private var cachedHeadingSpacing: Bool = true
+    private var cachedBlankLineSeparation: Bool = true
+    private var cachedTrailingWhitespaceTrim: Bool = true
+
+    /// Updates the formatting engine when settings change per FEAT-053 AC-6.
+    func updateFormattingSettings(
+        isHeadingSpacingEnabled: Bool,
+        isBlankLineSeparationEnabled: Bool,
+        isTrailingWhitespaceTrimEnabled: Bool
+    ) {
+        guard isHeadingSpacingEnabled != cachedHeadingSpacing
+           || isBlankLineSeparationEnabled != cachedBlankLineSeparation
+           || isTrailingWhitespaceTrimEnabled != cachedTrailingWhitespaceTrim else { return }
+        cachedHeadingSpacing = isHeadingSpacingEnabled
+        cachedBlankLineSeparation = isBlankLineSeparationEnabled
+        cachedTrailingWhitespaceTrim = isTrailingWhitespaceTrimEnabled
+        formattingEngine = FormattingEngine.defaultFormattingEngine(
+            isHeadingSpacingEnabled: isHeadingSpacingEnabled,
+            isBlankLineSeparationEnabled: isBlankLineSeparationEnabled,
+            isTrailingWhitespaceTrimEnabled: isTrailingWhitespaceTrimEnabled
+        )
+    }
 
     private var isUpdatingFromBinding = false
 

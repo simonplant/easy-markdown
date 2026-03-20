@@ -39,15 +39,31 @@ public struct FormattingEngine: Sendable {
     /// Table rules are evaluated first so they take priority when the cursor is in a table.
     /// Heading and whitespace rules are placed after list rules so list/table Enter
     /// handling takes priority; WhitespaceCleanupRule only fires on non-list, non-table lines.
-    public static func defaultFormattingEngine() -> FormattingEngine {
-        FormattingEngine(rules: [
+    ///
+    /// Settings parameters control which FEAT-053 rules are active. When a setting is false,
+    /// the corresponding rule is omitted or configured to skip that behavior.
+    public static func defaultFormattingEngine(
+        isHeadingSpacingEnabled: Bool = true,
+        isBlankLineSeparationEnabled: Bool = true,
+        isTrailingWhitespaceTrimEnabled: Bool = true
+    ) -> FormattingEngine {
+        var rules: [any FormattingRule] = [
             TableNavigationRule(),
             TableContinuationRule(),
             TableAlignmentRule(),
-            HeadingSpacingRule(),
+        ]
+        if isHeadingSpacingEnabled {
+            rules.append(HeadingSpacingRule())
+        }
+        rules.append(contentsOf: [
             ListContinuationRule(),
             ListIndentRule(),
-            WhitespaceCleanupRule(),
         ])
+        rules.append(WhitespaceCleanupRule(
+            trimTrailingWhitespace: isTrailingWhitespaceTrimEnabled,
+            removeTrailingHashes: isHeadingSpacingEnabled,
+            insertBlankLineBetweenBlocks: isBlankLineSeparationEnabled
+        ))
+        return FormattingEngine(rules: rules)
     }
 }

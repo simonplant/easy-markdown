@@ -62,7 +62,7 @@ let package = Package(
         .target(name: "EMFile", dependencies: ["EMCore"]),
         .target(name: "EMAI", dependencies: ["EMCore"]),
         .target(name: "EMSettings", dependencies: ["EMCore"]),
-        .target(name: "EMApp", dependencies: ["EMCore", "EMEditor", "EMFile", "EMAI", "EMSettings"]),
+        .target(name: "EMApp", dependencies: ["EMCore", "EMEditor", "EMFile", "EMFormatter", "EMAI", "EMSettings"]),
         .testTarget(name: "EMCoreTests", dependencies: ["EMCore"]),
         .testTarget(name: "EMParserTests", dependencies: ["EMParser", "EMCore"]),
         .testTarget(name: "EMFileTests", dependencies: ["EMFile", "EMCore"]),
