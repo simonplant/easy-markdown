@@ -1,27 +1,26 @@
 {
-  "sprintId": "sprint-1773965377",
-  "startedAt": "2026-03-19T17:09:37-07:00",
+  "sprintId": "sprint-1773966519",
+  "startedAt": "2026-03-19T17:28:39-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-039",
-    "title": "INFRA: Text Editing Engine",
-    "intent": "The core text system that handles every keystroke — must be fast enough for <16ms render and flexible enough for rich text, source view, and auto-formatting hooks.",
-    "description": "Core text input and rendering engine. Decision needed: TextKit 2 (modern, SwiftUI-friendly, but less mature) vs UITextView with custom NSAttributedString (proven but harder to customize). Must support: text input and editing, attributed string rendering, cursor/selection management, custom text attributes for markdown styling, hooks for auto-formatting (intercept keystrokes before commit), undo manager integration, IME support for CJK input, RTL text layout, Dynamic Type font scaling. Performance: <16ms keystroke-to-render (D-PERF-2), 120fps scroll (D-PERF-3).",
+    "id": "FEAT-042",
+    "title": "INFRA: Settings Screen",
+    "intent": "Minimal but essential — the single place users configure auto-format rules, spell check, AI behavior, theme, and font.",
+    "description": "SwiftUI settings view accessible via gear icon in toolbar. Sections: Appearance (theme, font, font size), Editor (auto-format toggles per rule, spell check toggle, trailing whitespace behavior), AI (ghost text on/off, model management — download/delete), About (version, licenses, support link). Persists via UserDefaults (no sidecar files per DP-1). Opinionated defaults — settings exist to turn things OFF, not to configure complexity.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "User types and sees characters appear with <16ms latency (measured via instruments)",
-      "Scrolling a 5,000-line document maintains 60fps on all devices, 120fps on ProMotion",
-      "CJK IME composition works correctly (partial input displayed, committed on confirm)",
-      "RTL text (Arabic, Hebrew) displays and edits with correct cursor behavior",
-      "Dynamic Type at all sizes (including accessibility sizes) renders without clipping or overlap",
-      "Undo manager tracks all text changes with unlimited depth"
+      "Settings screen opens from gear icon in toolbar",
+      "Toggling an auto-format rule takes effect immediately in the editor",
+      "All settings persist across app launches",
+      "VoiceOver can navigate and toggle every setting",
+      "Settings screen renders correctly at all Dynamic Type sizes"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T17:09:37-07:00",
+    "startedAt": "2026-03-19T17:28:39-07:00",
     "status": "passed",
-    "completedAt": "2026-03-19T17:28:23-07:00"
+    "completedAt": "2026-03-19T17:35:07-07:00"
   },
-  "completedAt": "2026-03-19T17:28:23-07:00",
-  "attempts": 2
+  "completedAt": "2026-03-19T17:35:07-07:00",
+  "attempts": 1
 }

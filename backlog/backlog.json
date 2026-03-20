@@ -831,9 +831,10 @@
         "VoiceOver can navigate and toggle every setting",
         "Settings screen renders correctly at all Dynamic Type sizes"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-19T17:35:07-07:00"
     },
     {
       "id": "FEAT-043",
