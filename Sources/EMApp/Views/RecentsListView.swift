@@ -3,11 +3,12 @@ import SwiftUI
 /// Displays the list of recently opened files per [D-UX-2].
 ///
 /// Shows filename, parent folder, and last opened date for each entry.
-/// Tapping an entry resolves its bookmark and opens the file.
+/// Tapping an entry resolves its bookmark and opens the file via FileOpenCoordinator.
 /// Stale entries (file deleted/moved) are removed gracefully.
 struct RecentsListView: View {
     @Environment(AppRouter.self) private var router
     @Environment(RecentsManager.self) private var recentsManager
+    @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -35,13 +36,19 @@ struct RecentsListView: View {
     }
 
     private func openRecent(_ item: RecentItem) {
-        guard recentsManager.resolveRecentItem(item) != nil else {
-            // Entry was stale and has been removed — no crash, no stale entry (AC-3)
+        guard let url = recentsManager.resolveRecentItem(item) else {
+            // Entry was stale and has been removed — no crash, no stale entry
             return
         }
-        // Re-record so it moves to the top of recents
-        // Actual file opening will be wired with FEAT-001 file coordination
-        router.openEditor()
+
+        let attempt = fileOpenCoordinator.openFile(url: url)
+        switch attempt {
+        case .opened, .alreadyOpen:
+            router.openEditor()
+        case .failed:
+            // Error already presented by FileOpenCoordinator
+            break
+        }
     }
 
     private func deleteRecents(at offsets: IndexSet) {

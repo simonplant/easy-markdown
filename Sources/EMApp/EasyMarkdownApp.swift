@@ -27,12 +27,25 @@ public final class AppShell {
     private let settings: SettingsManager
     private let errorPresenter: ErrorPresenter
     private let recentsManager: RecentsManager
+    private let fileOpenCoordinator: FileOpenCoordinator
 
     public init() {
         let settings = SettingsManager()
+        let errorPresenter = ErrorPresenter()
+        let recentsManager = RecentsManager(settings: settings)
+        let fileOpenService = FileOpenService()
+        let openFileRegistry = OpenFileRegistry()
+
         self.settings = settings
-        self.errorPresenter = ErrorPresenter()
-        self.recentsManager = RecentsManager(settings: settings)
+        self.errorPresenter = errorPresenter
+        self.recentsManager = recentsManager
+        self.fileOpenCoordinator = FileOpenCoordinator(
+            fileOpenService: fileOpenService,
+            openFileRegistry: openFileRegistry,
+            recentsManager: recentsManager,
+            errorPresenter: errorPresenter,
+            settings: settings
+        )
     }
 
     /// Returns the configured root view with all environment dependencies injected.
@@ -40,7 +53,8 @@ public final class AppShell {
         AppRootWrapper(
             settings: settings,
             errorPresenter: errorPresenter,
-            recentsManager: recentsManager
+            recentsManager: recentsManager,
+            fileOpenCoordinator: fileOpenCoordinator
         )
     }
 }
@@ -51,12 +65,14 @@ struct AppRootWrapper: View {
     @State var settings: SettingsManager
     @State var errorPresenter: ErrorPresenter
     @State var recentsManager: RecentsManager
+    @State var fileOpenCoordinator: FileOpenCoordinator
 
     var body: some View {
         RootView()
             .environment(settings)
             .environment(errorPresenter)
             .environment(recentsManager)
+            .environment(fileOpenCoordinator)
             .preferredColorScheme(colorScheme)
     }
 

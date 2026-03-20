@@ -10,6 +10,7 @@ public struct RootView: View {
     @Environment(ErrorPresenter.self) private var errorPresenter
     @Environment(RecentsManager.self) private var recentsManager
     @Environment(SettingsManager.self) private var settings
+    @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
     @State private var hasAttemptedRestore = false
     @State private var firstRunCoordinator: FirstRunCoordinator?
 
@@ -73,19 +74,23 @@ public struct RootView: View {
         }
     }
 
-    /// Attempts to restore the last open file on launch per [A-061].
+    /// Attempts to restore the last open file on launch per [A-061] and AC-5.
     ///
-    /// If the last file's bookmark resolves successfully, navigates directly to the editor.
+    /// If the last file's bookmark resolves successfully, opens the file via
+    /// FileOpenCoordinator and navigates to the editor.
     /// If it fails (file deleted/moved), stays on home screen with recents list.
     private func attemptStateRestoration() {
-        guard let restored = recentsManager.restoreLastFile() else {
-            // No saved state or bookmark stale — show home screen with recents (AC-2)
+        guard let bookmarkData = settings.lastOpenFileBookmark else {
             return
         }
 
-        // Successfully resolved — navigate to editor (AC-1)
-        // The restored state (cursor position, view mode, scroll) will be applied
-        // by EditorShellView when full file coordination is wired (FEAT-001/FEAT-040).
-        router.openEditor()
+        let attempt = fileOpenCoordinator.openFile(fromBookmark: bookmarkData)
+        switch attempt {
+        case .opened, .alreadyOpen:
+            router.openEditor()
+        case .failed:
+            // Bookmark stale or file gone — clear state, show home/recents
+            settings.clearStateRestoration()
+        }
     }
 }

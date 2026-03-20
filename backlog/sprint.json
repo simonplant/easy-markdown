@@ -1,25 +1,24 @@
 {
-  "sprintId": "sprint-1773969048",
-  "startedAt": "2026-03-19T18:10:48-07:00",
-  "status": "completed",
+  "sprintId": "sprint-1773969352",
+  "startedAt": "2026-03-19T18:15:52-07:00",
+  "status": "in_progress",
   "item": {
-    "id": "FEAT-060",
-    "title": "INFRA: On-Device Aggregate Counters",
-    "intent": "We must know if our AI features are landing without violating privacy — simple local counters tell us enough to make product decisions.",
-    "description": "Per D-BIZ-6. Track simple aggregate counts in UserDefaults: AI improve uses, AI summarize uses, AI continue accepts, doctor fixes accepted, documents opened, days active. Never transmitted off device. Powers App Store review prompt timing (FEAT-069) and status bar stats. No PII, no content, no telemetry — just counts.",
+    "id": "FEAT-001",
+    "title": "F-001: Open File",
+    "intent": "Users must be able to open any markdown file from any location via the system file picker — no vault, no import, no friction",
+    "description": "Open any markdown file via UIDocumentPickerViewController. Filters to markdown extensions (.md, .markdown, .mdown, .mkd, .mkdn, .mdx) per D-FILE-6. UTF-8 only (D-FILE-2). Error on non-UTF-8. Warning on >1MB. Editable immediately. File open to editing ready <500ms for <100KB files. Depends on: FEAT-040 (File Coordination Layer).",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "AI feature usage counts increment correctly and persist across launches",
-      "Counter data is stored in UserDefaults only — never transmitted",
-      "Counters are accessible for review prompt eligibility check (FEAT-069)",
-      "Deleting and reinstalling the app resets counters (no external storage)"
+      "User opens a .md file from iCloud Drive, edits it, and the edit is saved back to the same file in place",
+      "Non-UTF-8 file shows error without crashing or corrupting",
+      "File >1MB shows dismissable warning",
+      "VoiceOver announces file opened with filename",
+      "Security-scoped bookmark persists — file reopens on next launch without re-picking",
+      "Opening a file already open in another editor window shows that window instead of duplicating",
+      "File provider going offline mid-session preserves in-memory content and shows non-modal error"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T18:10:48-07:00",
-    "status": "passed",
-    "completedAt": "2026-03-19T18:15:41-07:00"
-  },
-  "completedAt": "2026-03-19T18:15:41-07:00",
-  "attempts": 1
+    "startedAt": "2026-03-19T18:15:52-07:00"
+  }
 }

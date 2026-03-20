@@ -11,19 +11,19 @@ import EMSettings
 /// Editor shell: toolbar at top, content area in center, format bar and status bar at bottom.
 /// Uses EMEditor's TextViewBridge for the text editing area (TextKit 2).
 /// Monitors for external file changes per FEAT-045 and [A-027].
+/// Loads file content from FileOpenCoordinator per FEAT-001.
 struct EditorShellView: View {
     @Environment(AppRouter.self) private var router
     @Environment(SettingsManager.self) private var settings
     @Environment(ErrorPresenter.self) private var errorPresenter
+    @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
     @State private var editorState = EditorState()
     @State private var text = ""
     @State private var wordCount = 0
     @State private var diagnosticCount = 0
     @State private var conflictManager: FileConflictManager?
     @State private var showingSaveElsewherePanel = false
-
-    /// The file URL to monitor. Set by the caller when opening a file.
-    var fileURL: URL?
+    @State private var currentLineEnding: LineEnding = .lf
 
     var body: some View {
         VStack(spacing: 0) {
@@ -61,7 +61,7 @@ struct EditorShellView: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: conflictManager?.conflictState)
-        .navigationTitle("Untitled")
+        .navigationTitle(navigationTitle)
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
@@ -76,7 +76,7 @@ struct EditorShellView: View {
             isPresented: $showingSaveElsewherePanel,
             document: TextFileDocument(text: text),
             contentType: .plainText,
-            defaultFilename: fileURL?.lastPathComponent ?? "Untitled.md"
+            defaultFilename: fileOpenCoordinator.currentFileURL?.lastPathComponent ?? "Untitled.md"
         ) { result in
             switch result {
             case .success:
@@ -90,10 +90,48 @@ struct EditorShellView: View {
             }
         }
         .onAppear {
+            loadFileContent()
             startConflictMonitoring()
         }
         .onDisappear {
             conflictManager?.stopMonitoring()
+            // Save in-place on disappear (AC-1): auto-save wired here,
+            // full debounced auto-save will come with FEAT-008.
+            saveCurrentFile()
+        }
+    }
+
+    /// The navigation title shows the filename or "Untitled".
+    private var navigationTitle: String {
+        fileOpenCoordinator.currentFileURL?.deletingPathExtension().lastPathComponent ?? "Untitled"
+    }
+
+    // MARK: - File Loading per FEAT-001
+
+    /// Loads file content from the coordinator into the editor.
+    private func loadFileContent() {
+        guard let content = fileOpenCoordinator.currentFileContent else { return }
+        text = content.text
+        currentLineEnding = content.lineEnding
+        updateWordCount(content.text)
+    }
+
+    /// Saves current editor text back to the open file (AC-1).
+    private func saveCurrentFile() {
+        guard let url = fileOpenCoordinator.currentFileURL else { return }
+        do {
+            // Pause conflict detection during our own save
+            conflictManager?.pauseDetection()
+            try CoordinatedFileAccess.write(
+                text: text,
+                to: url,
+                lineEnding: currentLineEnding
+            )
+            conflictManager?.resumeDetection()
+        } catch {
+            conflictManager?.resumeDetection()
+            let emError = (error as? EMError) ?? .unexpected(underlying: error)
+            errorPresenter.present(emError)
         }
     }
 
@@ -112,7 +150,7 @@ struct EditorShellView: View {
     // MARK: - Conflict Detection per FEAT-045
 
     private func startConflictMonitoring() {
-        guard let url = fileURL else { return }
+        guard let url = fileOpenCoordinator.currentFileURL else { return }
         let manager = FileConflictManager(url: url)
         conflictManager = manager
         manager.startMonitoring()
@@ -122,6 +160,7 @@ struct EditorShellView: View {
         do {
             let content = try manager.reload()
             text = content.text
+            currentLineEnding = content.lineEnding
         } catch {
             let emError = (error as? EMError) ?? .unexpected(underlying: error)
             errorPresenter.present(emError)

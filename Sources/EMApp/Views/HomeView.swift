@@ -1,4 +1,8 @@
 import SwiftUI
+import EMFile
+#if canImport(AppKit)
+import AppKit
+#endif
 
 /// Home screen per [D-UX-2]: no onboarding, no tutorial, no account creation.
 /// Shows Open File and New File buttons plus the recents list.
@@ -6,6 +10,8 @@ import SwiftUI
 struct HomeView: View {
     @Environment(AppRouter.self) private var router
     @Environment(RecentsManager.self) private var recentsManager
+    @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
+    @State private var showingFilePicker = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -57,16 +63,61 @@ struct HomeView: View {
         .task {
             recentsManager.pruneStaleEntries()
         }
+        #if os(iOS)
+        .sheet(isPresented: $showingFilePicker) {
+            DocumentPickerView(
+                onPick: { url in
+                    showingFilePicker = false
+                    handleFilePicked(url)
+                },
+                onCancel: {
+                    showingFilePicker = false
+                }
+            )
+        }
+        #endif
     }
 
     private func openFile() {
-        // File picker integration will come with FEAT-001.
-        // For the shell, navigate to the editor to demonstrate navigation.
-        router.openEditor()
+        #if os(iOS)
+        showingFilePicker = true
+        #else
+        openFileViaNSOpenPanel()
+        #endif
     }
 
     private func newFile() {
         // File creation will come with FEAT-002.
         router.openEditor()
     }
+
+    private func handleFilePicked(_ url: URL) {
+        let attempt = fileOpenCoordinator.openFile(url: url)
+        switch attempt {
+        case .opened:
+            router.openEditor()
+        case .alreadyOpen:
+            // AC-6: File already open — on single-window iOS, just navigate to editor.
+            // Multi-window activation handled at scene level.
+            router.openEditor()
+        case .failed:
+            // Error already presented by FileOpenCoordinator.
+            break
+        }
+    }
+
+    #if os(macOS)
+    private func openFileViaNSOpenPanel() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = MarkdownExtensions.utTypes
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.begin { response in
+            guard response == .OK, let url = panel.url else { return }
+            Task { @MainActor in
+                handleFilePicked(url)
+            }
+        }
+    }
+    #endif
 }
