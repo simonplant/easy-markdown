@@ -34,4 +34,15 @@ public struct FormattingEngine: Sendable {
             ListIndentRule(),
         ])
     }
+
+    /// Creates an engine with all auto-formatting rules (tables + lists) per FEAT-004, FEAT-052.
+    /// Table rules are evaluated first so they take priority when the cursor is in a table.
+    public static func defaultFormattingEngine() -> FormattingEngine {
+        FormattingEngine(rules: [
+            TableNavigationRule(),
+            TableContinuationRule(),
+            ListContinuationRule(),
+            ListIndentRule(),
+        ])
+    }
 }

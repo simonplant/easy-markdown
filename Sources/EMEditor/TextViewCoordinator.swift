@@ -41,8 +41,8 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
     /// Weak reference to the managed text view for ImproveWritingTextViewDelegate.
     weak var managedTextView: EMTextView?
 
-    /// Formatting engine for list auto-formatting per FEAT-004 and [A-051].
-    private let formattingEngine = FormattingEngine.listFormattingEngine()
+    /// Formatting engine for auto-formatting per FEAT-004, FEAT-052, and [A-051].
+    private let formattingEngine = FormattingEngine.defaultFormattingEngine()
 
     /// Prevents feedback loops when programmatically updating text.
     private var isUpdatingFromBinding = false
@@ -558,8 +558,8 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
     /// Weak reference to the managed text view for ImproveWritingTextViewDelegate.
     weak var managedTextView: EMTextView?
 
-    /// Formatting engine for list auto-formatting per FEAT-004 and [A-051].
-    private let formattingEngine = FormattingEngine.listFormattingEngine()
+    /// Formatting engine for auto-formatting per FEAT-004, FEAT-052, and [A-051].
+    private let formattingEngine = FormattingEngine.defaultFormattingEngine()
 
     private var isUpdatingFromBinding = false
 
