@@ -10,16 +10,28 @@ let package = Package(
     ],
     products: [
         .library(name: "EMCore", targets: ["EMCore"]),
+        .library(name: "EMParser", targets: ["EMParser"]),
         .library(name: "EMFile", targets: ["EMFile"]),
         .library(name: "EMSettings", targets: ["EMSettings"]),
         .library(name: "EMApp", targets: ["EMApp"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-markdown.git", from: "0.4.0"),
+    ],
     targets: [
         .target(name: "EMCore"),
+        .target(
+            name: "EMParser",
+            dependencies: [
+                "EMCore",
+                .product(name: "Markdown", package: "swift-markdown"),
+            ]
+        ),
         .target(name: "EMFile", dependencies: ["EMCore"]),
         .target(name: "EMSettings", dependencies: ["EMCore"]),
         .target(name: "EMApp", dependencies: ["EMCore", "EMSettings"]),
         .testTarget(name: "EMCoreTests", dependencies: ["EMCore"]),
+        .testTarget(name: "EMParserTests", dependencies: ["EMParser", "EMCore"]),
         .testTarget(name: "EMFileTests", dependencies: ["EMFile", "EMCore"]),
         .testTarget(name: "EMAppTests", dependencies: ["EMApp"]),
     ]
