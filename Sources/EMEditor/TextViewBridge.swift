@@ -62,6 +62,11 @@ public struct TextViewBridge: UIViewRepresentable {
         context.coordinator.onTextChange = onTextChange
         context.coordinator.renderConfig = renderConfig
 
+        // Apply initial layout metrics per FEAT-010
+        if let config = renderConfig {
+            textView.layoutMetrics = config.layoutMetrics
+        }
+
         // Apply initial theme background per FEAT-007
         if let colors = renderConfig?.colors {
             textView.backgroundColor = colors.background
@@ -87,6 +92,11 @@ public struct TextViewBridge: UIViewRepresentable {
 
         // Update render configuration
         coordinator.renderConfig = renderConfig
+
+        // Update layout metrics per FEAT-010
+        if let config = renderConfig {
+            textView.layoutMetrics = config.layoutMetrics
+        }
 
         // Update editable state
         textView.isEditable = isEditable
@@ -170,6 +180,11 @@ public struct TextViewBridge: NSViewRepresentable {
         context.coordinator.onTextChange = onTextChange
         context.coordinator.renderConfig = renderConfig
 
+        // Apply initial layout metrics per FEAT-010
+        if let config = renderConfig {
+            textView.layoutMetrics = config.layoutMetrics
+        }
+
         // Apply initial theme background per FEAT-007
         if let colors = renderConfig?.colors {
             textView.backgroundColor = colors.background
@@ -197,6 +212,12 @@ public struct TextViewBridge: NSViewRepresentable {
         let configChanged = viewModeChanged || colorChanged
 
         coordinator.renderConfig = renderConfig
+
+        // Update layout metrics per FEAT-010
+        if let config = renderConfig {
+            textView.layoutMetrics = config.layoutMetrics
+        }
+
         textView.isEditable = isEditable
         textView.isContinuousSpellCheckingEnabled = isSpellCheckEnabled
 

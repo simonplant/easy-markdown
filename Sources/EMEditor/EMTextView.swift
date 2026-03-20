@@ -26,6 +26,11 @@ public final class EMTextView: UITextView {
     /// The editor state this view reports changes to.
     public weak var editorState: EditorState?
 
+    /// Current layout metrics for device-aware spacing per FEAT-010.
+    public var layoutMetrics: LayoutMetrics = .current {
+        didSet { applyLayoutMetrics() }
+    }
+
     /// Creates a TextKit 2-configured text view.
     ///
     /// - Parameter editorState: The editor state to synchronize with.
@@ -75,7 +80,9 @@ public final class EMTextView: UITextView {
 
         // Appearance — default background, overridden by applyThemeBackground
         backgroundColor = .systemBackground
-        textContainerInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+
+        // Apply device-aware margins per FEAT-010
+        applyLayoutMetrics()
 
         // Scrolling: enable for large documents.
         // TextKit 2's viewport-based layout supports 120fps on ProMotion per [D-PERF-3].
@@ -118,14 +125,35 @@ public final class EMTextView: UITextView {
 
     // MARK: - Layout
 
+    /// Applies current layout metrics to text container insets per FEAT-010.
+    private func applyLayoutMetrics() {
+        textContainerInset = layoutMetrics.textContainerInsets
+    }
+
     public override func layoutSubviews() {
         super.layoutSubviews()
 
+        // Compute effective insets: if a maxContentWidth is set and the view is wider,
+        // center the content by increasing horizontal insets per FEAT-010 AC-3.
+        var insets = layoutMetrics.textContainerInsets
+        let lineFragPadding = textContainer.lineFragmentPadding * 2
+
+        if let maxWidth = layoutMetrics.maxContentWidth {
+            let availableWidth = bounds.width - lineFragPadding
+            if availableWidth > maxWidth + insets.left + insets.right {
+                let extraMargin = (availableWidth - maxWidth) / 2
+                insets.left = max(insets.left, extraMargin)
+                insets.right = max(insets.right, extraMargin)
+            }
+        }
+
+        if textContainerInset != insets {
+            textContainerInset = insets
+        }
+
         // Update text container width to match view width minus insets.
         // This ensures proper line wrapping without horizontal scrolling.
-        let insets = textContainerInset
-        let containerWidth = bounds.width - insets.left - insets.right
-            - textContainer.lineFragmentPadding * 2
+        let containerWidth = bounds.width - insets.left - insets.right - lineFragPadding
         if containerWidth > 0, textContainer.size.width != containerWidth {
             textContainer.size = CGSize(
                 width: containerWidth,
@@ -147,6 +175,11 @@ public final class EMTextView: NSTextView {
 
     /// The editor state this view reports changes to.
     public weak var editorState: EditorState?
+
+    /// Current layout metrics for device-aware spacing per FEAT-010.
+    public var layoutMetrics: LayoutMetrics = .current {
+        didSet { applyLayoutMetrics() }
+    }
 
     /// Creates a TextKit 2-configured text view for macOS.
     public init(editorState: EditorState?) {
@@ -187,7 +220,9 @@ public final class EMTextView: NSTextView {
 
         // Appearance — default background, overridden by applyThemeBackground
         backgroundColor = .textBackgroundColor
-        textContainerInset = NSSize(width: 16, height: 16)
+
+        // Apply device-aware margins per FEAT-010
+        applyLayoutMetrics()
 
         // Scrolling
         isVerticallyResizable = true
@@ -198,6 +233,11 @@ public final class EMTextView: NSTextView {
             "Document editor",
             comment: "Accessibility label for the main text editing area"
         ))
+    }
+
+    /// Applies current layout metrics to text container inset per FEAT-010.
+    private func applyLayoutMetrics() {
+        textContainerInset = layoutMetrics.textContainerInset
     }
 
     // MARK: - Theme

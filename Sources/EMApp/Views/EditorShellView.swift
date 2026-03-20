@@ -26,15 +26,29 @@ struct EditorShellView: View {
     @State private var showingSaveElsewherePanel = false
     @State private var currentLineEnding: LineEnding = .lf
     @Environment(\.colorScheme) private var colorScheme
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    #endif
 
-    /// Rendering configuration for the current view mode per FEAT-003 and FEAT-007.
+    /// Device-aware layout metrics based on current size class per FEAT-010.
+    private var layoutMetrics: LayoutMetrics {
+        #if os(iOS)
+        let sizeClass: SizeClass = (horizontalSizeClass == .regular) ? .regular : .compact
+        return LayoutMetrics.forSizeClass(sizeClass)
+        #else
+        return .mac
+        #endif
+    }
+
+    /// Rendering configuration for the current view mode per FEAT-003, FEAT-007, FEAT-010.
     private var renderConfig: RenderConfiguration {
         let isDark = colorScheme == .dark
         return RenderConfiguration(
             typeScale: .default,
             colors: Theme.default.colors(isDark: isDark),
             isSourceView: editorState.isSourceView,
-            colorVariant: isDark ? "dark" : "light"
+            colorVariant: isDark ? "dark" : "light",
+            layoutMetrics: layoutMetrics
         )
     }
 

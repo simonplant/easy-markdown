@@ -1,28 +1,28 @@
 {
-  "sprintId": "sprint-1773973857",
-  "startedAt": "2026-03-19T19:30:57-07:00",
+  "sprintId": "sprint-1773974610",
+  "startedAt": "2026-03-19T19:43:30-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-007",
-    "title": "F-007: Dark and Light Mode",
-    "intent": "The app must look intentionally designed in both dark and light modes — not just inverted colors, but a considered palette for each",
-    "description": "Defaults to system preference. User can override to always-light or always-dark. All UI elements, editor chrome, rendered markdown, and syntax highlighting adapt. All themes meet WCAG AA contrast ratios. Theme transitions animated (crossfade 200ms) with Reduced Motion alternative (instant switch).",
+    "id": "FEAT-010",
+    "title": "F-010: Typography and Layout",
+    "intent": "Typography is our silent differentiator — the rendered markdown must be so beautiful that users notice it subconsciously and can never go back to other editors",
+    "description": "Custom typefaces for editor and UI chrome. Line height, paragraph spacing, margins optimized per device class. Responsive layout adapts to screen size. Max content width on large screens (~70-80 chars). Respects Dynamic Type.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Toggling iOS dark mode causes the app to switch immediately",
-      "All text, backgrounds, and UI elements are legible and intentionally designed in both modes",
-      "Contrast ratios meet WCAG AA in both modes",
-      "Theme override preference persists across app updates",
-      "Dynamic theme switch during editing causes no text loss, no cursor jump",
-      "Theme transition animates with 200ms crossfade between modes",
-      "Reduced Motion setting triggers instant switch instead of animated crossfade"
+      "Designer reviews rendered markdown on iPhone SE, iPhone 15 Pro Max, iPad Mini, and iPad Pro — all feel intentionally designed",
+      "Dynamic Type at default and large sizes renders correctly on all device classes",
+      "Content width is 65-80 characters on iPad landscape and external displays",
+      "Line height is 1.5-1.7x font size, paragraph spacing is at least 0.5x line height",
+      "Minimum margins: 16pt on iPhone, 32pt on iPad",
+      "Custom typeface renders correctly for Latin, CJK, Arabic, and Devanagari scripts",
+      "Extreme Dynamic Type accessibility sizes render without clipping or text overlap"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T19:30:57-07:00",
+    "startedAt": "2026-03-19T19:43:30-07:00",
     "status": "passed",
-    "completedAt": "2026-03-19T19:43:25-07:00"
+    "completedAt": "2026-03-19T20:04:31-07:00"
   },
-  "completedAt": "2026-03-19T19:43:25-07:00",
-  "attempts": 1
+  "completedAt": "2026-03-19T20:04:31-07:00",
+  "attempts": 2
 }

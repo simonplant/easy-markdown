@@ -29,12 +29,21 @@ public struct RenderConfiguration: Sendable {
     public let isSourceView: Bool
     /// Identifies the color variant (e.g. "light" or "dark") for change detection.
     public let colorVariant: String
+    /// Device-aware layout metrics for spacing and typography per FEAT-010.
+    public let layoutMetrics: LayoutMetrics
 
-    public init(typeScale: TypeScale, colors: ThemeColors, isSourceView: Bool, colorVariant: String = "light") {
+    public init(
+        typeScale: TypeScale,
+        colors: ThemeColors,
+        isSourceView: Bool,
+        colorVariant: String = "light",
+        layoutMetrics: LayoutMetrics = .current
+    ) {
         self.typeScale = typeScale
         self.colors = colors
         self.isSourceView = isSourceView
         self.colorVariant = colorVariant
+        self.layoutMetrics = layoutMetrics
     }
 }
 
@@ -135,9 +144,12 @@ public struct MarkdownRenderer {
     // MARK: - Base Attributes
 
     private func baseAttributes(config: RenderConfiguration) -> [NSAttributedString.Key: Any] {
+        let metrics = config.layoutMetrics
+        let bodySize = config.typeScale.bodyFontSize
+
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 4
-        paragraphStyle.paragraphSpacing = 8
+        paragraphStyle.lineSpacing = metrics.lineSpacing(forFontSize: bodySize)
+        paragraphStyle.paragraphSpacing = metrics.paragraphSpacing(forFontSize: bodySize)
         paragraphStyle.alignment = .natural
 
         return [
@@ -278,12 +290,16 @@ public struct MarkdownRenderer {
         lineOffsets: [Int]
     ) {
         let font = config.typeScale.headingFont(level: level)
+        let metrics = config.layoutMetrics
+        let headingSize = font.pointSize
 
         let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = metrics.lineSpacing(forFontSize: headingSize)
         paragraphStyle.alignment = .natural
-        // More spacing around higher-level headings
-        paragraphStyle.paragraphSpacingBefore = level <= 2 ? 16 : 12
-        paragraphStyle.paragraphSpacing = level <= 2 ? 12 : 8
+        // More spacing around higher-level headings, scaled from metrics
+        let baseSpacing = metrics.paragraphSpacing(forFontSize: headingSize)
+        paragraphStyle.paragraphSpacingBefore = level <= 2 ? baseSpacing * 1.5 : baseSpacing * 1.2
+        paragraphStyle.paragraphSpacing = level <= 2 ? baseSpacing * 1.2 : baseSpacing
 
         attrStr.addAttributes([
             .font: font,
@@ -334,12 +350,15 @@ public struct MarkdownRenderer {
         let effectiveNesting = countListNesting(node, sourceText: sourceText)
         let indentLevel = max(effectiveNesting, nestingLevel)
 
+        let metrics = config.layoutMetrics
+        let bodySize = config.typeScale.bodyFontSize
         let indent = CGFloat(indentLevel) * 24.0 + 24.0
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .natural
+        paragraphStyle.lineSpacing = metrics.lineSpacing(forFontSize: bodySize)
         paragraphStyle.headIndent = indent
         paragraphStyle.firstLineHeadIndent = indent - 18.0
-        paragraphStyle.paragraphSpacing = 4
+        paragraphStyle.paragraphSpacing = metrics.paragraphSpacing(forFontSize: bodySize) * 0.5
         paragraphStyle.tabStops = [NSTextTab(textAlignment: .natural, location: indent)]
 
         attrStr.addAttributes([
@@ -410,12 +429,15 @@ public struct MarkdownRenderer {
         nestingLevel: Int,
         lineOffsets: [Int]
     ) {
+        let metrics = config.layoutMetrics
+        let bodySize = config.typeScale.bodyFontSize
         let indent: CGFloat = 16.0
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .natural
+        paragraphStyle.lineSpacing = metrics.lineSpacing(forFontSize: bodySize)
         paragraphStyle.headIndent = indent
         paragraphStyle.firstLineHeadIndent = indent
-        paragraphStyle.paragraphSpacing = 4
+        paragraphStyle.paragraphSpacing = metrics.paragraphSpacing(forFontSize: bodySize) * 0.5
 
         attrStr.addAttributes([
             .foregroundColor: config.colors.blockquoteForeground,
@@ -480,10 +502,14 @@ public struct MarkdownRenderer {
         into attrStr: NSMutableAttributedString,
         config: RenderConfiguration
     ) {
+        let metrics = config.layoutMetrics
+        let codeSize = config.typeScale.code.pointSize
+        let blockSpacing = metrics.paragraphSpacing(forFontSize: codeSize)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .natural
-        paragraphStyle.paragraphSpacing = 8
-        paragraphStyle.paragraphSpacingBefore = 8
+        paragraphStyle.lineSpacing = metrics.lineSpacing(forFontSize: codeSize) * 0.75
+        paragraphStyle.paragraphSpacing = blockSpacing
+        paragraphStyle.paragraphSpacingBefore = blockSpacing
 
         attrStr.addAttributes([
             .font: config.typeScale.code,
@@ -537,10 +563,13 @@ public struct MarkdownRenderer {
         into attrStr: NSMutableAttributedString,
         config: RenderConfiguration
     ) {
+        let metrics = config.layoutMetrics
+        let bodySize = config.typeScale.bodyFontSize
+        let breakSpacing = metrics.paragraphSpacing(forFontSize: bodySize) * 1.2
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
-        paragraphStyle.paragraphSpacingBefore = 12
-        paragraphStyle.paragraphSpacing = 12
+        paragraphStyle.paragraphSpacingBefore = breakSpacing
+        paragraphStyle.paragraphSpacing = breakSpacing
 
         attrStr.addAttributes([
             .foregroundColor: config.colors.thematicBreak,
