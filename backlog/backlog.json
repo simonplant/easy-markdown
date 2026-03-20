@@ -39,9 +39,10 @@
         "Write failure (disk full, permissions) shows error with no corrupt or empty file left behind",
         "Creating a file with an existing name at that location prompts for overwrite or rename"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-19T18:40:49-07:00"
     },
     {
       "id": "FEAT-003",

@@ -1,28 +1,27 @@
 {
-  "sprintId": "sprint-1773969352",
-  "startedAt": "2026-03-19T18:15:52-07:00",
+  "sprintId": "sprint-1773970285",
+  "startedAt": "2026-03-19T18:31:25-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-001",
-    "title": "F-001: Open File",
-    "intent": "Users must be able to open any markdown file from any location via the system file picker — no vault, no import, no friction",
-    "description": "Open any markdown file via UIDocumentPickerViewController. Filters to markdown extensions (.md, .markdown, .mdown, .mkd, .mkdn, .mdx) per D-FILE-6. UTF-8 only (D-FILE-2). Error on non-UTF-8. Warning on >1MB. Editable immediately. File open to editing ready <500ms for <100KB files. Depends on: FEAT-040 (File Coordination Layer).",
+    "id": "FEAT-002",
+    "title": "F-002: Create File",
+    "intent": "Users must be able to create new markdown files anywhere they have write access — no app-specific folders, no restrictions",
+    "description": "Create new .md file via system file picker save dialog. LF line endings. Default filename Untitled.md. File immediately opened for editing after creation.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "User opens a .md file from iCloud Drive, edits it, and the edit is saved back to the same file in place",
-      "Non-UTF-8 file shows error without crashing or corrupting",
-      "File >1MB shows dismissable warning",
-      "VoiceOver announces file opened with filename",
-      "Security-scoped bookmark persists — file reopens on next launch without re-picking",
-      "Opening a file already open in another editor window shows that window instead of duplicating",
-      "File provider going offline mid-session preserves in-memory content and shows non-modal error"
+      "User creates a new .md file in any accessible location and begins writing immediately",
+      "New file uses LF line endings",
+      "Default filename is Untitled.md, user can rename in picker",
+      "User cancels save picker and returns to previous state with no side effects",
+      "Write failure (disk full, permissions) shows error with no corrupt or empty file left behind",
+      "Creating a file with an existing name at that location prompts for overwrite or rename"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T18:15:52-07:00",
+    "startedAt": "2026-03-19T18:31:25-07:00",
     "status": "passed",
-    "completedAt": "2026-03-19T18:31:20-07:00"
+    "completedAt": "2026-03-19T18:40:49-07:00"
   },
-  "completedAt": "2026-03-19T18:31:20-07:00",
+  "completedAt": "2026-03-19T18:40:49-07:00",
   "attempts": 1
 }
