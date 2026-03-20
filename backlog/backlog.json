@@ -766,9 +766,10 @@
         "Dynamic Type at all sizes (including accessibility sizes) renders without clipping or overlap",
         "Undo manager tracks all text changes with unlimited depth"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-19T17:28:23-07:00"
     },
     {
       "id": "FEAT-040",

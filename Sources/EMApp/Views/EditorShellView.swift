@@ -3,27 +3,32 @@ import SwiftUI
 import UIKit
 #endif
 import EMCore
+import EMEditor
 
 /// Editor shell: toolbar at top, content area in center, format bar and status bar at bottom.
-/// The actual text editor (EMEditor) will replace the placeholder content area.
+/// Uses EMEditor's TextViewBridge for the text editing area (TextKit 2).
 struct EditorShellView: View {
     @Environment(AppRouter.self) private var router
-    @State private var isSourceView = false
+    @State private var editorState = EditorState()
     @State private var text = ""
     @State private var wordCount = 0
     @State private var diagnosticCount = 0
 
     var body: some View {
         VStack(spacing: 0) {
-            // Editor content area — placeholder until EMEditor is implemented (FEAT-039)
-            TextEditor(text: $text)
-                .scrollContentBackground(.hidden)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .accessibilityLabel("Document editor")
-                .accessibilityHint("Edit your markdown document here")
-                .onChange(of: text) { _, newValue in
-                    updateWordCount(newValue)
+            // Editor content area — TextKit 2 via EMEditor per [A-004]
+            TextViewBridge(
+                text: $text,
+                editorState: editorState,
+                isEditable: true,
+                isSpellCheckEnabled: true,
+                onTextChange: { newText in
+                    updateWordCount(newText)
                 }
+            )
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .accessibilityLabel("Document editor")
+            .accessibilityHint("Edit your markdown document here")
 
             Divider()
             FormatBar()
@@ -36,7 +41,7 @@ struct EditorShellView: View {
         #endif
         .toolbar {
             EditorToolbar(
-                isSourceView: isSourceView,
+                isSourceView: editorState.isSourceView,
                 onToggleSource: toggleSourceView,
                 onSettings: { router.showSettings() }
             )
@@ -44,7 +49,7 @@ struct EditorShellView: View {
     }
 
     private func toggleSourceView() {
-        isSourceView.toggle()
+        editorState.isSourceView.toggle()
         #if canImport(UIKit)
         HapticFeedback.trigger(.toggleView)
         #endif
