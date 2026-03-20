@@ -116,7 +116,7 @@ NC='\033[0m'
 log_header()  { echo -e "\n${BLUE}════════════════════════════════════════${NC}\n${BLUE}  $1${NC}\n${BLUE}════════════════════════════════════════${NC}"; }
 log_subheader() { echo -e "\n${CYAN}─── $1 ───${NC}"; }
 log_success() { echo -e "${GREEN}✓ $1${NC}"; }
-log_warning() { echo -e "${YELLOW}⚠ $1${NC}"; }
+log_warning() { echo -e "${YELLOW}⚠ $1${NC}" >&2; }
 log_error()   { echo -e "${RED}✗ $1${NC}" >&2; }
 log_info()    { echo -e "${CYAN}$1${NC}"; }
 log_agent()   { echo -e "${MAGENTA}[$1]${NC} $2"; }
