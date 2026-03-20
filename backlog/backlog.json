@@ -890,9 +890,10 @@
         "File deleted externally triggers notification with option to save elsewhere",
         "No data is silently lost in any conflict scenario"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-19T18:10:42-07:00"
     },
     {
       "id": "FEAT-046",
