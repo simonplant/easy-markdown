@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774032860",
   "startedAt": "2026-03-20T11:54:20-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-049",
     "title": "F-003d: Interactive Elements (Checkboxes and Links)",
@@ -17,6 +17,10 @@
       "Links to relative files open the file in easy-markdown (if .md) or system handler"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T11:54:20-07:00"
-  }
+    "startedAt": "2026-03-20T11:54:20-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-20T12:23:17-07:00"
+  },
+  "completedAt": "2026-03-20T12:23:17-07:00",
+  "attempts": 2
 }
