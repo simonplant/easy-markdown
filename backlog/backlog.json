@@ -870,9 +870,10 @@
         "User can edit a file while model downloads in background",
         "On unsupported devices (pre-A16), no AI download prompt appears"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-19T17:56:05-07:00"
     },
     {
       "id": "FEAT-045",

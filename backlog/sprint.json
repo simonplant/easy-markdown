@@ -1,25 +1,26 @@
 {
-  "sprintId": "sprint-1773966913",
-  "startedAt": "2026-03-19T17:35:13-07:00",
+  "sprintId": "sprint-1773967512",
+  "startedAt": "2026-03-19T17:45:12-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-043",
-    "title": "INFRA: Recents and State Restoration",
-    "intent": "The app must always return users to where they left off — last file, last cursor position, no friction on relaunch.",
-    "description": "Per D-UX-2: if user had a file open when app closed, reopen it on next launch with cursor at last position. If no last file, show recents list. Recents stored via security-scoped URL bookmarks (depends on File Coordination Layer). Recents list shows: filename, path, last opened date, file size. Max 20 recent entries. Entries removed if file no longer accessible. Recents list is the fallback home screen — not a separate mode.",
+    "id": "FEAT-044",
+    "title": "INFRA: First-Run Experience",
+    "intent": "First launch must be instant and self-evident — open the app and you're writing within 30 seconds, with AI model downloading silently in the background.",
+    "description": "Per D-UX-1 (no onboarding) and D-AI-9 (model download). First launch flow: app opens to home screen (Open/New buttons). No splash screen beyond system launch image. On capable devices (A16+/M1+): after 2 seconds, a non-modal banner offers AI model download ('Download AI assistant? ~3GB, Wi-Fi recommended'). User can accept (download starts in background), dismiss (asked again next launch), or go to settings. User can open/create a file immediately regardless of model download state. AI features hidden until model ready.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "User opens a file, backgrounds the app, force-quits, relaunches — same file opens at same cursor position",
-      "User with no last file sees recents list with previously opened files",
-      "Recents entry for a deleted/moved file is removed gracefully (no crash, no stale entry)",
-      "Recents list shows filename, parent folder, and last opened date"
+      "First launch to editor-ready state (file open and cursor active) in <30 seconds including user interaction",
+      "No onboarding screens, tutorials, or account prompts appear",
+      "AI model download prompt appears non-modally and is dismissable",
+      "User can edit a file while model downloads in background",
+      "On unsupported devices (pre-A16), no AI download prompt appears"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T17:35:13-07:00",
+    "startedAt": "2026-03-19T17:45:12-07:00",
     "status": "passed",
-    "completedAt": "2026-03-19T17:45:06-07:00"
+    "completedAt": "2026-03-19T17:56:05-07:00"
   },
-  "completedAt": "2026-03-19T17:45:06-07:00",
+  "completedAt": "2026-03-19T17:56:05-07:00",
   "attempts": 1
 }
