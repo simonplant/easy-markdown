@@ -1,6 +1,7 @@
 /// Coordinator that bridges EMTextView delegate callbacks to EditorState.
-/// Handles text changes, selection updates, scroll tracking, and
-/// keystroke performance instrumentation per [A-037].
+/// Handles text changes, selection updates, scroll tracking,
+/// keystroke performance instrumentation per [A-037],
+/// and markdown rendering per FEAT-003 and [A-018].
 
 import Foundation
 import os
@@ -9,6 +10,8 @@ import UIKit
 #elseif canImport(AppKit)
 import AppKit
 #endif
+import EMCore
+import EMParser
 
 private let logger = Logger(subsystem: "com.easymarkdown.emeditor", category: "coordinator")
 
@@ -30,8 +33,26 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
     var editorState: EditorState
     var onTextChange: ((String) -> Void)?
 
+    /// Current rendering configuration. Updated from the bridge.
+    var renderConfig: RenderConfiguration?
+
     /// Prevents feedback loops when programmatically updating text.
     private var isUpdatingFromBinding = false
+
+    /// Parser for markdown text per [A-003].
+    private let parser = MarkdownParser()
+
+    /// Renderer for AST → styled attributes per [A-018].
+    private let renderer = MarkdownRenderer()
+
+    /// Most recent AST from a full parse.
+    private var currentAST: MarkdownAST?
+
+    /// Debounce task for full re-parse per [A-017].
+    private var parseDebounceTask: Task<Void, Never>?
+
+    /// Debounce interval for full re-parse (300ms per [A-017]).
+    private let parseDebounceInterval: UInt64 = 300_000_000
 
     init(text: ValueBinding<String>, editorState: EditorState) {
         self.text = text
@@ -49,6 +70,9 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         let newText = textView.text ?? ""
         text.wrappedValue = newText
         onTextChange?(newText)
+
+        // Schedule debounced re-parse and render per [A-017]
+        scheduleRender(for: textView)
     }
 
     public func textViewDidChangeSelection(_ textView: UITextView) {
@@ -95,11 +119,74 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
     // MARK: - Programmatic text updates
 
     /// Update the text view's content from the binding without triggering delegate callbacks.
-    func updateTextView(_ textView: EMTextView, with newText: String) {
-        guard textView.text != newText else { return }
+    /// Returns true if text was actually changed.
+    @discardableResult
+    func updateTextView(_ textView: EMTextView, with newText: String) -> Bool {
+        guard textView.text != newText else { return false }
         isUpdatingFromBinding = true
         textView.text = newText
         isUpdatingFromBinding = false
+        return true
+    }
+
+    // MARK: - Rendering per FEAT-003
+
+    /// Requests an immediate parse and render. Called on initial load and view mode toggle.
+    func requestRender(for textView: EMTextView) {
+        guard let config = renderConfig else { return }
+
+        let sourceText = textView.text ?? ""
+        let parseResult = parser.parse(sourceText)
+        currentAST = parseResult.ast
+
+        applyRendering(to: textView, ast: parseResult.ast, sourceText: sourceText, config: config)
+    }
+
+    /// Schedules a debounced parse and render after text changes per [A-017].
+    private func scheduleRender(for textView: EMTextView) {
+        parseDebounceTask?.cancel()
+
+        parseDebounceTask = Task { [weak self] in
+            do {
+                try await Task.sleep(nanoseconds: self?.parseDebounceInterval ?? 300_000_000)
+            } catch {
+                return // Cancelled
+            }
+
+            guard let self, !Task.isCancelled else { return }
+            self.requestRender(for: textView)
+        }
+    }
+
+    /// Applies rendered attributes to the text view's text storage.
+    private func applyRendering(
+        to textView: EMTextView,
+        ast: MarkdownAST,
+        sourceText: String,
+        config: RenderConfiguration
+    ) {
+        let textStorage = textView.textStorage
+        guard textStorage.length == sourceText.utf16.count else {
+            logger.warning("Text storage length mismatch — skipping render")
+            return
+        }
+
+        // Preserve selection and scroll position
+        let selectedRange = textView.selectedRange
+        let scrollOffset = textView.contentOffset
+
+        textStorage.beginEditing()
+        renderer.render(
+            into: textStorage,
+            ast: ast,
+            sourceText: sourceText,
+            config: config
+        )
+        textStorage.endEditing()
+
+        // Restore selection and scroll
+        textView.selectedRange = selectedRange
+        textView.setContentOffset(scrollOffset, animated: false)
     }
 
     // MARK: - Word counting
@@ -147,7 +234,26 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
     var text: ValueBinding<String>
     var editorState: EditorState
     var onTextChange: ((String) -> Void)?
+
+    /// Current rendering configuration. Updated from the bridge.
+    var renderConfig: RenderConfiguration?
+
     private var isUpdatingFromBinding = false
+
+    /// Parser for markdown text per [A-003].
+    private let parser = MarkdownParser()
+
+    /// Renderer for AST → styled attributes per [A-018].
+    private let renderer = MarkdownRenderer()
+
+    /// Most recent AST from a full parse.
+    private var currentAST: MarkdownAST?
+
+    /// Debounce task for full re-parse per [A-017].
+    private var parseDebounceTask: Task<Void, Never>?
+
+    /// Debounce interval for full re-parse (300ms per [A-017]).
+    private let parseDebounceInterval: UInt64 = 300_000_000
 
     init(text: ValueBinding<String>, editorState: EditorState) {
         self.text = text
@@ -181,10 +287,13 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         signpost.end("keystroke")
 
         guard !isUpdatingFromBinding else { return }
-        guard let textView = notification.object as? NSTextView else { return }
+        guard let textView = notification.object as? EMTextView else { return }
         let newText = textView.string
         text.wrappedValue = newText
         onTextChange?(newText)
+
+        // Schedule debounced re-parse and render per [A-017]
+        scheduleRender(for: textView)
     }
 
     public func textViewDidChangeSelection(_ notification: Notification) {
@@ -224,17 +333,74 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
 
     // MARK: - Programmatic text updates
 
-    func updateTextView(_ textView: EMTextView, with newText: String) {
-        guard textView.string != newText else { return }
+    @discardableResult
+    func updateTextView(_ textView: EMTextView, with newText: String) -> Bool {
+        guard textView.string != newText else { return false }
         isUpdatingFromBinding = true
         textView.string = newText
         isUpdatingFromBinding = false
+        return true
+    }
+
+    // MARK: - Rendering per FEAT-003
+
+    /// Requests an immediate parse and render.
+    func requestRender(for textView: EMTextView) {
+        guard let config = renderConfig else { return }
+
+        let sourceText = textView.string
+        let parseResult = parser.parse(sourceText)
+        currentAST = parseResult.ast
+
+        applyRendering(to: textView, ast: parseResult.ast, sourceText: sourceText, config: config)
+    }
+
+    /// Schedules a debounced parse and render after text changes per [A-017].
+    private func scheduleRender(for textView: EMTextView) {
+        parseDebounceTask?.cancel()
+
+        parseDebounceTask = Task { [weak self] in
+            do {
+                try await Task.sleep(nanoseconds: self?.parseDebounceInterval ?? 300_000_000)
+            } catch {
+                return
+            }
+
+            guard let self, !Task.isCancelled else { return }
+            self.requestRender(for: textView)
+        }
+    }
+
+    /// Applies rendered attributes to the text view's text storage.
+    private func applyRendering(
+        to textView: EMTextView,
+        ast: MarkdownAST,
+        sourceText: String,
+        config: RenderConfiguration
+    ) {
+        guard let textStorage = textView.textStorage else { return }
+        guard textStorage.length == sourceText.utf16.count else {
+            logger.warning("Text storage length mismatch — skipping render")
+            return
+        }
+
+        let selectedRange = textView.selectedRange()
+
+        textStorage.beginEditing()
+        renderer.render(
+            into: textStorage,
+            ast: ast,
+            sourceText: sourceText,
+            config: config
+        )
+        textStorage.endEditing()
+
+        textView.setSelectedRange(selectedRange)
     }
 
     // MARK: - Word counting
 
     /// Simple word count for selection stats.
-    /// Full document word count uses NLTokenizer (in EditorShellView for now).
     private func wordCount(in text: String) -> Int {
         text.split(omittingEmptySubsequences: true) { $0.isWhitespace || $0.isNewline }.count
     }

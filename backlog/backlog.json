@@ -65,9 +65,10 @@
         "5000-line doc scrolls at 120fps on ProMotion with zero dropped frames",
         "Malformed markdown renders best-effort without crash or blank screen"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-19T19:30:50-07:00"
     },
     {
       "id": "FEAT-004",

@@ -25,13 +25,25 @@ struct EditorShellView: View {
     @State private var autoSaveManager: AutoSaveManager?
     @State private var showingSaveElsewherePanel = false
     @State private var currentLineEnding: LineEnding = .lf
+    @Environment(\.colorScheme) private var colorScheme
+
+    /// Rendering configuration for the current view mode per FEAT-003.
+    private var renderConfig: RenderConfiguration {
+        RenderConfiguration(
+            typeScale: .default,
+            colors: Theme.default.colors(isDark: colorScheme == .dark),
+            isSourceView: editorState.isSourceView
+        )
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             // Editor content area — TextKit 2 via EMEditor per [A-004]
+            // Rich text rendering per FEAT-003 and [A-018]
             TextViewBridge(
                 text: $text,
                 editorState: editorState,
+                renderConfig: renderConfig,
                 isEditable: true,
                 isSpellCheckEnabled: settings.isSpellCheckEnabled,
                 onTextChange: { newText in

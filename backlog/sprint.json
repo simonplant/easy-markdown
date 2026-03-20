@@ -1,28 +1,32 @@
 {
-  "sprintId": "sprint-1773970855",
-  "startedAt": "2026-03-19T18:40:55-07:00",
+  "sprintId": "sprint-1773972892",
+  "startedAt": "2026-03-19T19:14:52-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-008",
-    "title": "F-008: Auto-Save",
-    "intent": "Users must never lose work — saving is automatic, continuous, and invisible",
-    "description": "Save triggers: 1s after last keystroke (debounced), on app background, on file close. Uses file coordination APIs. No save button/indicator/confirmation. Non-modal error with retry on failure. Subtle haptic pulse on background save.",
+    "id": "FEAT-003",
+    "title": "F-003a: Rich Text Rendering (Core)",
+    "intent": "Core markdown-to-styled-text rendering: headings, bold, italic, lists, blockquotes, code spans. The foundation that makes writing feel beautiful. Tables, images, interactive elements, and source toggle are separate items.",
+    "description": "Depends on: FEAT-038 (Parser), FEAT-039 (Text Engine). Render AST nodes as attributed text: 6 heading levels, bold/italic/strikethrough inline, ordered/unordered lists with indentation, blockquotes with left border, code spans with monospace+background, horizontal rules, paragraph spacing. Performance: <16ms render, 120fps scroll. Malformed markdown renders best-effort.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "User edits a file, switches to another app, switches back — all changes preserved",
-      "User force-quits the app — content saved up to last debounce is preserved",
-      "Save failure shows non-modal error with retry option",
-      "External file change during editing triggers conflict detection (FEAT-045)",
-      "Auto-save on a 500KB file completes within 100ms with no perceptible input lag",
-      "Disk full during save shows non-modal error and retains in-memory content",
-      "Subtle haptic pulse confirms background save when app is foregrounded"
+      "User writes markdown and sees styled output in real time",
+      "Toggling to source shows valid markdown, round-trip preserves content perfectly",
+      "CJK, RTL text, accented characters, and emoji render and edit correctly",
+      "VoiceOver navigates document structure semantically",
+      "Dynamic Type scales editor content",
+      "All 6 heading levels render at distinct sizes and weights",
+      "Bold, italic, strikethrough render inline with syntax chars hidden in rich view",
+      "Nested lists render with correct indentation up to 4 levels",
+      "Keystroke-to-render under 16ms measured via Instruments on iPhone 15",
+      "5000-line doc scrolls at 120fps on ProMotion with zero dropped frames",
+      "Malformed markdown renders best-effort without crash or blank screen"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T18:40:55-07:00",
+    "startedAt": "2026-03-19T19:14:52-07:00",
     "status": "passed",
-    "completedAt": "2026-03-19T18:55:41-07:00"
+    "completedAt": "2026-03-19T19:30:50-07:00"
   },
-  "completedAt": "2026-03-19T18:55:41-07:00",
-  "attempts": 2
+  "completedAt": "2026-03-19T19:30:50-07:00",
+  "attempts": 1
 }
