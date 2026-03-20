@@ -1177,9 +1177,10 @@
         "Counters are accessible for review prompt eligibility check (FEAT-069)",
         "Deleting and reinstalling the app resets counters (no external storage)"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-19T18:15:41-07:00"
     },
     {
       "id": "FEAT-061",

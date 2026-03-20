@@ -1,26 +1,25 @@
 {
-  "sprintId": "sprint-1773968171",
-  "startedAt": "2026-03-19T17:56:11-07:00",
+  "sprintId": "sprint-1773969048",
+  "startedAt": "2026-03-19T18:10:48-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-045",
-    "title": "INFRA: File Conflict Detection",
-    "intent": "When a file changes on disk while open in the editor, the user must know — silent data loss from sync conflicts is unacceptable.",
-    "description": "Per D-FILE-5. Uses NSFilePresenter to monitor the open file for external changes. When detected: pause auto-save, show non-modal notification with file diff summary ('This file was modified by another app. Reload external changes or keep your version?'). Options: Reload (discard editor state, load new file), Keep Mine (continue with editor version, next save overwrites), View Diff (show what changed — stretch goal). If file is deleted externally: notify user, offer to save to a new location.",
+    "id": "FEAT-060",
+    "title": "INFRA: On-Device Aggregate Counters",
+    "intent": "We must know if our AI features are landing without violating privacy — simple local counters tell us enough to make product decisions.",
+    "description": "Per D-BIZ-6. Track simple aggregate counts in UserDefaults: AI improve uses, AI summarize uses, AI continue accepts, doctor fixes accepted, documents opened, days active. Never transmitted off device. Powers App Store review prompt timing (FEAT-069) and status bar stats. No PII, no content, no telemetry — just counts.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "File modified externally while open triggers a visible notification within 5 seconds",
-      "User can choose to reload external changes (editor updates to new content)",
-      "User can choose to keep their version (next save overwrites external changes)",
-      "File deleted externally triggers notification with option to save elsewhere",
-      "No data is silently lost in any conflict scenario"
+      "AI feature usage counts increment correctly and persist across launches",
+      "Counter data is stored in UserDefaults only — never transmitted",
+      "Counters are accessible for review prompt eligibility check (FEAT-069)",
+      "Deleting and reinstalling the app resets counters (no external storage)"
     ],
     "scope": [],
-    "startedAt": "2026-03-19T17:56:11-07:00",
+    "startedAt": "2026-03-19T18:10:48-07:00",
     "status": "passed",
-    "completedAt": "2026-03-19T18:10:42-07:00"
+    "completedAt": "2026-03-19T18:15:41-07:00"
   },
-  "completedAt": "2026-03-19T18:10:42-07:00",
-  "attempts": 2
+  "completedAt": "2026-03-19T18:15:41-07:00",
+  "attempts": 1
 }
