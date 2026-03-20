@@ -1,62 +1,28 @@
 {
-  "sprintId": "sprint-1774025393",
-  "startedAt": "2026-03-20T09:49:53-07:00",
+  "sprintId": "sprint-1774026860",
+  "startedAt": "2026-03-20T10:14:20-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-005",
-    "title": "F-005: Document Doctor",
-    "intent": "The editor must proactively catch structural issues in markdown files — broken links, heading hierarchy, formatting problems — without interrupting the writing flow",
-    "description": "Background analysis with inline indicators. MVP rules: broken relative links, heading hierarchy skips, duplicate headings, trailing whitespace, missing blank lines between blocks. Subtle underline/margin indicators (shape+color, not color alone). Tap for popover with Fix/Dismiss. Per-file per-session dismissals. Non-blocking. Haptic on fix. Evaluates within 1s of open, re-evaluates within 500ms after edits pause.",
+    "id": "FEAT-041",
+    "title": "INFRA: AI Model Pipeline",
+    "intent": "The local AI model must download, load, and run inference reliably — a failed model download or slow inference kills the entire AI value proposition.",
+    "description": "Per D-AI-5 and D-AI-9. Model download: separate from app (<50MB app, ~2-4GB model). Download via ODR or background asset download. Wi-Fi only by default, cellular opt-in. Non-blocking — editor usable during download. Progress indicator. Resume on interruption. Model loading: load into Core ML / MLX on app launch (for capable devices). Memory-mapped to minimize RAM impact. Model inference: token streaming pipeline. First token <500ms (D-PERF-4). Full response <3s. Model update: independent of app updates. Capability detection: check device (A16+/M1+), show/hide AI features accordingly (no broken affordances on unsupported devices).",
     "sourceBacklog": "backlog.json",
-    "steps": [
-      {
-        "title": "Add Diagnostic type to EMCore",
-        "status": "done"
-      },
-      {
-        "title": "Create EMDoctor module with DoctorRule protocol and DoctorEngine",
-        "status": "done"
-      },
-      {
-        "title": "Implement 5 MVP rules: HeadingHierarchy, DuplicateHeading, BrokenRelativeLink, TrailingWhitespace, MissingBlankLine",
-        "status": "done"
-      },
-      {
-        "title": "Add EMDoctor to Package.swift with correct dependencies",
-        "status": "done"
-      },
-      {
-        "title": "Integrate doctor into EMEditor via DoctorCoordinator",
-        "status": "done"
-      },
-      {
-        "title": "Add DoctorIndicatorBar and DoctorPopoverContent UI",
-        "status": "done"
-      },
-      {
-        "title": "Wire doctor into EditorShellView with Fix/Dismiss actions",
-        "status": "done"
-      },
-      {
-        "title": "Write comprehensive tests for all rules",
-        "status": "done"
-      }
-    ],
+    "steps": [],
     "acceptanceCriteria": [
-      "Doctor indicators appear within 1 second of opening a file with structural issues",
-      "User taps indicator, sees suggestion, can accept fix or dismiss",
-      "Dismissals persist for the session but not across file closes",
-      "Doctor never prevents writing or saving",
-      "VoiceOver announces each issue when navigating to indicators",
-      "Doctor does not flag valid but unusual markdown as an issue (low false positive rate)",
-      "Doctor runs in both rich text and source view",
-      "Doctor evaluates a 3000-line document within 2 seconds"
+      "Model downloads in background while user edits — no UI blocking",
+      "Download interrupted at 50% resumes from where it left off",
+      "Cellular download requires explicit user opt-in",
+      "Model loads and first inference completes with first token in <500ms on iPhone 15",
+      "Memory usage with model loaded stays under 100MB for editing session (D-PERF-5, model may be memory-mapped separately)",
+      "iPhone 14 shows no AI-related UI elements (buttons, ghost text, action bar items)",
+      "Device running low on storage shows clear message and option to skip/delete model"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T09:49:53-07:00",
+    "startedAt": "2026-03-20T10:14:20-07:00",
     "status": "passed",
-    "completedAt": "2026-03-20T10:14:09-07:00"
+    "completedAt": "2026-03-20T10:39:47-07:00"
   },
-  "completedAt": "2026-03-20T10:14:09-07:00",
-  "attempts": 3
+  "completedAt": "2026-03-20T10:39:47-07:00",
+  "attempts": 2
 }

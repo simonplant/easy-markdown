@@ -2,6 +2,7 @@ import SwiftUI
 import EMCore
 import EMFile
 import EMSettings
+import EMAI
 
 /// Composition root per [A-059].
 /// Creates and wires all shared singletons, provides the app scene.
@@ -29,6 +30,10 @@ public final class AppShell {
     private let recentsManager: RecentsManager
     private let fileOpenCoordinator: FileOpenCoordinator
     private let fileCreateCoordinator: FileCreateCoordinator
+
+    /// AI provider manager — shared singleton per [A-059].
+    /// Gates AI UI visibility via `shouldShowAIUI` per AC-6.
+    private let aiProviderManager: AIProviderManager
 
     public init() {
         // Register custom bundled typefaces before any UI is created per [A-052].
@@ -66,6 +71,13 @@ public final class AppShell {
             errorPresenter: errorPresenter,
             settings: settings
         )
+
+        // Wire EMAI per [A-057] and [A-059].
+        // SubscriptionStatusProviding bridge: use a placeholder until EMCloud is implemented.
+        // EMApp will replace this with the real EMCloud SubscriptionManager when FEAT-046 ships.
+        self.aiProviderManager = AIProviderManager(
+            subscriptionStatus: PlaceholderSubscriptionStatus()
+        )
     }
 
     /// Returns the configured root view with all environment dependencies injected.
@@ -75,9 +87,17 @@ public final class AppShell {
             errorPresenter: errorPresenter,
             recentsManager: recentsManager,
             fileOpenCoordinator: fileOpenCoordinator,
-            fileCreateCoordinator: fileCreateCoordinator
+            fileCreateCoordinator: fileCreateCoordinator,
+            aiProviderManager: aiProviderManager
         )
     }
+}
+
+/// Placeholder subscription status until EMCloud is implemented (FEAT-046).
+/// Returns inactive — cloud AI is unavailable until the subscription system ships.
+private struct PlaceholderSubscriptionStatus: SubscriptionStatusProviding {
+    var isProSubscriptionActive: Bool { false }
+    var subscriptionExpirationDate: Date? { nil }
 }
 
 /// Internal wrapper that reactively applies color scheme preference per FEAT-007.
@@ -88,6 +108,7 @@ struct AppRootWrapper: View {
     @State var recentsManager: RecentsManager
     @State var fileOpenCoordinator: FileOpenCoordinator
     @State var fileCreateCoordinator: FileCreateCoordinator
+    @State var aiProviderManager: AIProviderManager
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -97,6 +118,7 @@ struct AppRootWrapper: View {
             .environment(recentsManager)
             .environment(fileOpenCoordinator)
             .environment(fileCreateCoordinator)
+            .environment(aiProviderManager)
             .preferredColorScheme(colorScheme)
             .animation(themeTransition, value: colorScheme)
     }

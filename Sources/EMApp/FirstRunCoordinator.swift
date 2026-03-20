@@ -2,6 +2,7 @@ import Foundation
 import Observation
 import EMCore
 import EMSettings
+import EMAI
 
 /// Coordinates the first-run experience per FEAT-044 and [D-UX-1].
 ///
@@ -14,6 +15,7 @@ import EMSettings
 final class FirstRunCoordinator {
     private let settings: SettingsManager
     private let capability: DeviceCapability
+    private let downloadManager: ModelDownloadManager?
 
     /// Whether the model download banner should be visible.
     private(set) var showModelDownloadBanner = false
@@ -22,9 +24,15 @@ final class FirstRunCoordinator {
     ///
     /// - Parameters:
     ///   - settings: The settings manager for persisting download state.
+    ///   - downloadManager: The EMAI download manager for starting actual downloads.
     ///   - capability: The detected device capability. Defaults to auto-detection.
-    init(settings: SettingsManager, capability: DeviceCapability = .detect()) {
+    init(
+        settings: SettingsManager,
+        downloadManager: ModelDownloadManager? = nil,
+        capability: DeviceCapability = .detect()
+    ) {
         self.settings = settings
+        self.downloadManager = downloadManager
         self.capability = capability
     }
 
@@ -52,15 +60,14 @@ final class FirstRunCoordinator {
     }
 
     /// User accepted the download prompt.
+    /// Triggers the actual model download via EMAI's ModelDownloadManager.
     func acceptDownload() {
         showModelDownloadBanner = false
         settings.hasSeenModelDownloadPrompt = true
         settings.modelDownloadState = .downloading
 
-        // Actual download is handled by EMAI's model download manager
-        // when that package is implemented. For now, we record the intent.
-        // The EMAI package will check modelDownloadState on init and
-        // resume/start the download if state is .downloading.
+        // Start the actual download via EMAI's download manager.
+        downloadManager?.startDownload()
     }
 
     /// User dismissed the download prompt.

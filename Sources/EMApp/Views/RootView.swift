@@ -1,6 +1,7 @@
 import SwiftUI
 import EMCore
 import EMSettings
+import EMAI
 
 /// Root view with NavigationStack routing per [A-058].
 /// Error banners and modal alerts are attached here so they cover all navigation destinations.
@@ -11,6 +12,7 @@ public struct RootView: View {
     @Environment(RecentsManager.self) private var recentsManager
     @Environment(SettingsManager.self) private var settings
     @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
+    @Environment(AIProviderManager.self) private var aiProviderManager
     @State private var hasAttemptedRestore = false
     @State private var firstRunCoordinator: FirstRunCoordinator?
 
@@ -68,7 +70,13 @@ public struct RootView: View {
             hasAttemptedRestore = true
             attemptStateRestoration()
 
-            let coordinator = FirstRunCoordinator(settings: settings)
+            // Preload local model on launch for capable devices per [A-008].
+            await aiProviderManager.preloadLocalModel()
+
+            let coordinator = FirstRunCoordinator(
+                settings: settings,
+                downloadManager: aiProviderManager.downloadManager
+            )
             firstRunCoordinator = coordinator
             await coordinator.evaluateFirstRunPrompt()
         }
