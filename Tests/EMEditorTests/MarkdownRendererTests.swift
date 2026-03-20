@@ -863,7 +863,7 @@ struct MarkdownRendererTests {
         #expect(altText == "diagram", "Image should have alt text attribute")
     }
 
-    @Test("Image syntax is hidden in rich view (broken image shows alt text)")
+    @Test("Broken image shows placeholder icon and alt text in rich view")
     func imageSyntaxHiddenInRichView() {
         let source = "![alt text](missing.png)"
         let parseResult = parser.parse(source)
@@ -876,10 +876,14 @@ struct MarkdownRendererTests {
             config: richConfig
         )
 
-        // "![" at position 0 should be hidden (zero-width font)
-        let bangFont = attrStr.attribute(.font, at: 0, effectiveRange: nil) as? PlatformFont
-        #expect(bangFont != nil)
-        #expect(bangFont!.pointSize < 1, "Image opening syntax '![' should be hidden")
+        // Position 0 should have a placeholder icon attachment per AC-3
+        let attachment = attrStr.attribute(.attachment, at: 0, effectiveRange: nil)
+        #expect(attachment != nil, "Broken image should have placeholder icon attachment")
+
+        // "[" at position 1 should be hidden (zero-width font)
+        let bracketFont = attrStr.attribute(.font, at: 1, effectiveRange: nil) as? PlatformFont
+        #expect(bracketFont != nil)
+        #expect(bracketFont!.pointSize < 1, "Opening bracket '[' should be hidden")
 
         // "](missing.png)" should be hidden
         let closeSyntaxStart = source.distance(from: source.startIndex, to: source.range(of: "](")!.lowerBound)

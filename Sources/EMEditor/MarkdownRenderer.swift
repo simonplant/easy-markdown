@@ -1231,7 +1231,6 @@ public struct MarkdownRenderer {
                     altText: altText,
                     nsRange: nsRange,
                     into: attrStr,
-                    sourceText: sourceText,
                     config: config
                 )
                 return
@@ -1247,7 +1246,6 @@ public struct MarkdownRenderer {
             altText: altText,
             nsRange: nsRange,
             into: attrStr,
-            sourceText: sourceText,
             config: config
         )
     }
@@ -1279,18 +1277,28 @@ public struct MarkdownRenderer {
         }
     }
 
-    /// Renders a broken/missing image with alt text and placeholder styling per AC-3.
+    /// Renders a broken/missing image with placeholder icon and alt text per AC-3.
     private func renderBrokenImage(
         altText: String,
         nsRange: NSRange,
         into attrStr: NSMutableAttributedString,
-        sourceText: String,
         config: RenderConfiguration
     ) {
-        // Hide the full image syntax in rich view
-        hideImageSyntax(nsRange: nsRange, attrStr: attrStr, sourceText: sourceText)
+        guard nsRange.length > 0 else { return }
 
-        // Find the alt text range within the image syntax and make it visible
+        // Insert placeholder icon on the first character via NSTextAttachment
+        let placeholderImage = ImageLoader.brokenImagePlaceholder()
+        let placeholderSize = CGSize(width: 40, height: 40)
+        let attachment = ImageTextAttachment(image: placeholderImage, displaySize: placeholderSize)
+        attrStr.addAttribute(.attachment, value: attachment, range: NSRange(location: nsRange.location, length: 1))
+
+        // Hide remaining syntax characters after the placeholder
+        if nsRange.length > 1 {
+            let restRange = NSRange(location: nsRange.location + 1, length: nsRange.length - 1)
+            applySyntaxHiding(to: restRange, in: attrStr)
+        }
+
+        // Find the alt text range and make it visible with placeholder styling
         let text = attrStr.string
         guard let swiftRange = Range(nsRange, in: text) else { return }
         let content = text[swiftRange]
@@ -1315,34 +1323,6 @@ public struct MarkdownRenderer {
                     let italicFont = fontWithTrait(font, trait: .traitItalic)
                     attrStr.addAttribute(.font, value: italicFont, range: altNSRange)
                 }
-            }
-        }
-    }
-
-    /// Hides the image syntax characters in rich view: `![`, `](source)`.
-    private func hideImageSyntax(
-        nsRange: NSRange,
-        attrStr: NSMutableAttributedString,
-        sourceText: String
-    ) {
-        let text = attrStr.string
-        guard let swiftRange = Range(nsRange, in: text) else { return }
-        let content = text[swiftRange]
-
-        // Hide "!["
-        if content.hasPrefix("![") {
-            let hideRange = NSRange(location: nsRange.location, length: 2)
-            applySyntaxHiding(to: hideRange, in: attrStr)
-        }
-
-        // Hide "](source)"
-        if let closeBracket = content.range(of: "](") {
-            let hideStart = closeBracket.lowerBound
-            let hideNSStart = text.distance(from: text.startIndex, to: hideStart)
-            let hideLength = text.distance(from: hideStart, to: swiftRange.upperBound)
-            if hideLength > 0 {
-                let hideRange = NSRange(location: hideNSStart, length: hideLength)
-                applySyntaxHiding(to: hideRange, in: attrStr)
             }
         }
     }
