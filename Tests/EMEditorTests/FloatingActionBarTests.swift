@@ -185,4 +185,42 @@ struct FloatingActionBarTests {
         state.updateSelectionRect(nil)
         #expect(state.selectionRect == nil)
     }
+
+    // MARK: - EditorState Formatting Actions per FEAT-054
+
+    @Test("formatting actions dispatch through EditorState")
+    func formattingActionsViaEditorState() {
+        let state = EditorState()
+        var boldCalled = false
+        var italicCalled = false
+        var linkCalled = false
+
+        state.performBold = { boldCalled = true }
+        state.performItalic = { italicCalled = true }
+        state.performLink = { linkCalled = true }
+
+        state.performBold?()
+        #expect(boldCalled)
+
+        state.performItalic?()
+        #expect(italicCalled)
+
+        state.performLink?()
+        #expect(linkCalled)
+    }
+
+    @Test("focusAISection defaults to false")
+    func focusAISectionDefault() {
+        let state = EditorState()
+        #expect(!state.focusAISection)
+    }
+
+    @Test("focusAISection can be toggled")
+    func focusAISectionToggle() {
+        let state = EditorState()
+        state.focusAISection = true
+        #expect(state.focusAISection)
+        state.focusAISection = false
+        #expect(!state.focusAISection)
+    }
 }

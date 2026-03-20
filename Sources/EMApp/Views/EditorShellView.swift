@@ -84,7 +84,7 @@ struct EditorShellView: View {
                 isAutoFormatHeadingSpacing: settings.isAutoFormatHeadingSpacing,
                 isAutoFormatBlankLineSeparation: settings.isAutoFormatBlankLineSeparation,
                 isAutoFormatTrailingWhitespaceTrim: settings.trailingWhitespaceBehavior == .strip,
-                onAIAssist: { startImprove() },
+                onAIAssist: { editorState.focusAISection = true },
                 onToggleSourceView: { toggleSourceView() },
                 onOpenFile: { openFileFromEditor() },
                 onNewFile: { newFileFromEditor() },
@@ -482,13 +482,17 @@ struct EditorShellView: View {
                     onProUpgrade: { showingProUpgrade = true },
                     onAccept: { coordinator.accept() },
                     onDismiss: { coordinator.dismiss() },
-                    onBold: { /* Wired via keyboard shortcut, FEAT-009 */ },
-                    onItalic: { /* Wired via keyboard shortcut, FEAT-009 */ },
-                    onLink: { /* Wired via keyboard shortcut, FEAT-009 */ }
+                    onBold: { editorState.performBold?() },
+                    onItalic: { editorState.performItalic?() },
+                    onLink: { editorState.performLink?() }
                 ),
                 showAIActions: aiProviderManager.shouldShowAIUI,
                 isProSubscriber: isProSubscriber,
-                isCompact: isFloatingBarCompact
+                isCompact: isFloatingBarCompact,
+                focusAISection: Binding(
+                    get: { editorState.focusAISection },
+                    set: { editorState.focusAISection = $0 }
+                )
             )
             .fixedSize()
             .transition(.scale.combined(with: .opacity))

@@ -132,22 +132,33 @@ public struct TextViewBridge: UIViewRepresentable {
         }
 
         // Wire formatting shortcut handlers per FEAT-009
-        textView.onBold = { [weak coordinator = context.coordinator, weak textView] in
+        // Stored as named closures so EditorState can also expose them
+        // to the floating action bar per FEAT-054.
+        let boldAction: () -> Void = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return }
             coordinator.handleBold(in: textView)
         }
-        textView.onItalic = { [weak coordinator = context.coordinator, weak textView] in
+        let italicAction: () -> Void = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return }
             coordinator.handleItalic(in: textView)
         }
+        let linkAction: () -> Void = { [weak coordinator = context.coordinator, weak textView] in
+            guard let coordinator, let textView else { return }
+            coordinator.handleLinkInsert(in: textView)
+        }
+        textView.onBold = boldAction
+        textView.onItalic = italicAction
         textView.onCode = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return }
             coordinator.handleCode(in: textView)
         }
-        textView.onInsertLink = { [weak coordinator = context.coordinator, weak textView] in
-            guard let coordinator, let textView else { return }
-            coordinator.handleLinkInsert(in: textView)
-        }
+        textView.onInsertLink = linkAction
+
+        // Expose formatting actions on EditorState so the floating action bar
+        // can dispatch them without direct text view access per FEAT-054.
+        editorState.performBold = boldAction
+        editorState.performItalic = italicAction
+        editorState.performLink = linkAction
 
         // Wire app-level shortcut handlers per FEAT-009
         textView.onAIAssist = onAIAssist
@@ -363,22 +374,33 @@ public struct TextViewBridge: NSViewRepresentable {
         }
 
         // Wire formatting shortcut handlers per FEAT-009
-        textView.onBold = { [weak coordinator = context.coordinator, weak textView] in
+        // Stored as named closures so EditorState can also expose them
+        // to the floating action bar per FEAT-054.
+        let boldAction: () -> Void = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return }
             coordinator.handleBold(in: textView)
         }
-        textView.onItalic = { [weak coordinator = context.coordinator, weak textView] in
+        let italicAction: () -> Void = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return }
             coordinator.handleItalic(in: textView)
         }
+        let linkAction: () -> Void = { [weak coordinator = context.coordinator, weak textView] in
+            guard let coordinator, let textView else { return }
+            coordinator.handleLinkInsert(in: textView)
+        }
+        textView.onBold = boldAction
+        textView.onItalic = italicAction
         textView.onCode = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return }
             coordinator.handleCode(in: textView)
         }
-        textView.onInsertLink = { [weak coordinator = context.coordinator, weak textView] in
-            guard let coordinator, let textView else { return }
-            coordinator.handleLinkInsert(in: textView)
-        }
+        textView.onInsertLink = linkAction
+
+        // Expose formatting actions on EditorState so the floating action bar
+        // can dispatch them without direct text view access per FEAT-054.
+        editorState.performBold = boldAction
+        editorState.performItalic = italicAction
+        editorState.performLink = linkAction
 
         // Wire app-level shortcut handlers per FEAT-009
         textView.onAIAssist = onAIAssist

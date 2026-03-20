@@ -33,6 +33,18 @@ public final class EditorState {
     /// Nil when there is no selection.
     public private(set) var selectionRect: CGRect?
 
+    // MARK: - Floating Action Bar actions per FEAT-054
+
+    /// Formatting action closures wired by TextViewBridge so the floating bar
+    /// can dispatch Bold/Italic/Link without direct access to the text view.
+    public var performBold: (() -> Void)?
+    public var performItalic: (() -> Void)?
+    public var performLink: (() -> Void)?
+
+    /// When set to true, the floating action bar should move focus to its AI section.
+    /// Reset to false after the bar consumes the request.
+    public var focusAISection: Bool = false
+
     /// Full document statistics per [A-055]. Updated on text changes.
     public private(set) var documentStats: DocumentStats = .zero
 

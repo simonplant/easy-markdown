@@ -78,19 +78,25 @@ public struct FloatingActionBar: View {
     public let isProSubscriber: Bool
     /// Whether to use compact layout (icon-only format buttons).
     public let isCompact: Bool
+    /// Binding that triggers focus on the AI section when set to true (Cmd+J per AC-6).
+    @Binding public var focusAISection: Bool
+
+    @AccessibilityFocusState private var isAIFocused: Bool
 
     public init(
         diffPhase: InlineDiffPhase,
         actions: FloatingActionBarActions,
         showAIActions: Bool,
         isProSubscriber: Bool = false,
-        isCompact: Bool = false
+        isCompact: Bool = false,
+        focusAISection: Binding<Bool> = .constant(false)
     ) {
         self.diffPhase = diffPhase
         self.actions = actions
         self.showAIActions = showAIActions
         self.isProSubscriber = isProSubscriber
         self.isCompact = isCompact
+        self._focusAISection = focusAISection
     }
 
     public var body: some View {
@@ -108,6 +114,18 @@ public struct FloatingActionBar: View {
         .shadow(color: .black.opacity(0.15), radius: 8, y: 4)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Floating action bar")
+        .onChange(of: focusAISection) { _, shouldFocus in
+            if shouldFocus {
+                isAIFocused = true
+                focusAISection = false
+            }
+        }
+        .onAppear {
+            if focusAISection {
+                isAIFocused = true
+                focusAISection = false
+            }
+        }
     }
 
     // MARK: - Selection Mode
@@ -134,6 +152,7 @@ public struct FloatingActionBar: View {
                 )
                 .accessibilityLabel("Improve writing")
                 .accessibilityHint("Uses AI to improve the selected text")
+                .accessibilityFocused($isAIFocused)
 
                 AIActionButton(
                     title: "Summarize",
