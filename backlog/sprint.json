@@ -1,26 +1,26 @@
 {
-  "sprintId": "sprint-1774032103",
-  "startedAt": "2026-03-20T11:41:43-07:00",
+  "sprintId": "sprint-1774032860",
+  "startedAt": "2026-03-20T11:54:20-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-047",
-    "title": "F-003b: Table Rendering",
-    "intent": "Tables must render as formatted, aligned tables in rich view — not as pipe-delimited text",
-    "description": "Depends on: FEAT-038 (Parser), FEAT-003 (Core Rendering). GFM tables render as visually formatted tables with column alignment, cell padding, and header row styling. Tables are editable inline in rich view. Works with auto-format table features (FEAT-004 decomposed).",
+    "id": "FEAT-049",
+    "title": "F-003d: Interactive Elements (Checkboxes and Links)",
+    "intent": "Task list checkboxes must be tappable and links must be clickable — these are the elements that make the rich view feel alive, not static",
+    "description": "Depends on: FEAT-003 (Core Rendering). Task list checkboxes: rendered as interactive checkboxes. Tapping toggles the checkbox AND updates the underlying markdown (- [ ] to - [x]). Links: rendered as styled tappable text. Tap opens URL in system browser. Long-press shows URL preview and copy option. Link text styled with color and subtle underline.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "GFM table renders with visible column alignment and cell padding",
-      "Header row is visually distinct from data rows",
-      "Table with 10+ columns renders without horizontal overflow on iPad",
-      "Table with 100+ rows scrolls smoothly at 60fps minimum",
-      "Empty cells render as empty space, not collapsed"
+      "Tapping a task list checkbox toggles it and updates the markdown source",
+      "Toggling a checkbox is a single undo step",
+      "Tapping a link opens the URL in Safari/system browser",
+      "Long-pressing a link shows the URL and a copy option",
+      "Links to relative files open the file in easy-markdown (if .md) or system handler"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T11:41:43-07:00",
+    "startedAt": "2026-03-20T11:54:20-07:00",
     "status": "passed",
-    "completedAt": "2026-03-20T11:54:14-07:00"
+    "completedAt": "2026-03-20T12:23:17-07:00"
   },
-  "completedAt": "2026-03-20T11:54:14-07:00",
-  "attempts": 1
+  "completedAt": "2026-03-20T12:23:17-07:00",
+  "attempts": 2
 }

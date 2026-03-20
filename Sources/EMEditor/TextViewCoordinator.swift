@@ -244,6 +244,48 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         return true
     }
 
+    // MARK: - Interactive Elements (FEAT-049)
+
+    /// Handler for link taps. When set, receives all link taps (including relative links).
+    /// When nil, links open in the system browser by default.
+    var onLinkTap: ((URL) -> Void)?
+
+    /// Toggles a task list checkbox at the given range per FEAT-049.
+    /// Replaces `[ ]` with `[x]` or `[x]`/`[X]` with `[ ]` as a single undo step per AC-2.
+    func toggleCheckbox(at checkboxRange: NSRange, in textView: UITextView) {
+        let fullText = textView.text ?? ""
+        guard let swiftRange = Range(checkboxRange, in: fullText) else { return }
+        let current = String(fullText[swiftRange])
+
+        let replacement: String
+        if current == "[ ]" {
+            replacement = "[x]"
+        } else if current == "[x]" || current == "[X]" {
+            replacement = "[ ]"
+        } else {
+            return
+        }
+
+        let cursorAfter = swiftRange.upperBound
+        let mutation = TextMutation(
+            range: swiftRange,
+            replacement: replacement,
+            cursorAfter: cursorAfter,
+            hapticStyle: .listContinuation
+        )
+        applyMutation(mutation, to: textView)
+    }
+
+    /// Opens a link URL per FEAT-049 AC-3.
+    /// Delegates to onLinkTap callback if set, otherwise opens in system browser.
+    func handleLinkTap(url: URL) {
+        if let onLinkTap {
+            onLinkTap(url)
+        } else {
+            UIApplication.shared.open(url)
+        }
+    }
+
     // MARK: - UIScrollViewDelegate
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -649,6 +691,48 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         }
         applyMutation(mutation, to: textView)
         return true
+    }
+
+    // MARK: - Interactive Elements (FEAT-049)
+
+    /// Handler for link clicks. When set, receives all link clicks (including relative links).
+    /// When nil, links open in the system browser by default.
+    var onLinkTap: ((URL) -> Void)?
+
+    /// Toggles a task list checkbox at the given range per FEAT-049.
+    /// Replaces `[ ]` with `[x]` or `[x]`/`[X]` with `[ ]` as a single undo step per AC-2.
+    func toggleCheckbox(at checkboxRange: NSRange, in textView: NSTextView) {
+        let fullText = textView.string
+        guard let swiftRange = Range(checkboxRange, in: fullText) else { return }
+        let current = String(fullText[swiftRange])
+
+        let replacement: String
+        if current == "[ ]" {
+            replacement = "[x]"
+        } else if current == "[x]" || current == "[X]" {
+            replacement = "[ ]"
+        } else {
+            return
+        }
+
+        let cursorAfter = swiftRange.upperBound
+        let mutation = TextMutation(
+            range: swiftRange,
+            replacement: replacement,
+            cursorAfter: cursorAfter,
+            hapticStyle: .listContinuation
+        )
+        applyMutation(mutation, to: textView)
+    }
+
+    /// Opens a link URL per FEAT-049 AC-3.
+    /// Delegates to onLinkTap callback if set, otherwise opens in system browser.
+    func handleLinkTap(url: URL) {
+        if let onLinkTap {
+            onLinkTap(url)
+        } else {
+            NSWorkspace.shared.open(url)
+        }
     }
 
     public func textDidChange(_ notification: Notification) {

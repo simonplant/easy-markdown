@@ -29,6 +29,9 @@ public struct TextViewBridge: UIViewRepresentable {
     public var isEditable: Bool
     public var isSpellCheckEnabled: Bool
     public var onTextChange: ((String) -> Void)?
+    /// Handler for link taps per FEAT-049. Receives the URL when a link is tapped.
+    /// When nil, links open in the system browser by default.
+    public var onLinkTap: ((URL) -> Void)?
     /// Optional improve writing coordinator to wire as text view delegate per FEAT-011.
     public var improveCoordinator: ImproveWritingCoordinator?
 
@@ -39,6 +42,7 @@ public struct TextViewBridge: UIViewRepresentable {
         isEditable: Bool = true,
         isSpellCheckEnabled: Bool = true,
         onTextChange: ((String) -> Void)? = nil,
+        onLinkTap: ((URL) -> Void)? = nil,
         improveCoordinator: ImproveWritingCoordinator? = nil
     ) {
         self._text = text
@@ -47,6 +51,7 @@ public struct TextViewBridge: UIViewRepresentable {
         self.isEditable = isEditable
         self.isSpellCheckEnabled = isSpellCheckEnabled
         self.onTextChange = onTextChange
+        self.onLinkTap = onLinkTap
         self.improveCoordinator = improveCoordinator
     }
 
@@ -64,6 +69,7 @@ public struct TextViewBridge: UIViewRepresentable {
         )
 
         context.coordinator.onTextChange = onTextChange
+        context.coordinator.onLinkTap = onLinkTap
         context.coordinator.renderConfig = renderConfig
         context.coordinator.managedTextView = textView
 
@@ -76,6 +82,15 @@ public struct TextViewBridge: UIViewRepresentable {
         textView.onShiftTab = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return false }
             return coordinator.handleShiftTab(in: textView)
+        }
+
+        // Wire interactive element handlers per FEAT-049
+        textView.onCheckboxTap = { [weak coordinator = context.coordinator, weak textView] range in
+            guard let coordinator, let textView else { return }
+            coordinator.toggleCheckbox(at: range, in: textView)
+        }
+        textView.onLinkTap = { [weak coordinator = context.coordinator] url in
+            coordinator?.handleLinkTap(url: url)
         }
 
         // Apply initial layout metrics per FEAT-010
@@ -169,6 +184,9 @@ public struct TextViewBridge: NSViewRepresentable {
     public var isEditable: Bool
     public var isSpellCheckEnabled: Bool
     public var onTextChange: ((String) -> Void)?
+    /// Handler for link clicks per FEAT-049. Receives the URL when a link is clicked.
+    /// When nil, links open in the system browser by default.
+    public var onLinkTap: ((URL) -> Void)?
     /// Optional improve writing coordinator to wire as text view delegate per FEAT-011.
     public var improveCoordinator: ImproveWritingCoordinator?
 
@@ -179,6 +197,7 @@ public struct TextViewBridge: NSViewRepresentable {
         isEditable: Bool = true,
         isSpellCheckEnabled: Bool = true,
         onTextChange: ((String) -> Void)? = nil,
+        onLinkTap: ((URL) -> Void)? = nil,
         improveCoordinator: ImproveWritingCoordinator? = nil
     ) {
         self._text = text
@@ -187,6 +206,7 @@ public struct TextViewBridge: NSViewRepresentable {
         self.isEditable = isEditable
         self.isSpellCheckEnabled = isSpellCheckEnabled
         self.onTextChange = onTextChange
+        self.onLinkTap = onLinkTap
         self.improveCoordinator = improveCoordinator
     }
 
@@ -210,6 +230,7 @@ public struct TextViewBridge: NSViewRepresentable {
         ))
 
         context.coordinator.onTextChange = onTextChange
+        context.coordinator.onLinkTap = onLinkTap
         context.coordinator.renderConfig = renderConfig
         context.coordinator.managedTextView = textView
 
@@ -222,6 +243,15 @@ public struct TextViewBridge: NSViewRepresentable {
         textView.onShiftTab = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return false }
             return coordinator.handleShiftTab(in: textView)
+        }
+
+        // Wire interactive element handlers per FEAT-049
+        textView.onCheckboxTap = { [weak coordinator = context.coordinator, weak textView] range in
+            guard let coordinator, let textView else { return }
+            coordinator.toggleCheckbox(at: range, in: textView)
+        }
+        textView.onLinkTap = { [weak coordinator = context.coordinator] url in
+            coordinator?.handleLinkTap(url: url)
         }
 
         // Apply initial layout metrics per FEAT-010

@@ -649,4 +649,177 @@ struct MarkdownRendererTests {
 
         #expect(attrStr.string == source)
     }
+
+    // MARK: - Task List Checkbox Rendering (FEAT-049)
+
+    @Test("Unchecked task list item gets taskListCheckbox attribute in rich view")
+    func uncheckedCheckboxAttribute() {
+        let source = "- [ ] Buy milk"
+        let parseResult = parser.parse(source)
+        let attrStr = NSMutableAttributedString(string: source)
+
+        renderer.render(
+            into: attrStr,
+            ast: parseResult.ast,
+            sourceText: source,
+            config: richConfig
+        )
+
+        // Find the "[ ]" range
+        let checkboxStart = source.distance(from: source.startIndex, to: source.range(of: "[ ]")!.lowerBound)
+        let checkboxAttr = attrStr.attribute(.taskListCheckbox, at: checkboxStart, effectiveRange: nil) as? String
+        #expect(checkboxAttr == "unchecked", "Unchecked checkbox should have taskListCheckbox attribute")
+
+        // Should have link color for interactivity
+        let color = attrStr.attribute(.foregroundColor, at: checkboxStart, effectiveRange: nil) as? PlatformColor
+        #expect(color != nil, "Checkbox should have foreground color")
+
+        #expect(attrStr.string == source, "Checkbox rendering must preserve text content")
+    }
+
+    @Test("Checked task list item gets taskListCheckbox attribute in rich view")
+    func checkedCheckboxAttribute() {
+        let source = "- [x] Done task"
+        let parseResult = parser.parse(source)
+        let attrStr = NSMutableAttributedString(string: source)
+
+        renderer.render(
+            into: attrStr,
+            ast: parseResult.ast,
+            sourceText: source,
+            config: richConfig
+        )
+
+        let checkboxStart = source.distance(from: source.startIndex, to: source.range(of: "[x]")!.lowerBound)
+        let checkboxAttr = attrStr.attribute(.taskListCheckbox, at: checkboxStart, effectiveRange: nil) as? String
+        #expect(checkboxAttr == "checked", "Checked checkbox should have taskListCheckbox attribute")
+
+        #expect(attrStr.string == source)
+    }
+
+    @Test("Task list checkbox attribute not applied in source view")
+    func checkboxNotInSourceView() {
+        let source = "- [ ] Task item"
+        let parseResult = parser.parse(source)
+        let attrStr = NSMutableAttributedString(string: source)
+
+        renderer.render(
+            into: attrStr,
+            ast: parseResult.ast,
+            sourceText: source,
+            config: sourceConfig
+        )
+
+        // In source view, no taskListCheckbox attribute should be present
+        let checkboxStart = source.distance(from: source.startIndex, to: source.range(of: "[ ]")!.lowerBound)
+        let checkboxAttr = attrStr.attribute(.taskListCheckbox, at: checkboxStart, effectiveRange: nil)
+        #expect(checkboxAttr == nil, "Source view should not have taskListCheckbox attribute")
+    }
+
+    @Test("Multiple task list items each get checkbox attributes")
+    func multipleCheckboxes() {
+        let source = "- [ ] First\n- [x] Second\n- [ ] Third"
+        let parseResult = parser.parse(source)
+        let attrStr = NSMutableAttributedString(string: source)
+
+        renderer.render(
+            into: attrStr,
+            ast: parseResult.ast,
+            sourceText: source,
+            config: richConfig
+        )
+
+        // First checkbox: unchecked
+        let first = source.distance(from: source.startIndex, to: source.range(of: "[ ]")!.lowerBound)
+        let firstAttr = attrStr.attribute(.taskListCheckbox, at: first, effectiveRange: nil) as? String
+        #expect(firstAttr == "unchecked")
+
+        // Second checkbox: checked
+        let second = source.distance(from: source.startIndex, to: source.range(of: "[x]")!.lowerBound)
+        let secondAttr = attrStr.attribute(.taskListCheckbox, at: second, effectiveRange: nil) as? String
+        #expect(secondAttr == "checked")
+
+        #expect(attrStr.string == source)
+    }
+
+    // MARK: - Link Rendering (FEAT-049)
+
+    @Test("Link gets .link attribute with URL in rich view")
+    func linkAttribute() {
+        let source = "Click [here](https://example.com) now"
+        let parseResult = parser.parse(source)
+        let attrStr = NSMutableAttributedString(string: source)
+
+        renderer.render(
+            into: attrStr,
+            ast: parseResult.ast,
+            sourceText: source,
+            config: richConfig
+        )
+
+        // The link text "here" should have a .link attribute with the URL
+        let hereStart = source.distance(from: source.startIndex, to: source.range(of: "here")!.lowerBound)
+        let linkAttr = attrStr.attribute(.link, at: hereStart, effectiveRange: nil)
+        #expect(linkAttr != nil, "Link text should have .link attribute")
+
+        if let url = linkAttr as? URL {
+            #expect(url.absoluteString == "https://example.com")
+        }
+
+        // Link should have link color
+        let color = attrStr.attribute(.foregroundColor, at: hereStart, effectiveRange: nil) as? PlatformColor
+        #expect(color != nil, "Link text should have foreground color")
+
+        // Link should have underline
+        let underline = attrStr.attribute(.underlineStyle, at: hereStart, effectiveRange: nil) as? Int
+        #expect(underline == NSUnderlineStyle.single.rawValue, "Link should have subtle underline")
+
+        #expect(attrStr.string == source)
+    }
+
+    @Test("Link syntax is hidden in rich view")
+    func linkSyntaxHidden() {
+        let source = "[text](https://url.com)"
+        let parseResult = parser.parse(source)
+        let attrStr = NSMutableAttributedString(string: source)
+
+        renderer.render(
+            into: attrStr,
+            ast: parseResult.ast,
+            sourceText: source,
+            config: richConfig
+        )
+
+        // The "[" at position 0 should be hidden (zero-width font)
+        let bracketFont = attrStr.attribute(.font, at: 0, effectiveRange: nil) as? PlatformFont
+        #expect(bracketFont != nil)
+        #expect(bracketFont!.pointSize < 1, "Opening bracket should be hidden")
+
+        // The "](url)" part should be hidden
+        let closeBracketStart = source.distance(from: source.startIndex, to: source.range(of: "](")!.lowerBound)
+        let closeFont = attrStr.attribute(.font, at: closeBracketStart, effectiveRange: nil) as? PlatformFont
+        #expect(closeFont != nil)
+        #expect(closeFont!.pointSize < 1, "Closing syntax should be hidden")
+
+        #expect(attrStr.string == source)
+    }
+
+    @Test("Link not interactive in source view")
+    func linkNotInteractiveInSource() {
+        let source = "[text](https://url.com)"
+        let parseResult = parser.parse(source)
+        let attrStr = NSMutableAttributedString(string: source)
+
+        renderer.render(
+            into: attrStr,
+            ast: parseResult.ast,
+            sourceText: source,
+            config: sourceConfig
+        )
+
+        // In source view, link text should have link color but no .link attribute
+        let textStart = source.distance(from: source.startIndex, to: source.range(of: "text")!.lowerBound)
+        let linkAttr = attrStr.attribute(.link, at: textStart, effectiveRange: nil)
+        #expect(linkAttr == nil, "Source view should not have .link attribute")
+    }
 }

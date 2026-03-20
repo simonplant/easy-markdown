@@ -984,9 +984,10 @@
         "Long-pressing a link shows the URL and a copy option",
         "Links to relative files open the file in easy-markdown (if .md) or system handler"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T12:23:17-07:00"
     },
     {
       "id": "FEAT-050",

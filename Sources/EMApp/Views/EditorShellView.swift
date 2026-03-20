@@ -2,6 +2,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 #if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
 #endif
 import EMCore
 import EMEditor
@@ -69,6 +71,7 @@ struct EditorShellView: View {
                     updateDocumentStats(newText)
                     autoSaveManager?.contentDidChange()
                 },
+                onLinkTap: { url in handleLinkTap(url) },
                 improveCoordinator: improveCoordinator
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -297,6 +300,62 @@ struct EditorShellView: View {
         let selectedText = String(text[swiftRange])
         let stream = service.startImproving(selectedText: selectedText)
         coordinator.startImprove(updateStream: stream)
+    }
+
+    // MARK: - Link Handling per FEAT-049 AC-3, AC-5
+
+    /// Handles link taps: relative .md files open in easy-markdown,
+    /// other relative files open via system handler, absolute URLs open in browser.
+    private func handleLinkTap(_ url: URL) {
+        // Absolute URLs (http/https/mailto/etc.) → open in system browser
+        if url.scheme != nil && url.scheme != "file" {
+            #if canImport(UIKit)
+            UIApplication.shared.open(url)
+            #else
+            NSWorkspace.shared.open(url)
+            #endif
+            return
+        }
+
+        // Relative or file URL → resolve against the current document's directory
+        guard let currentFileURL = fileOpenCoordinator.currentFileURL else {
+            // No current file (unsaved doc) — cannot resolve relative links
+            #if canImport(UIKit)
+            UIApplication.shared.open(url)
+            #else
+            NSWorkspace.shared.open(url)
+            #endif
+            return
+        }
+
+        let resolvedURL: URL
+        if url.scheme == "file" {
+            resolvedURL = url
+        } else {
+            // Relative path — resolve against the current file's directory
+            let baseDir = currentFileURL.deletingLastPathComponent()
+            resolvedURL = baseDir.appendingPathComponent(url.relativeString)
+                .standardized
+        }
+
+        // .md files → open in easy-markdown via the router
+        if resolvedURL.pathExtension.lowercased() == "md" {
+            let attempt = fileOpenCoordinator.openFile(url: resolvedURL)
+            switch attempt {
+            case .opened, .alreadyOpen:
+                router.openEditor()
+            case .failed:
+                break // Error already presented by FileOpenCoordinator
+            }
+            return
+        }
+
+        // Other file types → open with system handler
+        #if canImport(UIKit)
+        UIApplication.shared.open(resolvedURL)
+        #else
+        NSWorkspace.shared.open(resolvedURL)
+        #endif
     }
 
     // MARK: - Conflict Detection per FEAT-045

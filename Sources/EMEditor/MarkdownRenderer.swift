@@ -63,6 +63,10 @@ extension NSAttributedString.Key {
     /// Marks a range as a table header row for distinct styling per FEAT-047.
     static let tableHeader = NSAttributedString.Key("em.tableHeader")
 
+    /// Marks a range as a task list checkbox for tap detection per FEAT-049.
+    /// Value is "checked" or "unchecked".
+    static let taskListCheckbox = NSAttributedString.Key("em.taskListCheckbox")
+
     /// Marks a range as excluded from spell checking per [A-054].
     static let spellCheckExcluded = NSAttributedString.Key("em.spellCheckExcluded")
 
@@ -405,6 +409,17 @@ public struct MarkdownRenderer {
             sourceText: sourceText
         )
 
+        // Render task list checkbox per FEAT-049
+        if case .listItem(checkbox: let checkbox) = node.type, let checkbox {
+            renderTaskListCheckbox(
+                checkbox: checkbox,
+                nsRange: nsRange,
+                into: attrStr,
+                sourceText: sourceText,
+                config: config
+            )
+        }
+
         // Process child blocks (paragraphs, nested lists)
         for child in node.children {
             switch child.type {
@@ -447,6 +462,49 @@ public struct MarkdownRenderer {
         // Each indent level is typically 2-4 characters
         let column = range.start.column
         return max(0, (column - 1) / 2)
+    }
+
+    // MARK: - Task List Checkboxes (FEAT-049)
+
+    /// Renders a task list checkbox with interactive styling and custom attribute.
+    ///
+    /// Finds `[ ]` or `[x]` within the list item range and applies the
+    /// `.taskListCheckbox` attribute for tap detection, plus link color
+    /// to signal interactivity.
+    private func renderTaskListCheckbox(
+        checkbox: Checkbox,
+        nsRange: NSRange,
+        into attrStr: NSMutableAttributedString,
+        sourceText: String,
+        config: RenderConfiguration
+    ) {
+        let text = attrStr.string
+        guard let swiftRange = Range(nsRange, in: text) else { return }
+        let content = text[swiftRange]
+
+        // Find [ ] or [x]/[X] within the list item text
+        let checkboxRange: Range<Substring.Index>
+        if checkbox == .checked {
+            // GFM allows both [x] and [X]
+            if let r = content.range(of: "[x]") {
+                checkboxRange = r
+            } else if let r = content.range(of: "[X]") {
+                checkboxRange = r
+            } else {
+                return
+            }
+        } else {
+            guard let r = content.range(of: "[ ]") else { return }
+            checkboxRange = r
+        }
+        let checkboxNSRange = NSRange(checkboxRange, in: text)
+
+        // Apply custom attribute for tap detection per FEAT-049
+        let state = checkbox == .checked ? "checked" : "unchecked"
+        attrStr.addAttribute(.taskListCheckbox, value: state, range: checkboxNSRange)
+
+        // Style with link color to signal interactivity
+        attrStr.addAttribute(.foregroundColor, value: config.colors.link, range: checkboxNSRange)
     }
 
     // MARK: - Blockquotes

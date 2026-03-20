@@ -30,6 +30,19 @@ public final class EMTextView: UITextView {
     /// Set by TextViewCoordinator for list outdent per FEAT-004.
     public var onShiftTab: (() -> Bool)?
 
+    /// Handler for task list checkbox tap per FEAT-049.
+    /// Called with the NSRange of the `[ ]` or `[x]` marker in the text storage.
+    public var onCheckboxTap: ((NSRange) -> Void)?
+
+    /// Handler for link tap per FEAT-049.
+    /// Called with the link URL when a link is tapped in rich view.
+    public var onLinkTap: ((URL) -> Void)?
+
+    /// Handler for link long-press per FEAT-049 AC-4.
+    /// Called with the link URL when a link is long-pressed.
+    /// The view shows the URL and a copy option.
+    public var onLinkLongPress: ((URL) -> Void)?
+
     /// Current layout metrics for device-aware spacing per FEAT-010.
     public var layoutMetrics: LayoutMetrics = .current {
         didSet { applyLayoutMetrics() }
@@ -55,6 +68,7 @@ public final class EMTextView: UITextView {
         super.init(frame: .zero, textContainer: container)
 
         configureTextView()
+        setupInteractiveGestures()
         logger.debug("EMTextView initialized with TextKit 2")
     }
 
@@ -101,6 +115,113 @@ public final class EMTextView: UITextView {
 
         // Keyboard
         keyboardDismissMode = .interactive
+    }
+
+    // MARK: - Interactive Elements (FEAT-049)
+
+    /// Sets up tap and long-press gestures for interactive elements (checkboxes and links).
+    /// Uses a custom gesture recognizer that only fires when the tap lands
+    /// on a checkbox or link, avoiding interference with normal editing.
+    private func setupInteractiveGestures() {
+        let tap = InteractiveTapGesture(target: self, action: #selector(handleInteractiveTap(_:)))
+        tap.targetTextView = self
+        addGestureRecognizer(tap)
+
+        // Long-press gesture for link preview per FEAT-049 AC-4
+        let longPress = InteractiveLongPressGesture(
+            target: self,
+            action: #selector(handleInteractiveLongPress(_:))
+        )
+        longPress.targetTextView = self
+        longPress.minimumPressDuration = 0.5
+        addGestureRecognizer(longPress)
+    }
+
+    /// Returns the interactive element (checkbox or link) at the given point, if any.
+    func interactiveElement(at point: CGPoint) -> InteractiveElement? {
+        guard let position = closestPosition(to: point) else { return nil }
+        let index = offset(from: beginningOfDocument, to: position)
+        guard index >= 0, index < textStorage.length else { return nil }
+
+        // Check for checkbox first (higher priority — smaller target)
+        if let state = textStorage.attribute(.taskListCheckbox, at: index, effectiveRange: nil) as? String {
+            var range = NSRange()
+            textStorage.attribute(.taskListCheckbox, at: index, effectiveRange: &range)
+            return .checkbox(range: range, isChecked: state == "checked")
+        }
+
+        // Check for link
+        if let url = textStorage.attribute(.link, at: index, effectiveRange: nil) as? URL {
+            return .link(url: url)
+        }
+
+        return nil
+    }
+
+    @objc private func handleInteractiveTap(_ recognizer: UITapGestureRecognizer) {
+        let point = recognizer.location(in: self)
+        guard let element = interactiveElement(at: point) else { return }
+
+        switch element {
+        case .checkbox(let range, _):
+            onCheckboxTap?(range)
+        case .link(let url):
+            onLinkTap?(url)
+        }
+    }
+
+    /// Shows a URL preview alert with a copy option on long-press per FEAT-049 AC-4.
+    @objc private func handleInteractiveLongPress(_ recognizer: UILongPressGestureRecognizer) {
+        guard recognizer.state == .began else { return }
+        let point = recognizer.location(in: self)
+        guard let element = interactiveElement(at: point),
+              case .link(let url) = element else { return }
+
+        let urlString = url.absoluteString
+        let alert = UIAlertController(
+            title: urlString,
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("Copy URL", comment: "Copy link URL action"),
+            style: .default
+        ) { _ in
+            UIPasteboard.general.string = urlString
+        })
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("Open Link", comment: "Open link in browser action"),
+            style: .default
+        ) { [weak self] _ in
+            self?.onLinkTap?(url)
+        })
+        alert.addAction(UIAlertAction(
+            title: NSLocalizedString("Cancel", comment: "Cancel action"),
+            style: .cancel
+        ))
+
+        // Configure popover for iPad
+        if let popover = alert.popoverPresentationController {
+            popover.sourceView = self
+            popover.sourceRect = CGRect(origin: point, size: .zero)
+        }
+
+        // Present from the nearest view controller
+        if let viewController = self.findViewController() {
+            viewController.present(alert, animated: true)
+        }
+    }
+
+    /// Walks the responder chain to find the nearest UIViewController.
+    private func findViewController() -> UIViewController? {
+        var responder: UIResponder? = self
+        while let next = responder?.next {
+            if let vc = next as? UIViewController {
+                return vc
+            }
+            responder = next
+        }
+        return nil
     }
 
     // MARK: - Undo Manager
@@ -189,6 +310,48 @@ public final class EMTextView: UITextView {
     }
 }
 
+/// Custom tap gesture recognizer that only fires when the tap lands
+/// on an interactive element (checkbox or link) per FEAT-049.
+/// When the tap is not on an interactive element, the gesture fails
+/// immediately, allowing the text view's editing gestures to proceed.
+class InteractiveTapGesture: UITapGestureRecognizer {
+    weak var targetTextView: EMTextView?
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+        guard let touch = touches.first, let tv = targetTextView else {
+            state = .failed
+            return
+        }
+
+        let point = touch.location(in: tv)
+        if tv.interactiveElement(at: point) != nil {
+            super.touchesBegan(touches, with: event)
+        } else {
+            state = .failed
+        }
+    }
+}
+
+/// Custom long-press gesture recognizer that only fires on links per FEAT-049 AC-4.
+/// Fails immediately if the touch is not on a link, preserving normal editing gestures.
+class InteractiveLongPressGesture: UILongPressGestureRecognizer {
+    weak var targetTextView: EMTextView?
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+        guard let touch = touches.first, let tv = targetTextView else {
+            state = .failed
+            return
+        }
+
+        let point = touch.location(in: tv)
+        if let element = tv.interactiveElement(at: point), case .link = element {
+            super.touchesBegan(touches, with: event)
+        } else {
+            state = .failed
+        }
+    }
+}
+
 // MARK: - macOS
 
 #elseif canImport(AppKit)
@@ -205,6 +368,17 @@ public final class EMTextView: NSTextView {
     /// Handler for Shift-Tab key. Returns true if the event was consumed.
     /// Set by TextViewCoordinator for list outdent per FEAT-004.
     public var onShiftTab: (() -> Bool)?
+
+    /// Handler for task list checkbox click per FEAT-049.
+    /// Called with the NSRange of the `[ ]` or `[x]` marker in the text storage.
+    public var onCheckboxTap: ((NSRange) -> Void)?
+
+    /// Handler for link click per FEAT-049.
+    /// Called with the link URL when a link is clicked in rich view.
+    public var onLinkTap: ((URL) -> Void)?
+
+    /// Handler for link long-press per FEAT-049 AC-4 (unused on macOS, right-click menu used instead).
+    public var onLinkLongPress: ((URL) -> Void)?
 
     /// Current layout metrics for device-aware spacing per FEAT-010.
     public var layoutMetrics: LayoutMetrics = .current {
@@ -299,6 +473,92 @@ public final class EMTextView: NSTextView {
         editorState?.undoManager ?? super.undoManager
     }
 
+    // MARK: - Interactive Elements (FEAT-049)
+
+    /// Returns the interactive element at the given point, if any.
+    func interactiveElement(at point: CGPoint) -> InteractiveElement? {
+        guard let textStorage else { return nil }
+        let index = characterIndexForInsertion(at: point)
+        guard index >= 0, index < textStorage.length else { return nil }
+
+        if let state = textStorage.attribute(.taskListCheckbox, at: index, effectiveRange: nil) as? String {
+            var range = NSRange()
+            textStorage.attribute(.taskListCheckbox, at: index, effectiveRange: &range)
+            return .checkbox(range: range, isChecked: state == "checked")
+        }
+
+        if let url = textStorage.attribute(.link, at: index, effectiveRange: nil) as? URL {
+            return .link(url: url)
+        }
+
+        return nil
+    }
+
+    /// Intercepts mouse clicks on interactive elements (checkboxes and links).
+    /// For non-interactive areas, passes through to normal text editing.
+    public override func mouseDown(with event: NSEvent) {
+        let point = convert(event.locationInWindow, from: nil)
+        if let element = interactiveElement(at: point) {
+            switch element {
+            case .checkbox(let range, _):
+                onCheckboxTap?(range)
+                return
+            case .link(let url):
+                onLinkTap?(url)
+                return
+            }
+        }
+        super.mouseDown(with: event)
+    }
+
+    /// Shows a context menu with URL preview and copy option on right-click per FEAT-049 AC-4.
+    public override func menu(for event: NSEvent) -> NSMenu? {
+        let point = convert(event.locationInWindow, from: nil)
+        if let element = interactiveElement(at: point), case .link(let url) = element {
+            let menu = NSMenu()
+
+            // Show URL as disabled title item
+            let titleItem = NSMenuItem(title: url.absoluteString, action: nil, keyEquivalent: "")
+            titleItem.isEnabled = false
+            menu.addItem(titleItem)
+            menu.addItem(NSMenuItem.separator())
+
+            // Copy URL action
+            let copyItem = NSMenuItem(
+                title: NSLocalizedString("Copy URL", comment: "Copy link URL action"),
+                action: #selector(copyLinkURL(_:)),
+                keyEquivalent: ""
+            )
+            copyItem.representedObject = url.absoluteString
+            copyItem.target = self
+            menu.addItem(copyItem)
+
+            // Open Link action
+            let openItem = NSMenuItem(
+                title: NSLocalizedString("Open Link", comment: "Open link in browser action"),
+                action: #selector(openLinkURL(_:)),
+                keyEquivalent: ""
+            )
+            openItem.representedObject = url
+            openItem.target = self
+            menu.addItem(openItem)
+
+            return menu
+        }
+        return super.menu(for: event)
+    }
+
+    @objc private func copyLinkURL(_ sender: NSMenuItem) {
+        guard let urlString = sender.representedObject as? String else { return }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(urlString, forType: .string)
+    }
+
+    @objc private func openLinkURL(_ sender: NSMenuItem) {
+        guard let url = sender.representedObject as? URL else { return }
+        onLinkTap?(url)
+    }
+
     // MARK: - Spell Check Suppression per [A-054]
 
     /// Overrides the system spell check indicator to skip ranges marked
@@ -329,6 +589,16 @@ public final class EMTextView: NSTextView {
 }
 
 #endif
+
+// MARK: - Interactive Element Types
+
+/// An interactive element detected at a tap/click location per FEAT-049.
+enum InteractiveElement {
+    /// A task list checkbox with its range and current state.
+    case checkbox(range: NSRange, isChecked: Bool)
+    /// A tappable link with its destination URL.
+    case link(url: URL)
+}
 
 // MARK: - os_signpost helper
 
