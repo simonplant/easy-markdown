@@ -4,11 +4,13 @@ import UIKit
 #endif
 import EMCore
 import EMEditor
+import EMSettings
 
 /// Editor shell: toolbar at top, content area in center, format bar and status bar at bottom.
 /// Uses EMEditor's TextViewBridge for the text editing area (TextKit 2).
 struct EditorShellView: View {
     @Environment(AppRouter.self) private var router
+    @Environment(SettingsManager.self) private var settings
     @State private var editorState = EditorState()
     @State private var text = ""
     @State private var wordCount = 0
@@ -21,7 +23,7 @@ struct EditorShellView: View {
                 text: $text,
                 editorState: editorState,
                 isEditable: true,
-                isSpellCheckEnabled: true,
+                isSpellCheckEnabled: settings.isSpellCheckEnabled,
                 onTextChange: { newText in
                     updateWordCount(newText)
                 }
