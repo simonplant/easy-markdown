@@ -7,6 +7,7 @@ import EMCore
 import EMEditor
 import EMFile
 import EMSettings
+import EMAI
 
 /// Editor shell: toolbar at top, content area in center, format bar and status bar at bottom.
 /// Uses EMEditor's TextViewBridge for the text editing area (TextKit 2).
@@ -17,6 +18,7 @@ struct EditorShellView: View {
     @Environment(SettingsManager.self) private var settings
     @Environment(ErrorPresenter.self) private var errorPresenter
     @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
+    @Environment(AIProviderManager.self) private var aiProviderManager
     @State private var editorState = EditorState()
     @State private var text = ""
     @State private var showDoctorPopover = false
@@ -24,6 +26,8 @@ struct EditorShellView: View {
     @State private var autoSaveManager: AutoSaveManager?
     @State private var showingSaveElsewherePanel = false
     @State private var currentLineEnding: LineEnding = .lf
+    @State private var improveCoordinator: ImproveWritingCoordinator?
+    @State private var improveService: ImproveWritingService?
     @Environment(\.colorScheme) private var colorScheme
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -64,11 +68,31 @@ struct EditorShellView: View {
                 onTextChange: { newText in
                     updateDocumentStats(newText)
                     autoSaveManager?.contentDidChange()
-                }
+                },
+                improveCoordinator: improveCoordinator
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .accessibilityLabel("Document editor")
             .accessibilityHint("Edit your markdown document here")
+
+            // Floating action bar per FEAT-054 and [A-023]
+            // Shows on text selection, provides Improve button (FEAT-011 entry point).
+            // Accept/dismiss controls appear during active inline diff.
+            if let coordinator = improveCoordinator,
+               (editorState.selectedRange.length > 0 || coordinator.diffState.isActive),
+               aiProviderManager.shouldShowAIUI {
+                FloatingActionBar(
+                    diffPhase: coordinator.diffState.phase,
+                    actions: FloatingActionBarActions(
+                        onImprove: { startImprove() },
+                        onAccept: { coordinator.accept() },
+                        onDismiss: { coordinator.dismiss() }
+                    ),
+                    showAIActions: aiProviderManager.shouldShowAIUI
+                )
+                .transition(.scale.combined(with: .opacity))
+                .padding(.bottom, 4)
+            }
 
             // Doctor indicator bar per FEAT-005 — non-blocking overlay
             if !editorState.diagnostics.isEmpty {
@@ -116,6 +140,8 @@ struct EditorShellView: View {
                 .zIndex(1)
             }
         }
+        .animation(.easeInOut(duration: 0.2), value: editorState.selectedRange.length > 0)
+        .animation(.easeInOut(duration: 0.2), value: improveCoordinator?.diffState.phase)
         .animation(.easeInOut(duration: 0.25), value: conflictManager?.conflictState)
         .navigationTitle(navigationTitle)
         #if os(iOS)
@@ -149,6 +175,7 @@ struct EditorShellView: View {
             loadFileContent()
             startConflictMonitoring()
             startAutoSave()
+            setupImproveWriting()
         }
         .onDisappear {
             Task {
@@ -156,6 +183,8 @@ struct EditorShellView: View {
                 autoSaveManager?.stop()
             }
             conflictManager?.stopMonitoring()
+            // Cancel any active AI improve session on file close
+            improveCoordinator?.cancel()
             // Clear doctor state on file close per FEAT-005 AC-3
             editorState.clearDiagnostics()
         }
@@ -241,6 +270,33 @@ struct EditorShellView: View {
     private func updateDocumentStats(_ text: String) {
         let stats = DocumentStatsCalculator.computeFullStats(for: text)
         editorState.updateDocumentStats(stats)
+    }
+
+    // MARK: - AI Improve Writing per FEAT-011
+
+    /// Creates the improve writing coordinator and service per FEAT-011.
+    /// Wires EMAI → EMEditor via EMCore's ImproveWritingUpdate, maintaining
+    /// module isolation per [A-015].
+    private func setupImproveWriting() {
+        guard aiProviderManager.shouldShowAIUI else { return }
+        let coordinator = ImproveWritingCoordinator(editorState: editorState)
+        improveCoordinator = coordinator
+        improveService = ImproveWritingService(providerManager: aiProviderManager)
+    }
+
+    /// Starts the AI improve flow per FEAT-011 AC-1.
+    /// User selects text, taps Improve → AI streams improved version.
+    private func startImprove() {
+        guard let coordinator = improveCoordinator,
+              let service = improveService else { return }
+
+        let selectedRange = editorState.selectedRange
+        guard selectedRange.length > 0,
+              let swiftRange = Range(selectedRange, in: text) else { return }
+
+        let selectedText = String(text[swiftRange])
+        let stream = service.startImproving(selectedText: selectedText)
+        coordinator.startImprove(updateStream: stream)
     }
 
     // MARK: - Conflict Detection per FEAT-045

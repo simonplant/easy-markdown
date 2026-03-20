@@ -1,26 +1,29 @@
 {
-  "sprintId": "sprint-1774029203",
-  "startedAt": "2026-03-20T10:53:23-07:00",
+  "sprintId": "sprint-1774030299",
+  "startedAt": "2026-03-20T11:11:39-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-050",
-    "title": "F-003e: Source Toggle with Cursor Mapping",
-    "intent": "Switching between rich and source view must preserve context — the user should land on the same paragraph, not the top of the document",
-    "description": "Depends on: FEAT-003 (Core Rendering), FEAT-038 (Parser). Toggle button in toolbar switches between rich text view and raw markdown source view. Cursor position maps between views using AST source positions — same paragraph, best-effort same line. Changes made in source view are reflected when returning to rich view (re-parse and re-render). Toggle latency (tap to first frame of new view) under 50ms excluding The Render animation. The Render animation (FEAT-014) triggers on this toggle.",
+    "id": "FEAT-011",
+    "title": "F-025a: AI Improve Writing",
+    "intent": "Select text, tap Improve, get a better version. This is the primary AI interaction and the one we demo to sell the product.",
+    "description": "Depends on: FEAT-041 (AI Model Pipeline), FEAT-054 (AI Action Bar). Select text, see Improve in floating action bar, tap it. AI produces improved version with grammar, clarity, and conciseness fixes. Shows inline diff preview: original with strikethrough, suggestion in green. User taps Accept (text replaced, haptic), edits suggestion, or dismisses. Undoable with Cmd+Z. Streams progressively. First token <500ms, full response <3s. Works offline. AI is content-aware: understands whether selection is prose, a diagram block, or a table, and adapts its suggestions accordingly.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Toggling from rich to source shows raw markdown with cursor at the corresponding line",
-      "Toggling from source to rich shows styled view with cursor at the corresponding paragraph",
-      "Edits in source view are correctly reflected when toggling back to rich view",
-      "Toggle latency under 50ms (excluding Render animation)",
-      "Toggle works correctly on an empty document"
+      "User selects a paragraph, taps Improve, sees inline diff within 3 seconds, accepts with one tap",
+      "AI works in airplane mode with no network connection",
+      "AI works on iPhone 15 and does not appear on iPhone 14",
+      "All AI actions are undoable with Cmd+Z",
+      "Inline diff preview shows original and suggestion clearly distinguishable",
+      "Accept replaces text and triggers haptic confirmation",
+      "Dismissing returns to original text with no modifications",
+      "AI output streams token-by-token into the diff preview"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T10:53:23-07:00",
+    "startedAt": "2026-03-20T11:11:39-07:00",
     "status": "passed",
-    "completedAt": "2026-03-20T11:02:37-07:00"
+    "completedAt": "2026-03-20T11:41:35-07:00"
   },
-  "completedAt": "2026-03-20T11:02:37-07:00",
-  "attempts": 1
+  "completedAt": "2026-03-20T11:41:35-07:00",
+  "attempts": 2
 }

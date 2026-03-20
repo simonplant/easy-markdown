@@ -15,4 +15,11 @@ struct DeviceCapabilityTests {
     func casesAreDistinct() {
         #expect(DeviceCapability.fullAI != DeviceCapability.noAI)
     }
+
+    @Test("fullAI and noAI are equatable")
+    func equatable() {
+        #expect(DeviceCapability.fullAI == .fullAI)
+        #expect(DeviceCapability.noAI == .noAI)
+        #expect(DeviceCapability.fullAI != .noAI)
+    }
 }

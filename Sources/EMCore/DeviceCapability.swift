@@ -8,7 +8,7 @@ public enum DeviceCapability: Sendable {
 
     /// Detects the current device's AI capability based on chip family.
     ///
-    /// On iOS: checks the hardware machine identifier for A16+ (iPhone 14 Pro and later).
+    /// On iOS: checks the hardware machine identifier for iPhone 15+ (iPhone16,x and later).
     /// On macOS: checks for Apple Silicon (M1+) via processor translation check.
     public static func detect() -> DeviceCapability {
         #if os(iOS) || os(visionOS)
@@ -30,13 +30,13 @@ public enum DeviceCapability: Sendable {
             }
         }
 
-        // iPhone: A16 starts at iPhone15,2 (iPhone 14 Pro).
-        // "iPhone" prefix followed by major,minor version.
+        // iPhone: gate on iPhone 15 and later per AC-3 ("works on iPhone 15
+        // and does not appear on iPhone 14"). iPhone 15 = iPhone16,x.
+        // iPhone 14 Pro (iPhone15,2) has A16 but is excluded by product decision.
         if machine.hasPrefix("iPhone") {
             let version = machine.dropFirst("iPhone".count)
             if let major = parseMajorVersion(String(version)) {
-                // iPhone15,x and later have A16+
-                return major >= 15 ? .fullAI : .noAI
+                return major >= 16 ? .fullAI : .noAI
             }
         }
 

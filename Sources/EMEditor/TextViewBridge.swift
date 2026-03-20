@@ -29,6 +29,8 @@ public struct TextViewBridge: UIViewRepresentable {
     public var isEditable: Bool
     public var isSpellCheckEnabled: Bool
     public var onTextChange: ((String) -> Void)?
+    /// Optional improve writing coordinator to wire as text view delegate per FEAT-011.
+    public var improveCoordinator: ImproveWritingCoordinator?
 
     public init(
         text: SwiftUI.Binding<String>,
@@ -36,7 +38,8 @@ public struct TextViewBridge: UIViewRepresentable {
         renderConfig: RenderConfiguration? = nil,
         isEditable: Bool = true,
         isSpellCheckEnabled: Bool = true,
-        onTextChange: ((String) -> Void)? = nil
+        onTextChange: ((String) -> Void)? = nil,
+        improveCoordinator: ImproveWritingCoordinator? = nil
     ) {
         self._text = text
         self.editorState = editorState
@@ -44,6 +47,7 @@ public struct TextViewBridge: UIViewRepresentable {
         self.isEditable = isEditable
         self.isSpellCheckEnabled = isSpellCheckEnabled
         self.onTextChange = onTextChange
+        self.improveCoordinator = improveCoordinator
     }
 
     public func makeUIView(context: Context) -> EMTextView {
@@ -61,6 +65,12 @@ public struct TextViewBridge: UIViewRepresentable {
 
         context.coordinator.onTextChange = onTextChange
         context.coordinator.renderConfig = renderConfig
+        context.coordinator.managedTextView = textView
+
+        // Wire improve writing coordinator per FEAT-011
+        if let improveCoordinator {
+            improveCoordinator.textViewDelegate = context.coordinator
+        }
 
         // Wire Shift-Tab handler for list outdent per FEAT-004
         textView.onShiftTab = { [weak coordinator = context.coordinator, weak textView] in
@@ -88,6 +98,12 @@ public struct TextViewBridge: UIViewRepresentable {
 
     public func updateUIView(_ textView: EMTextView, context: Context) {
         let coordinator = context.coordinator
+
+        // Ensure managed text view and improve coordinator are wired per FEAT-011
+        coordinator.managedTextView = textView
+        if let improveCoordinator, improveCoordinator.textViewDelegate == nil {
+            improveCoordinator.textViewDelegate = coordinator
+        }
 
         // Track whether we need to re-render
         let textChanged = coordinator.updateTextView(textView, with: text)
@@ -153,6 +169,8 @@ public struct TextViewBridge: NSViewRepresentable {
     public var isEditable: Bool
     public var isSpellCheckEnabled: Bool
     public var onTextChange: ((String) -> Void)?
+    /// Optional improve writing coordinator to wire as text view delegate per FEAT-011.
+    public var improveCoordinator: ImproveWritingCoordinator?
 
     public init(
         text: SwiftUI.Binding<String>,
@@ -160,7 +178,8 @@ public struct TextViewBridge: NSViewRepresentable {
         renderConfig: RenderConfiguration? = nil,
         isEditable: Bool = true,
         isSpellCheckEnabled: Bool = true,
-        onTextChange: ((String) -> Void)? = nil
+        onTextChange: ((String) -> Void)? = nil,
+        improveCoordinator: ImproveWritingCoordinator? = nil
     ) {
         self._text = text
         self.editorState = editorState
@@ -168,6 +187,7 @@ public struct TextViewBridge: NSViewRepresentable {
         self.isEditable = isEditable
         self.isSpellCheckEnabled = isSpellCheckEnabled
         self.onTextChange = onTextChange
+        self.improveCoordinator = improveCoordinator
     }
 
     public func makeNSView(context: Context) -> NSScrollView {
@@ -191,6 +211,12 @@ public struct TextViewBridge: NSViewRepresentable {
 
         context.coordinator.onTextChange = onTextChange
         context.coordinator.renderConfig = renderConfig
+        context.coordinator.managedTextView = textView
+
+        // Wire improve writing coordinator per FEAT-011
+        if let improveCoordinator {
+            improveCoordinator.textViewDelegate = context.coordinator
+        }
 
         // Wire Shift-Tab handler for list outdent per FEAT-004
         textView.onShiftTab = { [weak coordinator = context.coordinator, weak textView] in
@@ -223,6 +249,13 @@ public struct TextViewBridge: NSViewRepresentable {
         guard let textView = scrollView.documentView as? EMTextView else { return }
 
         let coordinator = context.coordinator
+
+        // Ensure managed text view and improve coordinator are wired per FEAT-011
+        coordinator.managedTextView = textView
+        if let improveCoordinator, improveCoordinator.textViewDelegate == nil {
+            improveCoordinator.textViewDelegate = coordinator
+        }
+
         let textChanged = coordinator.updateTextView(textView, with: text)
         let previousVariant = coordinator.renderConfig?.colorVariant
         let viewModeChanged = coordinator.renderConfig?.isSourceView != renderConfig?.isSourceView

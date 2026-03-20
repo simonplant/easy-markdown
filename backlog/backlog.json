@@ -245,9 +245,10 @@
         "Dismissing returns to original text with no modifications",
         "AI output streams token-by-token into the diff preview"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T11:41:35-07:00"
     },
     {
       "id": "FEAT-012",

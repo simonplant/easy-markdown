@@ -38,6 +38,9 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
     /// Current rendering configuration. Updated from the bridge.
     var renderConfig: RenderConfiguration?
 
+    /// Weak reference to the managed text view for ImproveWritingTextViewDelegate.
+    weak var managedTextView: EMTextView?
+
     /// Formatting engine for list auto-formatting per FEAT-004 and [A-051].
     private let formattingEngine = FormattingEngine.listFormattingEngine()
 
@@ -398,6 +401,43 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
     }
 }
 
+// MARK: - ImproveWritingTextViewDelegate (iOS)
+
+extension TextViewCoordinator: ImproveWritingTextViewDelegate {
+
+    public func currentText() -> String {
+        managedTextView?.text ?? text.wrappedValue
+    }
+
+    public func currentSelectedRange() -> NSRange {
+        managedTextView?.selectedRange ?? editorState.selectedRange
+    }
+
+    public func textStorage() -> NSMutableAttributedString? {
+        managedTextView?.textStorage
+    }
+
+    public func baseFont() -> PlatformFont {
+        renderConfig?.typeScale.body ?? PlatformFont.systemFont(ofSize: 17)
+    }
+
+    public func replaceText(in range: NSRange, with replacement: String) {
+        guard let textView = managedTextView else { return }
+        let fullText = textView.text ?? ""
+        guard let swiftRange = Range(range, in: fullText) else { return }
+        var mutable = fullText
+        mutable.replaceSubrange(swiftRange, with: replacement)
+        textView.text = mutable
+        text.wrappedValue = mutable
+        onTextChange?(mutable)
+    }
+
+    public func requestRerender() {
+        guard let textView = managedTextView else { return }
+        requestRender(for: textView)
+    }
+}
+
 // MARK: - Value binding helper
 
 /// Lightweight get/set binding for coordinator use.
@@ -437,6 +477,9 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
 
     /// Current rendering configuration. Updated from the bridge.
     var renderConfig: RenderConfiguration?
+
+    /// Weak reference to the managed text view for ImproveWritingTextViewDelegate.
+    weak var managedTextView: EMTextView?
 
     /// Formatting engine for list auto-formatting per FEAT-004 and [A-051].
     private let formattingEngine = FormattingEngine.listFormattingEngine()
@@ -798,6 +841,43 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
     /// Word count for selection stats using NLTokenizer for CJK-aware segmentation per [A-055].
     private func wordCount(in text: String) -> Int {
         DocumentStatsCalculator.countWords(in: text)
+    }
+}
+
+// MARK: - ImproveWritingTextViewDelegate (macOS)
+
+extension TextViewCoordinator: ImproveWritingTextViewDelegate {
+
+    public func currentText() -> String {
+        managedTextView?.string ?? text.wrappedValue
+    }
+
+    public func currentSelectedRange() -> NSRange {
+        managedTextView?.selectedRange() ?? editorState.selectedRange
+    }
+
+    public func textStorage() -> NSMutableAttributedString? {
+        managedTextView?.textStorage
+    }
+
+    public func baseFont() -> PlatformFont {
+        renderConfig?.typeScale.body ?? PlatformFont.systemFont(ofSize: 14)
+    }
+
+    public func replaceText(in range: NSRange, with replacement: String) {
+        guard let textView = managedTextView else { return }
+        let fullText = textView.string
+        guard let swiftRange = Range(range, in: fullText) else { return }
+        var mutable = fullText
+        mutable.replaceSubrange(swiftRange, with: replacement)
+        textView.string = mutable
+        text.wrappedValue = mutable
+        onTextChange?(mutable)
+    }
+
+    public func requestRerender() {
+        guard let textView = managedTextView else { return }
+        requestRender(for: textView)
     }
 }
 

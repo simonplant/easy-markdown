@@ -136,8 +136,8 @@ public final class AIProviderManager {
         }
     }
 
-    /// Whether AI UI elements should be shown per AC-6.
-    /// iPhone 14 and older devices show no AI-related UI elements.
+    /// Whether AI UI elements should be shown per AC-3.
+    /// iPhone 14 (including Pro) and older devices show no AI-related UI elements.
     public var shouldShowAIUI: Bool {
         deviceCapability == .fullAI
     }
