@@ -822,4 +822,160 @@ struct MarkdownRendererTests {
         let linkAttr = attrStr.attribute(.link, at: textStart, effectiveRange: nil)
         #expect(linkAttr == nil, "Source view should not have .link attribute")
     }
+
+    // MARK: - Image Rendering (FEAT-048)
+
+    @Test("Image gets markdownNodeType 'image' attribute in rich view")
+    func imageNodeTypeAttribute() {
+        let source = "![alt text](image.png)"
+        let parseResult = parser.parse(source)
+        let attrStr = NSMutableAttributedString(string: source)
+
+        renderer.render(
+            into: attrStr,
+            ast: parseResult.ast,
+            sourceText: source,
+            config: richConfig
+        )
+
+        // Should have markdownNodeType "image"
+        let nodeType = attrStr.attribute(.markdownNodeType, at: 0, effectiveRange: nil) as? String
+        #expect(nodeType == "image", "Image node should have markdownNodeType attribute")
+
+        // Text content must be preserved
+        #expect(attrStr.string == source, "Image rendering must preserve text content")
+    }
+
+    @Test("Image alt text attribute is set in rich view")
+    func imageAltTextAttribute() {
+        let source = "![diagram](./images/arch.png)"
+        let parseResult = parser.parse(source)
+        let attrStr = NSMutableAttributedString(string: source)
+
+        renderer.render(
+            into: attrStr,
+            ast: parseResult.ast,
+            sourceText: source,
+            config: richConfig
+        )
+
+        let altText = attrStr.attribute(.imageAltText, at: 0, effectiveRange: nil) as? String
+        #expect(altText == "diagram", "Image should have alt text attribute")
+    }
+
+    @Test("Image syntax is hidden in rich view (broken image shows alt text)")
+    func imageSyntaxHiddenInRichView() {
+        let source = "![alt text](missing.png)"
+        let parseResult = parser.parse(source)
+        let attrStr = NSMutableAttributedString(string: source)
+
+        renderer.render(
+            into: attrStr,
+            ast: parseResult.ast,
+            sourceText: source,
+            config: richConfig
+        )
+
+        // "![" at position 0 should be hidden (zero-width font)
+        let bangFont = attrStr.attribute(.font, at: 0, effectiveRange: nil) as? PlatformFont
+        #expect(bangFont != nil)
+        #expect(bangFont!.pointSize < 1, "Image opening syntax '![' should be hidden")
+
+        // "](missing.png)" should be hidden
+        let closeSyntaxStart = source.distance(from: source.startIndex, to: source.range(of: "](")!.lowerBound)
+        let closeFont = attrStr.attribute(.font, at: closeSyntaxStart, effectiveRange: nil) as? PlatformFont
+        #expect(closeFont != nil)
+        #expect(closeFont!.pointSize < 1, "Image closing syntax '](url)' should be hidden")
+
+        // Alt text "alt text" should be visible (not hidden)
+        let altStart = source.distance(from: source.startIndex, to: source.range(of: "alt text")!.lowerBound)
+        let altFont = attrStr.attribute(.font, at: altStart, effectiveRange: nil) as? PlatformFont
+        #expect(altFont != nil)
+        #expect(altFont!.pointSize > 1, "Alt text should be visible in rich view")
+
+        #expect(attrStr.string == source)
+    }
+
+    @Test("Image in source view gets link color")
+    func imageSourceViewColor() {
+        let source = "![photo](image.jpg)"
+        let parseResult = parser.parse(source)
+        let attrStr = NSMutableAttributedString(string: source)
+
+        renderer.render(
+            into: attrStr,
+            ast: parseResult.ast,
+            sourceText: source,
+            config: sourceConfig
+        )
+
+        // In source view, the "!" should have link color
+        let color = attrStr.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? PlatformColor
+        #expect(color != nil, "Image should have foreground color in source view")
+
+        // Syntax should NOT be hidden in source view
+        let font = attrStr.attribute(.font, at: 0, effectiveRange: nil) as? PlatformFont
+        #expect(font != nil)
+        #expect(font!.pointSize > 1, "Source view should not hide image syntax")
+    }
+
+    @Test("Image with empty alt text renders without crash")
+    func imageEmptyAltText() {
+        let source = "![](path/to/image.png)"
+        let parseResult = parser.parse(source)
+        let attrStr = NSMutableAttributedString(string: source)
+
+        renderer.render(
+            into: attrStr,
+            ast: parseResult.ast,
+            sourceText: source,
+            config: richConfig
+        )
+
+        #expect(attrStr.string == source, "Image with empty alt text must preserve content")
+
+        let altText = attrStr.attribute(.imageAltText, at: 0, effectiveRange: nil) as? String
+        #expect(altText == "", "Empty alt text should still have attribute")
+    }
+
+    @Test("Multiple images in document render independently")
+    func multipleImages() {
+        let source = "![first](a.png)\n\n![second](b.png)"
+        let parseResult = parser.parse(source)
+        let attrStr = NSMutableAttributedString(string: source)
+
+        renderer.render(
+            into: attrStr,
+            ast: parseResult.ast,
+            sourceText: source,
+            config: richConfig
+        )
+
+        // First image
+        let firstAlt = attrStr.attribute(.imageAltText, at: 0, effectiveRange: nil) as? String
+        #expect(firstAlt == "first")
+
+        // Second image
+        let secondStart = source.distance(from: source.startIndex, to: source.range(of: "![second]")!.lowerBound)
+        let secondAlt = attrStr.attribute(.imageAltText, at: secondStart, effectiveRange: nil) as? String
+        #expect(secondAlt == "second")
+
+        #expect(attrStr.string == source)
+    }
+
+    @Test("Image with no source renders without crash")
+    func imageNoSource() {
+        let source = "![alt]()"
+        let parseResult = parser.parse(source)
+        let attrStr = NSMutableAttributedString(string: source)
+
+        renderer.render(
+            into: attrStr,
+            ast: parseResult.ast,
+            sourceText: source,
+            config: richConfig
+        )
+
+        #expect(attrStr.string == source, "Image with no source must preserve content")
+    }
 }
