@@ -84,6 +84,74 @@ public final class SettingsManager {
         didSet { defaults.set(hasSeenModelDownloadPrompt, forKey: Keys.hasSeenModelDownloadPrompt) }
     }
 
+    // MARK: - On-Device Aggregate Counters per [D-BIZ-6]
+
+    /// Number of times AI Improve Writing has been used.
+    public private(set) var aiImproveCount: Int {
+        didSet { defaults.set(aiImproveCount, forKey: Keys.aiImproveCount) }
+    }
+
+    /// Number of times AI Summarize has been used.
+    public private(set) var aiSummarizeCount: Int {
+        didSet { defaults.set(aiSummarizeCount, forKey: Keys.aiSummarizeCount) }
+    }
+
+    /// Number of times an AI Continue Writing suggestion was accepted.
+    public private(set) var aiContinueAcceptCount: Int {
+        didSet { defaults.set(aiContinueAcceptCount, forKey: Keys.aiContinueAcceptCount) }
+    }
+
+    /// Number of times a Document Doctor fix was accepted.
+    public private(set) var doctorFixAcceptCount: Int {
+        didSet { defaults.set(doctorFixAcceptCount, forKey: Keys.doctorFixAcceptCount) }
+    }
+
+    /// Number of documents opened (cumulative across launches).
+    public private(set) var documentsOpenedCount: Int {
+        didSet { defaults.set(documentsOpenedCount, forKey: Keys.documentsOpenedCount) }
+    }
+
+    /// Number of distinct days the app has been actively used.
+    public private(set) var daysActiveCount: Int {
+        didSet { defaults.set(daysActiveCount, forKey: Keys.daysActiveCount) }
+    }
+
+    /// Date string (yyyy-MM-dd) of the last day the app was recorded as active.
+    private var lastActiveDateString: String? {
+        didSet { defaults.set(lastActiveDateString, forKey: Keys.lastActiveDateString) }
+    }
+
+    /// Increments the specified counter by one.
+    public func recordAIImprove() { aiImproveCount += 1 }
+
+    /// Increments the specified counter by one.
+    public func recordAISummarize() { aiSummarizeCount += 1 }
+
+    /// Increments the specified counter by one.
+    public func recordAIContinueAccept() { aiContinueAcceptCount += 1 }
+
+    /// Increments the specified counter by one.
+    public func recordDoctorFixAccept() { doctorFixAcceptCount += 1 }
+
+    /// Increments the specified counter by one.
+    public func recordDocumentOpened() { documentsOpenedCount += 1 }
+
+    /// Records the app as active today. Increments `daysActiveCount` only on the first call per calendar day.
+    public func recordDayActive() {
+        let today = Self.todayString()
+        guard today != lastActiveDateString else { return }
+        lastActiveDateString = today
+        daysActiveCount += 1
+    }
+
+    /// Date formatter for day-active tracking. Uses fixed POSIX locale to avoid calendar/locale ambiguity.
+    private static func todayString() -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: Date())
+    }
+
     // MARK: - State Restoration per [A-061]
 
     /// Security-scoped bookmark data for the last open file.
@@ -142,6 +210,15 @@ public final class SettingsManager {
         ) ?? .notDownloaded
         self.hasSeenModelDownloadPrompt = defaults.object(forKey: Keys.hasSeenModelDownloadPrompt) as? Bool ?? false
 
+        // On-device aggregate counters
+        self.aiImproveCount = defaults.integer(forKey: Keys.aiImproveCount)
+        self.aiSummarizeCount = defaults.integer(forKey: Keys.aiSummarizeCount)
+        self.aiContinueAcceptCount = defaults.integer(forKey: Keys.aiContinueAcceptCount)
+        self.doctorFixAcceptCount = defaults.integer(forKey: Keys.doctorFixAcceptCount)
+        self.documentsOpenedCount = defaults.integer(forKey: Keys.documentsOpenedCount)
+        self.daysActiveCount = defaults.integer(forKey: Keys.daysActiveCount)
+        self.lastActiveDateString = defaults.string(forKey: Keys.lastActiveDateString)
+
         // State restoration
         self.lastOpenFileBookmark = defaults.data(forKey: Keys.lastOpenFileBookmark)
         self.lastCursorPosition = defaults.object(forKey: Keys.lastCursorPosition) as? Int ?? 0
@@ -163,6 +240,13 @@ public final class SettingsManager {
         static let ghostText = "em_ghostText"
         static let modelDownloadState = "em_modelDownloadState"
         static let hasSeenModelDownloadPrompt = "em_hasSeenModelDownloadPrompt"
+        static let aiImproveCount = "em_counter_aiImprove"
+        static let aiSummarizeCount = "em_counter_aiSummarize"
+        static let aiContinueAcceptCount = "em_counter_aiContinueAccept"
+        static let doctorFixAcceptCount = "em_counter_doctorFixAccept"
+        static let documentsOpenedCount = "em_counter_documentsOpened"
+        static let daysActiveCount = "em_counter_daysActive"
+        static let lastActiveDateString = "em_counter_lastActiveDate"
         static let lastOpenFileBookmark = "em_lastOpenFileBookmark"
         static let lastCursorPosition = "em_lastCursorPosition"
         static let lastViewModeIsSource = "em_lastViewModeIsSource"
