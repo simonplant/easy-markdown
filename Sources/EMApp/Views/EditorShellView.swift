@@ -25,6 +25,7 @@ struct EditorShellView: View {
     @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
     @Environment(FileCreateCoordinator.self) private var fileCreateCoordinator
     @Environment(AIProviderManager.self) private var aiProviderManager
+    @Environment(ReviewPromptCoordinator.self) private var reviewPromptCoordinator
     @State private var editorState = EditorState()
     @State private var text = ""
     @State private var showDoctorPopover = false
@@ -502,6 +503,7 @@ struct EditorShellView: View {
         #endif
 
         settings.recordDoctorFixAccept()
+        reviewPromptCoordinator.requestReviewIfEligible()
     }
 
     /// Recomputes document stats using NLTokenizer-based calculator per [A-055].
@@ -578,7 +580,10 @@ struct EditorShellView: View {
                     onTranslate: { /* Pro action — wired in future FEAT-024 */ },
                     onTone: { /* Pro action — wired in future FEAT-023 */ },
                     onProUpgrade: { showingProUpgrade = true },
-                    onAccept: { coordinator.accept() },
+                    onAccept: {
+                        coordinator.accept()
+                        reviewPromptCoordinator.requestReviewIfEligible()
+                    },
                     onDismiss: { coordinator.dismiss() },
                     onBold: { editorState.performBold?() },
                     onItalic: { editorState.performItalic?() },

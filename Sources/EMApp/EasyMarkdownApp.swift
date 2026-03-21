@@ -122,6 +122,8 @@ public final class AppShell {
             settings: settings
         )
 
+        let reviewPromptCoordinator = ReviewPromptCoordinator(settings: settings)
+
         return AppRootWrapper(
             settings: settings,
             errorPresenter: errorPresenter,
@@ -129,7 +131,8 @@ public final class AppShell {
             purchaseManager: purchaseManager,
             fileOpenCoordinator: fileOpenCoordinator,
             fileCreateCoordinator: fileCreateCoordinator,
-            aiProviderManager: aiProviderManager
+            aiProviderManager: aiProviderManager,
+            reviewPromptCoordinator: reviewPromptCoordinator
         )
     }
 
@@ -191,6 +194,7 @@ struct AppRootWrapper: View {
     @State var fileOpenCoordinator: FileOpenCoordinator
     @State var fileCreateCoordinator: FileCreateCoordinator
     @State var aiProviderManager: AIProviderManager
+    @State var reviewPromptCoordinator: ReviewPromptCoordinator
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -202,6 +206,7 @@ struct AppRootWrapper: View {
             .environment(fileOpenCoordinator)
             .environment(fileCreateCoordinator)
             .environment(aiProviderManager)
+            .environment(reviewPromptCoordinator)
             .preferredColorScheme(colorScheme)
             .animation(themeTransition, value: colorScheme)
     }
