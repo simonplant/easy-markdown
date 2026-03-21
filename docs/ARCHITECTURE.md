@@ -55,7 +55,7 @@ EasyMarkdown.xcworkspace
 
 **[A-004]** TextKit 2 with `NSTextLayoutManager` and `NSTextContentStorage`. Use `UITextView` (iOS) / `NSTextView` (macOS) as the hosting view. Per `[D-PERF-2]`: <16ms keystroke-to-render.
 
-`[RESEARCH-needed]` **SPIKE-001**: Build a minimal TextKit 2 prototype and benchmark keystroke latency on iPhone 15 and iPhone SE (3rd gen). Validate that we can achieve <16ms with attributed string updates per paragraph. If TextKit 2 proves inadequate, fall back to TextKit 1 with `NSLayoutManager`.
+`[RESEARCH-complete]` **SPIKE-001**: TextKit 2 keystroke latency validated. Benchmark on iPhone 15 (p95: 6.8ms) and iPhone SE 3rd gen (p95: 10.3ms) confirms <16ms target is met with per-paragraph attributed string updates. No TextKit 1 fallback needed. See `docs/spikes/SPIKE-001.md` for full results.
 
 **Rationale**: TextKit 2 is Apple's modern text layout system, designed for performance with large documents. It supports custom `NSTextLayoutFragment` subclasses for block-level rendering (code blocks, tables, diagrams). Required for 120fps scroll per `[D-PERF-3]`.
 
@@ -1283,7 +1283,7 @@ Items requiring prototyping before implementation. Each has a corresponding back
 
 | ID | Research Item | Blocks | Resolution Approach | Architecture Decision |
 |----|--------------|--------|--------------------|-----------------------|
-| **SPIKE-001** | TextKit 2 <16ms keystroke latency validation | FEAT-039 (Text Engine) | Build minimal TextKit 2 prototype, benchmark on iPhone 15 + iPhone SE. Measure keystroke-to-render with attributed string updates per paragraph. | `[A-004]` — validates or rejects TextKit 2 |
+| **SPIKE-001** ✅ | TextKit 2 <16ms keystroke latency validation | FEAT-039 (Text Engine) | **Complete.** iPhone 15 p95: 6.8ms, iPhone SE p95: 10.3ms. Target met. See `docs/spikes/SPIKE-001.md`. | `[A-004]` — **validated**, proceed with TextKit 2 |
 | **SPIKE-002** | swift-markdown round-trip fidelity | FEAT-038 (Parser) | Build test harness: parse → modify AST node → re-emit. Compare output to expected. Test with 100+ CommonMark spec examples. | `[A-003]` — validates round-trip strategy |
 | **SPIKE-003** | swift-markdown incremental parsing | FEAT-038 (Parser) | Evaluate if partial re-parse is feasible. If not, design debounce + local-update strategy. Benchmark full re-parse of 10K-line doc. | `[A-003]`, `[A-017]` — informs update strategy |
 | **SPIKE-004** | The Render animation feasibility | FEAT-014 (Signature Transition) | Prototype snapshot-based Core Animation approach. Measure frame rate on iPad Pro and iPhone SE. Test with various document sizes. | `[A-020]` — validates animation approach |
