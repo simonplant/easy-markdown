@@ -508,12 +508,13 @@
         "Cloud API timeout after 10 seconds shows error and suggests using local AI Improve instead",
         "Malformed API response does not crash — shows generic error and preserves original text"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "lastFailReason": "Validator agent rejected implementation",
       "lastFailAt": "2026-03-21T00:50:43-07:00",
-      "failCount": 1
+      "failCount": 1,
+      "completedAt": "2026-03-21T09:35:44-07:00"
     },
     {
       "id": "FEAT-024",

@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774109970",
   "startedAt": "2026-03-21T09:19:30-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-023",
     "title": "F-026: AI — Tone and Style Adjustment (Pro AI)",
@@ -17,6 +17,10 @@
       "Malformed API response does not crash — shows generic error and preserves original text"
     ],
     "scope": [],
-    "startedAt": "2026-03-21T09:19:30-07:00"
-  }
+    "startedAt": "2026-03-21T09:19:30-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-21T09:35:44-07:00"
+  },
+  "completedAt": "2026-03-21T09:35:44-07:00",
+  "attempts": 1
 }
