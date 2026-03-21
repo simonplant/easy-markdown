@@ -522,7 +522,7 @@ The editor is the hardest subsystem. It owns the text view, rendering pipeline, 
 
 ### 4.3 The Render Animation
 
-**[A-020]** Snapshot-based Core Animation per `DP-9` and `[D-UX-3]`. `[RESEARCH-needed]` **SPIKE-004**.
+**[A-020]** Snapshot-based Core Animation per `DP-9` and `[D-UX-3]`. `[RESEARCH-complete]` **SPIKE-004** ✅.
 
 **Approach**:
 1. Capture the current view state as a snapshot layer (`CALayer` snapshot)
@@ -1286,7 +1286,7 @@ Items requiring prototyping before implementation. Each has a corresponding back
 | **SPIKE-001** ✅ | TextKit 2 <16ms keystroke latency validation | FEAT-039 (Text Engine) | **Complete.** iPhone 15 p95: 6.8ms, iPhone SE p95: 10.3ms. Target met. See `docs/spikes/SPIKE-001.md`. | `[A-004]` — **validated**, proceed with TextKit 2 |
 | **SPIKE-002** ✅ | swift-markdown round-trip fidelity | FEAT-038 (Parser) | **Complete.** 100% structural fidelity across 106 CommonMark + GFM cases. AST modification via `MarkupRewriter` works correctly. Formatting normalization is cosmetic only. See `docs/spikes/SPIKE-002.md`. | `[A-003]` — **validated**, proceed with swift-markdown |
 | **SPIKE-003** | swift-markdown incremental parsing | FEAT-038 (Parser) | Evaluate if partial re-parse is feasible. If not, design debounce + local-update strategy. Benchmark full re-parse of 10K-line doc. | `[A-003]`, `[A-017]` — informs update strategy |
-| **SPIKE-004** | The Render animation feasibility | FEAT-014 (Signature Transition) | Prototype snapshot-based Core Animation approach. Measure frame rate on iPad Pro and iPhone SE. Test with various document sizes. | `[A-020]` — validates animation approach |
+| **SPIKE-004** ✅ | The Render animation feasibility | FEAT-014 (Signature Transition) | **Complete.** 120fps on iPad Pro (M2) and 60fps on iPhone SE (A15) with up to 450 animating layers. Reduced Motion crossfade validated. 1000-line documents performant. See `docs/spikes/SPIKE-004.md`. | `[A-020]` — **validated**, proceed with snapshot-based Core Animation |
 | **SPIKE-005** | Local AI inference benchmarks + device capability detection | FEAT-041 (AI Pipeline) | Run MLX Swift and Core ML inference on A16 and M1 hardware. Measure first token latency, tokens/sec, memory. Also validate device capability detection via ProcessInfo. | `[A-008]`, `[A-033]` — selects inference framework and validates capability detection |
 | **SPIKE-006** | Mermaid WKWebView memory impact | FEAT-030 (Mermaid Rendering) | Prototype offscreen WKWebView rendering. Measure memory with 1, 5, 10 diagrams. Test cache invalidation. | `[A-006]` — validates rendering approach |
 | **SPIKE-007** | tree-sitter Swift integration | FEAT-006 (Syntax Highlighting) | Evaluate swift-tree-sitter package. Build prototype with 3 languages. Measure binary size and parse performance. | `[A-005]` — selects highlighting approach |
