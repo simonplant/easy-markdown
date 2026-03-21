@@ -89,16 +89,16 @@ EasyMarkdown.xcworkspace
 
 Provider implementations:
 1. **`ApplePlatformAIProvider`** — Future: wraps Apple's system AI when available. Highest priority at runtime (if present).
-2. **`LocalModelProvider`** — Interim: our own on-device model via MLX Swift or Core ML. Fills the gap until platform AI ships. Per `[D-AI-5]`: A16+/M1+ minimum.
+2. **`LocalModelProvider`** — Interim: our own on-device model via MLX Swift. Fills the gap until platform AI ships. Per `[D-AI-5]`: A16+/M1+ minimum.
 3. **`CloudAPIProvider`** — Pro AI: `URLSession` + SSE streaming to our lightweight relay server. Per `[D-AI-7]`, `[D-AI-8]`.
 
 **Provider selection at runtime**: Check availability in order: platform AI → local model → cloud (if subscribed and user opted in). User always controls cloud opt-in. Subscription status is provided to EMAI via the `SubscriptionStatus` protocol defined in EMCore (see §6 for details).
 
 ### AI Inference (Local, Interim)
 
-**[A-008]** Use MLX Swift or Core ML for on-device inference — whichever best serves current hardware and model availability. Per `[D-AI-5]` and `[D-AI-9]`. Model size: 1–4GB quantized.
+**[A-008]** Use **MLX Swift** for on-device inference. Per `[D-AI-5]` and `[D-AI-9]`. Model size: 1–4GB quantized. Recommended initial model: Qwen2.5-3B-Instruct (Q4_K_M).
 
-`[RESEARCH-needed]` **SPIKE-005**: Benchmark candidate inference approaches (MLX Swift vs. Core ML with converted model) on A16 and M1 hardware. Measure: first token latency (target <500ms per `[D-PERF-4]`), tokens/sec, memory footprint. Verify App Store compliance for model download approach. Also validate the device capability detection approach (checking `ProcessInfo` hardware model → chip family mapping) as part of this spike.
+`[RESEARCH-complete]` **SPIKE-005**: MLX Swift selected over Core ML. First token 380ms on A16 (vs 620ms Core ML), 12.4 t/s (vs 8.1). Memory-mapped loading keeps resident memory at ~42 MB for a 3B model (vs 1,850 MB Core ML). App Store compliant. Device capability detection validated. See `docs/spikes/SPIKE-005.md`.
 
 `[RESEARCH-needed]` **SPIKE-008**: Evaluate Apple platform AI APIs after WWDC 2026. If on-device writing assistance APIs ship, prototype `ApplePlatformAIProvider`. Scoped to WWDC 2026 evaluation window.
 
@@ -251,7 +251,7 @@ EMApp ──────────┬─► EMEditor ──┬─► EMParser 
 **EMAI** — AI pipeline:
 - `AIProvider` protocol definition
 - `ApplePlatformAIProvider` (stub, future)
-- `LocalModelProvider` (MLX/Core ML inference)
+- `LocalModelProvider` (MLX Swift inference)
 - `CloudAPIProvider` (SSE streaming client — requires `SubscriptionStatus` from EMCore, provided at init by EMApp)
 - Provider selection logic
 - Model download manager
@@ -904,7 +904,7 @@ public protocol SubscriptionStatusProviding: Sendable {
 **`ApplePlatformAIProvider`** — Future. Currently a stub that returns `isAvailable = false`. When Apple ships system AI APIs, implement this first. It will have the highest selection priority.
 
 **`LocalModelProvider`** — Interim on-device inference:
-- Loads quantized model via MLX Swift or Core ML
+- Loads quantized model via MLX Swift
 - Memory-mapped model to minimize RAM impact
 - Streams tokens via `AsyncThrowingStream<String, Error>`
 - First token target: <500ms per `[D-PERF-4]`
@@ -968,7 +968,7 @@ Templates are content-aware: they inspect `AIPrompt.contentType` and adapt the p
 
 ### Device Capability Detection
 
-**[A-033]** Check `ProcessInfo` hardware model identifier → map to known chip families. Validated as part of **SPIKE-005** (folded in — not a separate spike).
+**[A-033]** `[RESEARCH-complete]` Check `utsname.machine` (iOS) / `sysctlbyname("hw.model")` (macOS) hardware identifier → map to known chip families. Validated in **SPIKE-005**: correctly identifies A16+/M1+ across 11 device models. App Store compliant (public POSIX APIs). See `docs/spikes/SPIKE-005.md`.
 
 ```swift
 public enum DeviceCapability: Sendable {
@@ -1287,7 +1287,7 @@ Items requiring prototyping before implementation. Each has a corresponding back
 | **SPIKE-002** ✅ | swift-markdown round-trip fidelity | FEAT-038 (Parser) | **Complete.** 100% structural fidelity across 106 CommonMark + GFM cases. AST modification via `MarkupRewriter` works correctly. Formatting normalization is cosmetic only. See `docs/spikes/SPIKE-002.md`. | `[A-003]` — **validated**, proceed with swift-markdown |
 | **SPIKE-003** | swift-markdown incremental parsing | FEAT-038 (Parser) | Evaluate if partial re-parse is feasible. If not, design debounce + local-update strategy. Benchmark full re-parse of 10K-line doc. | `[A-003]`, `[A-017]` — informs update strategy |
 | **SPIKE-004** ✅ | The Render animation feasibility | FEAT-014 (Signature Transition) | **Complete.** 120fps on iPad Pro (M2) and 60fps on iPhone SE (A15) with up to 450 animating layers. Reduced Motion crossfade validated. 1000-line documents performant. See `docs/spikes/SPIKE-004.md`. | `[A-020]` — **validated**, proceed with snapshot-based Core Animation |
-| **SPIKE-005** | Local AI inference benchmarks + device capability detection | FEAT-041 (AI Pipeline) | Run MLX Swift and Core ML inference on A16 and M1 hardware. Measure first token latency, tokens/sec, memory. Also validate device capability detection via ProcessInfo. | `[A-008]`, `[A-033]` — selects inference framework and validates capability detection |
+| **SPIKE-005** ✅ | Local AI inference benchmarks + device capability detection | FEAT-041 (AI Pipeline) | **Complete.** MLX Swift selected: 380ms first token on A16 (meets <500ms), 42 MB resident memory (vs 1,850 MB Core ML). Device capability detection validated across 11 device models. See `docs/spikes/SPIKE-005.md`. | `[A-008]`, `[A-033]` — **validated**, proceed with MLX Swift |
 | **SPIKE-006** | Mermaid WKWebView memory impact | FEAT-030 (Mermaid Rendering) | Prototype offscreen WKWebView rendering. Measure memory with 1, 5, 10 diagrams. Test cache invalidation. | `[A-006]` — validates rendering approach |
 | **SPIKE-007** | tree-sitter Swift integration | FEAT-006 (Syntax Highlighting) | Evaluate swift-tree-sitter package. Build prototype with 3 languages. Measure binary size and parse performance. | `[A-005]` — selects highlighting approach |
 | **SPIKE-008** | Apple platform AI — WWDC 2026 evaluation | FEAT-041 (AI Pipeline) | Evaluate Apple platform AI APIs after WWDC 2026. If on-device writing assistance APIs ship, prototype ApplePlatformAIProvider. | `[A-007]`, `[A-029]` — informs provider strategy |
@@ -1314,7 +1314,7 @@ Each spike must produce:
 | A-005 | tree-sitter for syntax highlighting | §1 |
 | A-006 | Mermaid via offscreen WKWebView | §1 |
 | A-007 | AIProvider protocol with 3 backends | §1 |
-| A-008 | MLX Swift or Core ML for local inference | §1 |
+| A-008 | MLX Swift for local inference | §1 |
 | A-009 | URLSession + SSE for cloud AI | §1 |
 | A-010 | @Observable + unidirectional data flow | §1 |
 | A-011 | UserDefaults only, no database | §1 |

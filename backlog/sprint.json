@@ -1,32 +1,28 @@
 {
-  "sprintId": "sprint-1774069348",
-  "startedAt": "2026-03-20T22:02:28-07:00",
+  "sprintId": "sprint-1774071008",
+  "startedAt": "2026-03-20T22:30:08-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-014",
-    "title": "F-035: The Render (Signature Transition)",
-    "intent": "The source-to-rich transition is our brand — a designed animation that makes people say 'whoa' and toggle it just to watch. This is the show-someone moment.",
-    "description": "When opening a file or toggling source to rich: # markers shrink as headings scale up, ** dissolves as text boldfaces, list markers morph into styled bullets, code fences fade as blocks materialize, links compact to styled form, blockquote markers become visual borders. ~400ms spring-animated. Reverse plays on rich-to-source. Reduced Motion: instant crossfade 200ms. Uses Core Animation for guaranteed 120fps on ProMotion. VoiceOver unaffected — announces rendered content immediately.",
+    "id": "SPIKE-005",
+    "title": "SPIKE: Local AI Inference Benchmarks and Device Capability Detection",
+    "intent": "Benchmark MLX Swift vs Core ML for on-device inference, validate device capability detection, and select the local AI framework",
+    "description": "Run inference benchmarks comparing MLX Swift and Core ML on A16 (iPhone 15) and M1 hardware. Test with 1-4GB quantized language models suitable for writing assistance. Measure: first token latency (target <500ms per D-PERF-4), tokens/sec throughput, peak memory usage, and memory-mapped model behavior. Additionally, validate the device capability detection approach (ProcessInfo hardware model → chip family mapping) to correctly identify A16+/M1+ devices. Verify App Store compliance for the model download and inference approach. Blocks FEAT-041 (AI Pipeline). Updates architecture decisions [A-008] and [A-033].",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Non-technical observer watching over the shoulder finds the transition visually striking",
-      "Animation runs at 120fps on ProMotion devices with no dropped frames",
-      "Reduced Motion setting triggers instant crossfade instead",
-      "User toggles source/rich multiple times because the animation is delightful",
-      "Animation duration is 350-450ms using spring curve with damping 0.8 and response 0.4",
-      "Every element type has an interpolated transition (no elements pop in or out)",
-      "Reverse animation rich-to-source plays at equal quality to forward",
-      "Toggle latency (tap to first animation frame) under 50ms",
-      "Works correctly on empty document and on 1-line document",
-      "Rapid toggle (tap 5 times quickly) does not crash or produce glitched state",
-      "The Render animation plays when opening a file (not just on source toggle)"
+      "MLX Swift and Core ML benchmarked on A16 and M1 hardware",
+      "First token latency, tokens/sec, and memory measured for each",
+      "Recommended framework selected with rationale",
+      "App Store compliance for model download approach verified",
+      "Device capability detection (A16+/M1+ identification) validated on multiple device models",
+      "Written finding committed to docs/spikes/SPIKE-005.md",
+      "Architecture decisions [A-008] and [A-033] updated based on findings"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T22:02:28-07:00",
+    "startedAt": "2026-03-20T22:30:08-07:00",
     "status": "passed",
-    "completedAt": "2026-03-20T22:30:07-07:00"
+    "completedAt": "2026-03-20T22:34:36-07:00"
   },
-  "completedAt": "2026-03-20T22:30:07-07:00",
+  "completedAt": "2026-03-20T22:34:36-07:00",
   "attempts": 1
 }
