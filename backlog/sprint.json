@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774066990",
   "startedAt": "2026-03-20T21:23:10-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-063",
     "title": "INFRA: App Store Purchase and Receipt Validation",
@@ -16,6 +16,10 @@
       "No additional purchase gates after the initial $9.99 for non-Pro features"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T21:23:10-07:00"
-  }
+    "startedAt": "2026-03-20T21:23:10-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-20T21:30:51-07:00"
+  },
+  "completedAt": "2026-03-20T21:30:51-07:00",
+  "attempts": 1
 }
