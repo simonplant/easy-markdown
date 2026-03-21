@@ -401,12 +401,13 @@
         "Rendered PDF includes images and code blocks with syntax highlighting",
         "No proprietary format options appear anywhere in the export flow (no Word, Pages, RTF, HTML)"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "lastFailReason": "Validator agent rejected implementation",
       "lastFailAt": "2026-03-20T23:44:46-07:00",
-      "failCount": 1
+      "failCount": 1,
+      "completedAt": "2026-03-21T08:42:14-07:00"
     },
     {
       "id": "FEAT-019",

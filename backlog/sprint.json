@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774106821",
   "startedAt": "2026-03-21T08:27:01-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-018",
     "title": "F-013: Render, Print, and Share",
@@ -19,6 +19,10 @@
       "No proprietary format options appear anywhere in the export flow (no Word, Pages, RTF, HTML)"
     ],
     "scope": [],
-    "startedAt": "2026-03-21T08:27:01-07:00"
-  }
+    "startedAt": "2026-03-21T08:27:01-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-21T08:42:14-07:00"
+  },
+  "completedAt": "2026-03-21T08:42:14-07:00",
+  "attempts": 1
 }
