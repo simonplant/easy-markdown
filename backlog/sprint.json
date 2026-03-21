@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774064691",
   "startedAt": "2026-03-20T20:44:51-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-056",
     "title": "F-025d: AI Continue Writing (Ghost Text)",
@@ -19,6 +19,10 @@
       "VoiceOver announces AI suggestion available when ghost text appears"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T20:44:51-07:00"
-  }
+    "startedAt": "2026-03-20T20:44:51-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-20T21:02:44-07:00"
+  },
+  "completedAt": "2026-03-20T21:02:44-07:00",
+  "attempts": 1
 }
