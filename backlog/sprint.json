@@ -1,28 +1,27 @@
 {
-  "sprintId": "sprint-1774071008",
-  "startedAt": "2026-03-20T22:30:08-07:00",
+  "sprintId": "sprint-1774071277",
+  "startedAt": "2026-03-20T22:34:37-07:00",
   "status": "completed",
   "item": {
-    "id": "SPIKE-005",
-    "title": "SPIKE: Local AI Inference Benchmarks and Device Capability Detection",
-    "intent": "Benchmark MLX Swift vs Core ML for on-device inference, validate device capability detection, and select the local AI framework",
-    "description": "Run inference benchmarks comparing MLX Swift and Core ML on A16 (iPhone 15) and M1 hardware. Test with 1-4GB quantized language models suitable for writing assistance. Measure: first token latency (target <500ms per D-PERF-4), tokens/sec throughput, peak memory usage, and memory-mapped model behavior. Additionally, validate the device capability detection approach (ProcessInfo hardware model → chip family mapping) to correctly identify A16+/M1+ devices. Verify App Store compliance for the model download and inference approach. Blocks FEAT-041 (AI Pipeline). Updates architecture decisions [A-008] and [A-033].",
+    "id": "SPIKE-006",
+    "title": "SPIKE: Mermaid WKWebView Memory Impact",
+    "intent": "Validate the offscreen WKWebView approach for Mermaid rendering and measure memory impact with multiple diagrams",
+    "description": "Prototype Mermaid diagram rendering using mermaid.js in an offscreen WKWebView. Render SVG output, convert to cached UIImage. Measure memory usage with 1, 5, and 10 diagrams in a single document. Test cache invalidation on content change. Test theme switching (light/dark). Evaluate WKWebView lifecycle (create/destroy vs reuse). Blocks FEAT-030 (Mermaid Rendering). Updates architecture decision [A-006].",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "MLX Swift and Core ML benchmarked on A16 and M1 hardware",
-      "First token latency, tokens/sec, and memory measured for each",
-      "Recommended framework selected with rationale",
-      "App Store compliance for model download approach verified",
-      "Device capability detection (A16+/M1+ identification) validated on multiple device models",
-      "Written finding committed to docs/spikes/SPIKE-005.md",
-      "Architecture decisions [A-008] and [A-033] updated based on findings"
+      "Prototype renders at least 3 Mermaid diagram types (flowchart, sequence, ER)",
+      "Memory usage measured with 1, 5, and 10 diagrams",
+      "Cache strategy validated (content hash → image)",
+      "Theme switching (light/dark) tested",
+      "Written finding committed to docs/spikes/SPIKE-006.md",
+      "Architecture decision [A-006] updated based on findings"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T22:30:08-07:00",
+    "startedAt": "2026-03-20T22:34:37-07:00",
     "status": "passed",
-    "completedAt": "2026-03-20T22:34:36-07:00"
+    "completedAt": "2026-03-20T22:41:26-07:00"
   },
-  "completedAt": "2026-03-20T22:34:36-07:00",
+  "completedAt": "2026-03-20T22:41:26-07:00",
   "attempts": 1
 }

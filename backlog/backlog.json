@@ -1487,9 +1487,10 @@
         "Written finding committed to docs/spikes/SPIKE-006.md",
         "Architecture decision [A-006] updated based on findings"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T22:41:26-07:00"
     },
     {
       "id": "SPIKE-007",
