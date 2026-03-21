@@ -9,4 +9,9 @@ public protocol SubscriptionStatusProviding: Sendable {
 
     /// When the current subscription expires, if applicable.
     var subscriptionExpirationDate: Date? { get }
+
+    /// The signed transaction JWS for server-side subscription validation.
+    /// Used by CloudAPIProvider to authenticate requests to the relay server.
+    /// Returns `nil` if no active subscription transaction is available.
+    var subscriptionReceiptJWS: String? { get async }
 }

@@ -1,28 +1,26 @@
 {
-  "sprintId": "sprint-1774077077",
-  "startedAt": "2026-03-21T00:11:17-07:00",
+  "sprintId": "sprint-1774080945",
+  "startedAt": "2026-03-21T01:15:45-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-021",
-    "title": "F-016: macOS App",
-    "intent": "macOS must feel like a native Mac app — not a port. Mac users are discerning and will reject anything that feels like iOS on a bigger screen.",
-    "description": "Native macOS window management (tabs, split view, full screen). Menu bar with complete keyboard shortcut coverage. Drag-and-drop file opening. Services menu integration. Finder Quick Look preview for .md files. Touch Bar support if applicable.",
+    "id": "FEAT-046",
+    "title": "INFRA: Pro AI Cloud Infrastructure",
+    "intent": "The cloud relay for Pro AI must be minimal, private, and reliable — it routes requests to the AI provider and validates subscriptions, nothing more.",
+    "description": "Lightweight API relay (serverless function or minimal server) that: validates App Store subscription receipt via StoreKit 2 server-side verification, forwards selected text to AI provider (initially Anthropic Claude per D-AI-7), streams response back to client, logs nothing (no prompts, no responses, no user data per D-AI-8). Client-side: StoreKit 2 subscription management, subscription status caching, graceful degradation on network failure (suggest local AI alternative). Privacy pipeline: only user-selected text sent (never full document silently), provider contractual no-retention.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "macOS app passes Apple HIG review",
-      "A Mac-native user would not guess it was ported from iOS",
-      "Quick Look preview works for .md files in Finder",
-      "Uses NSWindow, not UIWindow via Catalyst",
-      "Menu bar has standard File/Edit/View/Format/Window/Help menus",
-      "Cmd+comma opens preferences, Cmd+Q quits",
-      "Right-click context menu matches system style and includes AI actions on selected text"
+      "Pro AI request completes end-to-end (client → relay → provider → client) in <5 seconds",
+      "Expired/invalid subscription receipt is rejected with clear user-facing message",
+      "Network failure during Pro AI request shows error and suggests using local AI instead",
+      "Server logs contain zero user content (prompts, responses, or file data)",
+      "Subscription status is cached client-side so the app doesn't block on network for every AI action"
     ],
     "scope": [],
-    "startedAt": "2026-03-21T00:11:17-07:00",
+    "startedAt": "2026-03-21T01:15:45-07:00",
     "status": "passed",
-    "completedAt": "2026-03-21T00:22:16-07:00"
+    "completedAt": "2026-03-21T01:26:43-07:00"
   },
-  "completedAt": "2026-03-21T00:22:16-07:00",
+  "completedAt": "2026-03-21T01:26:43-07:00",
   "attempts": 1
 }

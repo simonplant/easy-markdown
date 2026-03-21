@@ -60,10 +60,10 @@ public enum EMError: LocalizedError {
             switch self {
             case .modelNotDownloaded: return "AI model hasn't been downloaded yet."
             case .modelDownloadFailed: return "AI model download failed. Check your connection."
-            case .inferenceTimeout: return "AI took too long. Try again or use a shorter selection."
+            case .inferenceTimeout: return "Cloud AI took too long. Try using on-device AI instead."
             case .inferenceFailed: return "AI couldn't process that. Try again."
             case .deviceNotSupported: return "AI features require a newer device."
-            case .cloudUnavailable: return "Can't reach cloud AI. Check your connection."
+            case .cloudUnavailable: return "Can't reach cloud AI. Try using on-device AI instead."
             case .subscriptionRequired: return "This feature requires Pro AI."
             case .subscriptionExpired: return "Your Pro AI subscription has expired."
             }

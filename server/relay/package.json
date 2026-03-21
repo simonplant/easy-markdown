@@ -1,0 +1,17 @@
+{
+  "name": "easymarkdown-relay",
+  "version": "1.0.0",
+  "description": "Lightweight API relay for easy-markdown Pro AI — validates subscriptions, forwards to AI provider, streams response. Logs zero user content.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "jose": "^5.2.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
