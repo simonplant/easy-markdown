@@ -39,3 +39,4 @@
 {"date":"2026-03-20","sprintId":"sprint-1774067452","itemId":"SPIKE-001","status":"complete","attempts":1,"filesChanged":4,"linesAdded":1,"linesRemoved":9,"duration":278,"priority":"must","category":"Research"}
 {"date":"2026-03-20","sprintId":"sprint-1774067731","itemId":"SPIKE-002","status":"complete","attempts":1,"filesChanged":3,"linesAdded":9,"linesRemoved":2,"duration":604,"priority":"must","category":"Research"}
 {"date":"2026-03-20","sprintId":"sprint-1774068859","itemId":"SPIKE-004","status":"complete","attempts":1,"filesChanged":4,"linesAdded":4,"linesRemoved":2,"duration":488,"priority":"must","category":"Research"}
+{"date":"2026-03-20","sprintId":"sprint-1774069348","itemId":"FEAT-014","status":"complete","attempts":1,"filesChanged":3,"linesAdded":9,"linesRemoved":1,"duration":1659,"priority":"must","category":"Appearance"}

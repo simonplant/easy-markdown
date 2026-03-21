@@ -319,9 +319,10 @@
         "Rapid toggle (tap 5 times quickly) does not crash or produce glitched state",
         "The Render animation plays when opening a file (not just on source toggle)"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T22:30:07-07:00"
     },
     {
       "id": "FEAT-015",

@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774069348",
   "startedAt": "2026-03-20T22:02:28-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-014",
     "title": "F-035: The Render (Signature Transition)",
@@ -23,6 +23,10 @@
       "The Render animation plays when opening a file (not just on source toggle)"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T22:02:28-07:00"
-  }
+    "startedAt": "2026-03-20T22:02:28-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-20T22:30:07-07:00"
+  },
+  "completedAt": "2026-03-20T22:30:07-07:00",
+  "attempts": 1
 }
