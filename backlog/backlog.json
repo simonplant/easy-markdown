@@ -1151,9 +1151,10 @@
         "External display shows sharp text with appropriate content width constraints",
         "No letterboxing or awkward black bars on any display size"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T21:11:14-07:00"
     },
     {
       "id": "FEAT-058",

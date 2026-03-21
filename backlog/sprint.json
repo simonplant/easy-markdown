@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774065766",
   "startedAt": "2026-03-20T21:02:46-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-057",
     "title": "F-036b: iPad Split View, Slide Over, and External Display",
@@ -16,6 +16,10 @@
       "No letterboxing or awkward black bars on any display size"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T21:02:46-07:00"
-  }
+    "startedAt": "2026-03-20T21:02:46-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-20T21:11:14-07:00"
+  },
+  "completedAt": "2026-03-20T21:11:14-07:00",
+  "attempts": 1
 }
