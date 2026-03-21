@@ -160,6 +160,36 @@ extension LayoutMetrics {
             return .iPad
         }
     }
+
+    /// Returns metrics adapted to a specific available width in points per FEAT-057.
+    ///
+    /// Provides continuous adaptation for iPad Split View resize, Slide Over,
+    /// and external display scenarios. Unlike `forSizeClass(_:)`, which jumps
+    /// at the compact/regular threshold, this method adapts margins smoothly
+    /// based on actual view width.
+    ///
+    /// Width behavior:
+    /// - Below 400pt (Slide Over, ~320pt): tight margins (12pt), no content width constraint
+    /// - 400–599pt (narrow Split View): compact margins (16pt), no content width constraint
+    /// - 600pt+ (wide Split View, full screen, external display): comfortable margins (32pt),
+    ///   700pt max content width for 65–80 character readability per [D-PERF] typography spec
+    public static func forAvailableWidth(_ width: CGFloat) -> LayoutMetrics {
+        if width < 400 {
+            // Slide Over / very narrow: minimize margins to maximize content area.
+            // At 320pt with 12pt margins, content area is ~296pt — sufficient for wrapped text.
+            return LayoutMetrics(
+                horizontalMargin: 12,
+                verticalMargin: 12,
+                maxContentWidth: nil,
+                lineHeightMultiplier: 1.6,
+                paragraphSpacingMultiplier: 0.6
+            )
+        } else if width < 600 {
+            return .iPhone
+        } else {
+            return .iPad
+        }
+    }
 }
 
 /// Size class abstraction for cross-platform layout decisions.
