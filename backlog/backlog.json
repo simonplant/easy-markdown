@@ -1264,9 +1264,10 @@
         "Restore purchases works for users who reinstall or switch devices",
         "No additional purchase gates after the initial $9.99 for non-Pro features"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T21:30:51-07:00"
     },
     {
       "id": "FEAT-064",

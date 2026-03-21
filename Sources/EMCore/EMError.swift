@@ -7,6 +7,7 @@ public enum EMError: LocalizedError {
     case file(FileError)
     case ai(AIError)
     case parse(ParseError)
+    case purchase(PurchaseError)
     case unexpected(underlying: Error)
 
     public var errorDescription: String? {
@@ -14,6 +15,7 @@ public enum EMError: LocalizedError {
         case .file(let error): return error.errorDescription
         case .ai(let error): return error.errorDescription
         case .parse(let error): return error.errorDescription
+        case .purchase(let error): return error.errorDescription
         case .unexpected: return "Something unexpected happened. Your work is safe."
         }
     }
@@ -81,6 +83,34 @@ public enum EMError: LocalizedError {
         }
     }
 
+    // MARK: - Purchase Errors
+
+    public enum PurchaseError: LocalizedError {
+        case productNotFound
+        case purchaseFailed(underlying: Error?)
+        case userCancelled
+        case purchasePending
+        case receiptValidationFailed(underlying: Error)
+        case restoreFailed(underlying: Error)
+
+        public var errorDescription: String? {
+            switch self {
+            case .productNotFound:
+                return "Couldn't load the purchase. Check your connection and try again."
+            case .purchaseFailed:
+                return "Purchase failed. You haven't been charged."
+            case .userCancelled:
+                return nil // Silent — user chose to cancel.
+            case .purchasePending:
+                return "Purchase is pending approval."
+            case .receiptValidationFailed:
+                return "Couldn't verify your purchase. Try restoring purchases."
+            case .restoreFailed:
+                return "Couldn't restore purchases. Check your connection and try again."
+            }
+        }
+    }
+
     // MARK: - Error Severity Classification
 
     /// The severity of this error, determining how it is presented to the user.
@@ -113,6 +143,18 @@ public enum EMError: LocalizedError {
             case .modelNotDownloaded, .deviceNotSupported,
                  .subscriptionRequired, .subscriptionExpired:
                 return .informational
+            }
+
+        case .purchase(let purchaseError):
+            switch purchaseError {
+            case .userCancelled:
+                return .informational
+            case .purchasePending:
+                return .informational
+            case .purchaseFailed, .restoreFailed:
+                return .recoverable
+            case .productNotFound, .receiptValidationFailed:
+                return .recoverable
             }
 
         case .parse:
