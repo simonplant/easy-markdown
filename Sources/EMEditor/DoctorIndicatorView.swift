@@ -9,9 +9,13 @@ import EMCore
 
 /// Indicator bar shown when the Document Doctor has found issues.
 /// Appears at the bottom of the editor, non-blocking per FEAT-005 AC-4.
+/// Shows a hover preview of the first issue on pointer hover per FEAT-058 AC-2.
 public struct DoctorIndicatorBar: View {
     public let diagnostics: [Diagnostic]
     public let onTap: () -> Void
+
+    @State private var isHovered = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     public init(diagnostics: [Diagnostic], onTap: @escaping () -> Void) {
         self.diagnostics = diagnostics
@@ -26,15 +30,30 @@ public struct DoctorIndicatorBar: View {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .font(.caption)
                         .foregroundStyle(.orange)
-                    Text("\(diagnostics.count) issue\(diagnostics.count == 1 ? "" : "s")")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+
+                    if isHovered, let first = diagnostics.first {
+                        // Show first issue preview on hover per FEAT-058 AC-2
+                        Text("Line \(first.line): \(first.message)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .transition(.opacity)
+                    } else {
+                        Text("\(diagnostics.count) issue\(diagnostics.count == 1 ? "" : "s")")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .transition(.opacity)
+                    }
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(.ultraThinMaterial, in: Capsule())
+                .animation(reduceMotion ? nil : .easeInOut(duration: 0.15), value: isHovered)
             }
             .buttonStyle(.plain)
+            .onHover { hovering in
+                isHovered = hovering
+            }
             #if os(iOS)
             .hoverEffect(.highlight)
             #endif
