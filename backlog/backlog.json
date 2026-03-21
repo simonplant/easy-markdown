@@ -427,8 +427,8 @@
       "passes": false,
       "readyForSprint": true,
       "lastFailReason": "Validator agent rejected implementation",
-      "lastFailAt": "2026-03-20T23:56:14-07:00",
-      "failCount": 1
+      "lastFailAt": "2026-03-21T08:51:39-07:00",
+      "failCount": 2
     },
     {
       "id": "FEAT-020",
@@ -448,8 +448,8 @@
       "passes": false,
       "readyForSprint": true,
       "lastFailReason": "Validator agent rejected implementation",
-      "lastFailAt": "2026-03-21T00:11:17-07:00",
-      "failCount": 1
+      "lastFailAt": "2026-03-21T09:06:27-07:00",
+      "failCount": 2
     },
     {
       "id": "FEAT-021",

@@ -28,6 +28,7 @@ struct SettingsView: View {
         return Form {
             appearanceSection(settings: $settings)
             editorSection(settings: $settings)
+            writingSection(settings: $settings)
             aiSection(settings: $settings)
             exportSection(settings: $settings)
             aboutSection
@@ -112,6 +113,32 @@ struct SettingsView: View {
                 Text("Keep").tag(TrailingWhitespaceBehavior.keep)
             }
             .accessibilityHint("Choose how trailing whitespace is handled on save")
+        }
+    }
+
+    // MARK: - Writing per FEAT-022
+
+    private func writingSection(settings: Bindable<SettingsManager>) -> some View {
+        Section("Writing") {
+            Toggle("Prose Suggestions", isOn: settings.isProseSuggestionsEnabled)
+                .accessibilityHint("Flag long sentences, passive voice, and repeated words")
+
+            HStack {
+                Text("Word Count Goal")
+                Spacer()
+                TextField(
+                    "0",
+                    value: settings.writingGoalWordCount,
+                    format: .number
+                )
+                .multilineTextAlignment(.trailing)
+                .frame(width: 80)
+                #if os(iOS)
+                .keyboardType(.numberPad)
+                #endif
+                .accessibilityLabel("Target word count")
+                .accessibilityHint("Set a word count goal. Enter 0 for no goal.")
+            }
         }
     }
 

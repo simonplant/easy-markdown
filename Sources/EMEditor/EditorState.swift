@@ -48,6 +48,10 @@ public final class EditorState {
     /// Full document statistics per [A-055]. Updated on text changes.
     public private(set) var documentStats: DocumentStats = .zero
 
+    /// Target word count for the writing goal per FEAT-022. Zero means no goal.
+    /// Set by EMApp from SettingsManager.
+    public var writingGoalWordCount: Int = 0
+
     /// Active diagnostics from the Document Doctor per FEAT-005.
     /// Updated after each doctor evaluation cycle.
     public private(set) var diagnostics: [Diagnostic] = []

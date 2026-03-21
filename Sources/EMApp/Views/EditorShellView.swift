@@ -95,6 +95,7 @@ struct EditorShellView: View {
                 isAutoFormatHeadingSpacing: settings.isAutoFormatHeadingSpacing,
                 isAutoFormatBlankLineSeparation: settings.isAutoFormatBlankLineSeparation,
                 isAutoFormatTrailingWhitespaceTrim: settings.trailingWhitespaceBehavior == .strip,
+                isProseSuggestionsEnabled: settings.isProseSuggestionsEnabled,
                 onAIAssist: { editorState.focusAISection = true },
                 onToggleSourceView: { toggleSourceView() },
                 onOpenFile: { openFileFromEditor() },
@@ -179,7 +180,8 @@ struct EditorShellView: View {
             StatusBar(
                 stats: editorState.documentStats,
                 selectionWordCount: editorState.selectionWordCount,
-                diagnosticCount: editorState.diagnostics.count
+                diagnosticCount: editorState.diagnostics.count,
+                writingGoalWordCount: editorState.writingGoalWordCount
             )
         }
         .overlay(alignment: .top) {
@@ -278,6 +280,7 @@ struct EditorShellView: View {
             startConflictMonitoring()
             startAutoSave()
             setupImproveWriting()
+            editorState.writingGoalWordCount = settings.writingGoalWordCount
         }
         .task {
             // Check Pro subscription status for floating bar badge per FEAT-054 AC-3.
@@ -307,6 +310,9 @@ struct EditorShellView: View {
             if !newValue {
                 ghostTextCoordinator?.cancel()
             }
+        }
+        .onChange(of: settings.writingGoalWordCount) { _, newValue in
+            editorState.writingGoalWordCount = newValue
         }
         .onChange(of: editorState.findReplaceState.searchQuery) { _, _ in
             updateFindMatches()

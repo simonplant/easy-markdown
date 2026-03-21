@@ -1,28 +1,20 @@
 {
-  "sprintId": "sprint-1774106821",
-  "startedAt": "2026-03-21T08:27:01-07:00",
-  "status": "completed",
+  "sprintId": "sprint-1774109187",
+  "startedAt": "2026-03-21T09:06:27-07:00",
+  "status": "in_progress",
   "item": {
-    "id": "FEAT-018",
-    "title": "F-013: Render, Print, and Share",
-    "intent": "Share markdown with the world — as a .md file via share sheet, as a beautiful print, or as a rendered PDF. Markdown is the primary format; rendering is for handoff to non-markdown users.",
-    "description": "Share as markdown: iOS share sheet for .md file (AirDrop, email, Messages, any app). Save to new location: copy .md to different directory/cloud/external storage. Print: rendered rich text matching in-editor appearance. Rendered PDF: polished PDF for sharing with non-markdown users. No Word, Pages, RTF, or proprietary format export (D-NO-12).",
+    "id": "FEAT-022",
+    "title": "F-017: Extended Document Doctor",
+    "intent": "Deepen writing intelligence beyond structural checks — help users write better prose, not just better markdown",
+    "description": "Readability scoring (Flesch-Kincaid or similar) in status bar. Writing goals: user sets target word count, progress shown visually. Prose suggestions (opt-in): flag very long sentences, passive voice, repeated words.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "User exports a document with headings, lists, code blocks, and images to PDF — result looks like a polished document",
-      "PDF export includes images from relative paths",
-      "User can save/copy the .md file to a different directory or cloud drive",
-      "User shares .md file via AirDrop to a colleague",
-      "User prints document and output matches in-editor rich text appearance",
-      "Rendered PDF includes images and code blocks with syntax highlighting",
-      "No proprietary format options appear anywhere in the export flow (no Word, Pages, RTF, HTML)"
+      "User enables prose suggestions — doctor flags a 60-word sentence with suggestion to break it up",
+      "User can accept suggestion (cursor positioned for edit) or dismiss",
+      "Writing goal progress is shown visually as user approaches target word count"
     ],
     "scope": [],
-    "startedAt": "2026-03-21T08:27:01-07:00",
-    "status": "passed",
-    "completedAt": "2026-03-21T08:42:14-07:00"
-  },
-  "completedAt": "2026-03-21T08:42:14-07:00",
-  "attempts": 1
+    "startedAt": "2026-03-21T09:06:27-07:00"
+  }
 }

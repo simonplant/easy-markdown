@@ -46,6 +46,9 @@ public struct TextViewBridge: UIViewRepresentable {
     /// Whether trailing whitespace trimming on Enter is enabled.
     public var isAutoFormatTrailingWhitespaceTrim: Bool
 
+    /// Whether prose suggestion doctor rules are enabled per FEAT-022.
+    public var isProseSuggestionsEnabled: Bool
+
     // MARK: - App-level keyboard shortcut handlers per FEAT-009
 
     /// Called when Cmd+J is pressed (AI assist).
@@ -83,6 +86,7 @@ public struct TextViewBridge: UIViewRepresentable {
         isAutoFormatHeadingSpacing: Bool = true,
         isAutoFormatBlankLineSeparation: Bool = true,
         isAutoFormatTrailingWhitespaceTrim: Bool = true,
+        isProseSuggestionsEnabled: Bool = false,
         onAIAssist: (() -> Void)? = nil,
         onToggleSourceView: (() -> Void)? = nil,
         onOpenFile: (() -> Void)? = nil,
@@ -105,6 +109,7 @@ public struct TextViewBridge: UIViewRepresentable {
         self.isAutoFormatHeadingSpacing = isAutoFormatHeadingSpacing
         self.isAutoFormatBlankLineSeparation = isAutoFormatBlankLineSeparation
         self.isAutoFormatTrailingWhitespaceTrim = isAutoFormatTrailingWhitespaceTrim
+        self.isProseSuggestionsEnabled = isProseSuggestionsEnabled
         self.onAIAssist = onAIAssist
         self.onToggleSourceView = onToggleSourceView
         self.onOpenFile = onOpenFile
@@ -278,6 +283,9 @@ public struct TextViewBridge: UIViewRepresentable {
             isTrailingWhitespaceTrimEnabled: isAutoFormatTrailingWhitespaceTrim
         )
 
+        // Update prose suggestions setting per FEAT-022
+        coordinator.doctorCoordinator.proseSuggestionsEnabled = isProseSuggestionsEnabled
+
         // Apply theme background color per FEAT-007
         if let colors = renderConfig?.colors {
             textView.applyThemeBackground(colors.background, animated: colorChanged)
@@ -335,6 +343,9 @@ public struct TextViewBridge: NSViewRepresentable {
     /// Whether trailing whitespace trimming on Enter is enabled.
     public var isAutoFormatTrailingWhitespaceTrim: Bool
 
+    /// Whether prose suggestion doctor rules are enabled per FEAT-022.
+    public var isProseSuggestionsEnabled: Bool
+
     // MARK: - App-level keyboard shortcut handlers per FEAT-009
 
     /// Called when Cmd+J is pressed (AI assist).
@@ -372,6 +383,7 @@ public struct TextViewBridge: NSViewRepresentable {
         isAutoFormatHeadingSpacing: Bool = true,
         isAutoFormatBlankLineSeparation: Bool = true,
         isAutoFormatTrailingWhitespaceTrim: Bool = true,
+        isProseSuggestionsEnabled: Bool = false,
         onAIAssist: (() -> Void)? = nil,
         onToggleSourceView: (() -> Void)? = nil,
         onOpenFile: (() -> Void)? = nil,
@@ -394,6 +406,7 @@ public struct TextViewBridge: NSViewRepresentable {
         self.isAutoFormatHeadingSpacing = isAutoFormatHeadingSpacing
         self.isAutoFormatBlankLineSeparation = isAutoFormatBlankLineSeparation
         self.isAutoFormatTrailingWhitespaceTrim = isAutoFormatTrailingWhitespaceTrim
+        self.isProseSuggestionsEnabled = isProseSuggestionsEnabled
         self.onAIAssist = onAIAssist
         self.onToggleSourceView = onToggleSourceView
         self.onOpenFile = onOpenFile
@@ -569,6 +582,9 @@ public struct TextViewBridge: NSViewRepresentable {
             isBlankLineSeparationEnabled: isAutoFormatBlankLineSeparation,
             isTrailingWhitespaceTrimEnabled: isAutoFormatTrailingWhitespaceTrim
         )
+
+        // Update prose suggestions setting per FEAT-022
+        coordinator.doctorCoordinator.proseSuggestionsEnabled = isProseSuggestionsEnabled
 
         // Apply theme background color per FEAT-007
         if let colors = renderConfig?.colors {

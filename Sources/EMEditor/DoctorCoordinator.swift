@@ -15,14 +15,23 @@ private let logger = Logger(subsystem: "com.easymarkdown.emeditor", category: "d
 @MainActor
 public final class DoctorCoordinator {
 
-    /// The doctor engine instance. Created once, reused for all evaluations.
-    private let engine = DoctorEngine()
+    /// The doctor engine instance. Rebuilt when prose suggestions toggle changes.
+    private var engine: DoctorEngine
 
     /// The editor state to post diagnostics to.
     private weak var editorState: EditorState?
 
     /// File URL for resolving relative links. Updated by the caller.
     public var fileURL: URL?
+
+    /// Whether prose suggestion rules are included per FEAT-022.
+    /// Set by EMApp from SettingsManager. Rebuilds the engine when changed.
+    public var proseSuggestionsEnabled: Bool = false {
+        didSet {
+            guard oldValue != proseSuggestionsEnabled else { return }
+            engine = DoctorEngine(includingProseSuggestions: proseSuggestionsEnabled)
+        }
+    }
 
     /// Debounce task for doctor evaluation (500ms per spec).
     private var debounceTask: Task<Void, Never>?
@@ -36,8 +45,10 @@ public final class DoctorCoordinator {
         category: "doctor"
     )
 
-    public init(editorState: EditorState) {
+    public init(editorState: EditorState, proseSuggestionsEnabled: Bool = false) {
         self.editorState = editorState
+        self.proseSuggestionsEnabled = proseSuggestionsEnabled
+        self.engine = DoctorEngine(includingProseSuggestions: proseSuggestionsEnabled)
     }
 
     /// Evaluates the document immediately (used on file open).

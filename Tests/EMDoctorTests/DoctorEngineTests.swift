@@ -342,3 +342,198 @@ struct MissingBlankLineRuleTests {
         }
     }
 }
+
+// MARK: - FEAT-022 Extended Doctor Rules
+
+@Suite("LongSentenceRule")
+struct LongSentenceRuleTests {
+
+    private let parser = MarkdownParser()
+
+    private func context(for text: String) -> DoctorContext {
+        let result = parser.parse(text)
+        return DoctorContext(text: text, ast: result.ast, fileURL: nil)
+    }
+
+    @Test("AC-1: Flags a 60-word sentence")
+    func flags60WordSentence() {
+        // Build a sentence with exactly 60 words
+        let words = (1...60).map { "word\($0)" }
+        let text = words.joined(separator: " ") + "."
+        let rule = LongSentenceRule(threshold: 50)
+        let diagnostics = rule.evaluate(context(for: text))
+        #expect(diagnostics.count == 1)
+        #expect(diagnostics[0].ruleID == "long-sentence")
+        #expect(diagnostics[0].message.contains("60"))
+        #expect(diagnostics[0].message.contains("breaking it up"))
+    }
+
+    @Test("Does not flag a short sentence")
+    func noFlagShort() {
+        let text = "This is a short sentence."
+        let rule = LongSentenceRule(threshold: 50)
+        let diagnostics = rule.evaluate(context(for: text))
+        #expect(diagnostics.isEmpty)
+    }
+
+    @Test("Does not flag exactly threshold words")
+    func noFlagExactThreshold() {
+        let words = (1...50).map { "word\($0)" }
+        let text = words.joined(separator: " ") + "."
+        let rule = LongSentenceRule(threshold: 50)
+        let diagnostics = rule.evaluate(context(for: text))
+        #expect(diagnostics.isEmpty)
+    }
+
+    @Test("Flags multiple long sentences independently")
+    func flagsMultiple() {
+        let longSentence = (1...55).map { "word\($0)" }.joined(separator: " ") + "."
+        let text = longSentence + " " + longSentence
+        let rule = LongSentenceRule(threshold: 50)
+        let diagnostics = rule.evaluate(context(for: text))
+        #expect(diagnostics.count == 2)
+    }
+
+    @Test("No fix provided — informational only")
+    func noFix() {
+        let words = (1...55).map { "word\($0)" }
+        let text = words.joined(separator: " ") + "."
+        let rule = LongSentenceRule(threshold: 50)
+        let diagnostics = rule.evaluate(context(for: text))
+        #expect(diagnostics.first?.fix == nil)
+    }
+
+    @Test("Empty document produces no diagnostics")
+    func emptyDocument() {
+        let rule = LongSentenceRule()
+        let diagnostics = rule.evaluate(context(for: ""))
+        #expect(diagnostics.isEmpty)
+    }
+}
+
+@Suite("PassiveVoiceRule")
+struct PassiveVoiceRuleTests {
+
+    private let parser = MarkdownParser()
+    private let rule = PassiveVoiceRule()
+
+    private func context(for text: String) -> DoctorContext {
+        let result = parser.parse(text)
+        return DoctorContext(text: text, ast: result.ast, fileURL: nil)
+    }
+
+    @Test("Flags was + past participle")
+    func flagsWasPastParticiple() {
+        let text = "The report was written by the team."
+        let diagnostics = rule.evaluate(context(for: text))
+        #expect(diagnostics.count >= 1)
+        #expect(diagnostics[0].ruleID == "passive-voice")
+        #expect(diagnostics[0].message.contains("passive voice") || diagnostics[0].message.contains("Passive voice"))
+    }
+
+    @Test("Does not flag active voice")
+    func noFlagActive() {
+        let text = "The team wrote the report."
+        let diagnostics = rule.evaluate(context(for: text))
+        #expect(diagnostics.isEmpty)
+    }
+
+    @Test("Empty document produces no diagnostics")
+    func emptyDocument() {
+        let diagnostics = rule.evaluate(context(for: ""))
+        #expect(diagnostics.isEmpty)
+    }
+}
+
+@Suite("RepeatedWordRule")
+struct RepeatedWordRuleTests {
+
+    private let parser = MarkdownParser()
+    private let rule = RepeatedWordRule()
+
+    private func context(for text: String) -> DoctorContext {
+        let result = parser.parse(text)
+        return DoctorContext(text: text, ast: result.ast, fileURL: nil)
+    }
+
+    @Test("Flags repeated adjacent word")
+    func flagsRepeated() {
+        let text = "The the cat sat on the mat."
+        let diagnostics = rule.evaluate(context(for: text))
+        #expect(diagnostics.count == 1)
+        #expect(diagnostics[0].ruleID == "repeated-word")
+        #expect(diagnostics[0].message.lowercased().contains("the"))
+    }
+
+    @Test("Provides fix to remove duplicate")
+    func providesFix() {
+        let text = "The the cat sat."
+        let diagnostics = rule.evaluate(context(for: text))
+        #expect(diagnostics.first?.fix != nil)
+        #expect(diagnostics.first?.fix?.label == "Remove duplicate")
+        #expect(diagnostics.first?.fix?.replacement == "")
+    }
+
+    @Test("Case-insensitive detection")
+    func caseInsensitive() {
+        let text = "The the cat."
+        let diagnostics = rule.evaluate(context(for: text))
+        #expect(diagnostics.count == 1)
+    }
+
+    @Test("No flag for different words")
+    func noFlagDifferent() {
+        let text = "The cat sat on the mat."
+        let diagnostics = rule.evaluate(context(for: text))
+        #expect(diagnostics.isEmpty)
+    }
+
+    @Test("No flag for same word on different lines")
+    func noFlagCrossLine() {
+        let text = "word\nword"
+        let diagnostics = rule.evaluate(context(for: text))
+        #expect(diagnostics.isEmpty)
+    }
+
+    @Test("Empty document produces no diagnostics")
+    func emptyDocument() {
+        let diagnostics = rule.evaluate(context(for: ""))
+        #expect(diagnostics.isEmpty)
+    }
+}
+
+@Suite("DoctorEngine Prose Mode")
+struct DoctorEngineProseTests {
+
+    private let parser = MarkdownParser()
+
+    private func context(for text: String) -> DoctorContext {
+        let result = parser.parse(text)
+        return DoctorContext(text: text, ast: result.ast, fileURL: nil)
+    }
+
+    @Test("Engine with prose suggestions includes prose rules")
+    func proseEngineIncludesRules() {
+        let engine = DoctorEngine(includingProseSuggestions: true)
+        let ruleIDs = engine.rules.map { $0.ruleID }
+        #expect(ruleIDs.contains("long-sentence"))
+        #expect(ruleIDs.contains("passive-voice"))
+        #expect(ruleIDs.contains("repeated-word"))
+    }
+
+    @Test("Engine without prose suggestions excludes prose rules")
+    func structuralOnlyEngine() {
+        let engine = DoctorEngine(includingProseSuggestions: false)
+        let ruleIDs = engine.rules.map { $0.ruleID }
+        #expect(!ruleIDs.contains("long-sentence"))
+        #expect(!ruleIDs.contains("passive-voice"))
+        #expect(!ruleIDs.contains("repeated-word"))
+    }
+
+    @Test("Default engine excludes prose rules")
+    func defaultEngine() {
+        let engine = DoctorEngine()
+        let ruleIDs = engine.rules.map { $0.ruleID }
+        #expect(!ruleIDs.contains("long-sentence"))
+    }
+}
