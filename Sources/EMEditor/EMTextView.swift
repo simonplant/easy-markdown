@@ -352,20 +352,26 @@ public final class EMTextView: UITextView {
 
     // MARK: - Layout
 
-    /// Applies current layout metrics to text container insets per FEAT-010.
+    /// Triggers a layout pass to recompute width-adaptive insets per FEAT-057.
     private func applyLayoutMetrics() {
-        textContainerInset = layoutMetrics.textContainerInsets
+        setNeedsLayout()
     }
 
     public override func layoutSubviews() {
         super.layoutSubviews()
 
-        // Compute effective insets: if a maxContentWidth is set and the view is wider,
-        // center the content by increasing horizontal insets per FEAT-010 AC-3.
-        var insets = layoutMetrics.textContainerInsets
+        // Use width-adaptive metrics for smooth Split View / Slide Over reflow per FEAT-057.
+        // This runs on every frame during resize, computing margins from actual view width
+        // rather than discrete size class thresholds. Prevents jumpiness at the
+        // compact/regular boundary during Split View resize drag.
+        let adaptedMetrics = LayoutMetrics.forAvailableWidth(bounds.width)
+        var insets = adaptedMetrics.textContainerInsets
         let lineFragPadding = textContainer.lineFragmentPadding * 2
 
-        if let maxWidth = layoutMetrics.maxContentWidth {
+        // Center content if maxContentWidth is set and the view is wider per FEAT-010 AC-3.
+        // On external displays and wide Split Views, this constrains content to ~65–80
+        // characters for readability without letterboxing.
+        if let maxWidth = adaptedMetrics.maxContentWidth {
             let availableWidth = bounds.width - lineFragPadding
             if availableWidth > maxWidth + insets.left + insets.right {
                 let extraMargin = (availableWidth - maxWidth) / 2
@@ -379,7 +385,8 @@ public final class EMTextView: UITextView {
         }
 
         // Update text container width to match view width minus insets.
-        // This ensures proper line wrapping without horizontal scrolling.
+        // This ensures proper line wrapping without horizontal scrolling,
+        // including at Slide Over's minimum ~320pt width.
         let containerWidth = bounds.width - insets.left - insets.right - lineFragPadding
         if containerWidth > 0, textContainer.size.width != containerWidth {
             textContainer.size = CGSize(

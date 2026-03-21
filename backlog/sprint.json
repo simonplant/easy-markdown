@@ -1,28 +1,25 @@
 {
-  "sprintId": "sprint-1774064691",
-  "startedAt": "2026-03-20T20:44:51-07:00",
+  "sprintId": "sprint-1774065766",
+  "startedAt": "2026-03-20T21:02:46-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-056",
-    "title": "F-025d: AI Continue Writing (Ghost Text)",
-    "intent": "The editor should anticipate what you want to write next — ghost text that appears naturally after a pause and accepts with Tab",
-    "description": "Depends on: FEAT-041 (AI Model Pipeline), FEAT-039 (Text Engine). After a 3-second typing pause at end of text, AI generates 1-3 sentences continuing the thought. Appears as dimmed ghost text inline at cursor. Tab accepts (text inserted, ghost text becomes real). Typing any character dismisses ghost text. Can be toggled off in settings (FEAT-042). Must not conflict with auto-formatting. First token <500ms.",
+    "id": "FEAT-057",
+    "title": "F-036b: iPad Split View, Slide Over, and External Display",
+    "intent": "Content must reflow gracefully at every width — from narrow Slide Over to full external display",
+    "description": "Depends on: FEAT-037 (App Shell), FEAT-010 (Typography). Split View at 1/3, 1/2, 2/3 widths with graceful content reflow. Slide Over for quick edits. External display: editor spans full display with content width constraints (70-80 char max per D-PERF typography). No letterboxing. Resolution independent (sharp on non-Retina external displays). Content width adapts in real time during Split View resize.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Ghost text appears after 3-second pause at end of content",
-      "Tab key accepts ghost text and it becomes real document text",
-      "Typing any character dismisses ghost text immediately",
-      "Ghost text does not appear inside code blocks",
-      "Ghost text can be toggled off in settings",
-      "Ghost text does not trigger auto-formatting rules",
-      "VoiceOver announces AI suggestion available when ghost text appears"
+      "Content reflows without jumpiness during Split View resize drag",
+      "Slide Over at narrowest width shows content without horizontal scrolling",
+      "External display shows sharp text with appropriate content width constraints",
+      "No letterboxing or awkward black bars on any display size"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T20:44:51-07:00",
+    "startedAt": "2026-03-20T21:02:46-07:00",
     "status": "passed",
-    "completedAt": "2026-03-20T21:02:44-07:00"
+    "completedAt": "2026-03-20T21:11:14-07:00"
   },
-  "completedAt": "2026-03-20T21:02:44-07:00",
+  "completedAt": "2026-03-20T21:11:14-07:00",
   "attempts": 1
 }

@@ -158,6 +158,54 @@ struct LayoutMetricsTests {
     }
     #endif
 
+    // MARK: - Width-Based Metrics per FEAT-057
+
+    @Test("Slide Over width (~320pt) uses tight margins with no content width constraint")
+    func slideOverWidth() {
+        let metrics = LayoutMetrics.forAvailableWidth(320)
+        #expect(metrics.horizontalMargin < 16,
+                "Slide Over should use tight margins to maximize content area")
+        #expect(metrics.maxContentWidth == nil,
+                "Narrow widths should not constrain content width")
+    }
+
+    @Test("Narrow Split View width uses compact margins")
+    func narrowSplitViewWidth() {
+        let metrics = LayoutMetrics.forAvailableWidth(500)
+        #expect(metrics.horizontalMargin == LayoutMetrics.iPhone.horizontalMargin)
+        #expect(metrics.maxContentWidth == nil)
+    }
+
+    @Test("Wide Split View / full screen uses comfortable margins with content width constraint")
+    func wideSplitViewWidth() {
+        let metrics = LayoutMetrics.forAvailableWidth(800)
+        #expect(metrics.horizontalMargin == LayoutMetrics.iPad.horizontalMargin)
+        #expect(metrics.maxContentWidth != nil)
+    }
+
+    @Test("External display width uses content width constraint for readability")
+    func externalDisplayWidth() {
+        let metrics = LayoutMetrics.forAvailableWidth(2560)
+        #expect(metrics.maxContentWidth != nil,
+                "External display should constrain content width")
+        if let maxWidth = metrics.maxContentWidth {
+            #expect(maxWidth >= 550)
+            #expect(maxWidth <= 750)
+        }
+    }
+
+    @Test("Width breakpoints transition smoothly — no gaps")
+    func widthBreakpointCoverage() {
+        // Verify every width from 0 to 2000 returns valid metrics
+        for width in stride(from: CGFloat(0), through: 2000, by: 50) {
+            let metrics = LayoutMetrics.forAvailableWidth(width)
+            #expect(metrics.horizontalMargin > 0)
+            #expect(metrics.verticalMargin > 0)
+            #expect(metrics.lineHeightMultiplier >= 1.5)
+            #expect(metrics.lineHeightMultiplier <= 1.7)
+        }
+    }
+
     // MARK: - Edge Cases
 
     @Test("Line spacing is zero for very small font sizes")
