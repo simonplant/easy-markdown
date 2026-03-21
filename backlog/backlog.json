@@ -1532,9 +1532,10 @@
         "Architecture decisions [A-007] and [A-029] updated based on findings",
         "Spike closed with clear resolution (adopt, defer, or not applicable)"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T23:10:08-07:00"
     },
     {
       "id": "SPIKE-009",
