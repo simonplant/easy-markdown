@@ -303,6 +303,68 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         signpost.end("keystroke")
     }
 
+    /// Custom attribute key for find match highlighting per FEAT-017.
+    private static let findHighlightKey = NSAttributedString.Key("com.easymarkdown.findHighlight")
+
+    /// Applies find match highlighting to the text storage per FEAT-017.
+    /// All matches get a subtle background. The current match gets a stronger highlight.
+    func applyFindHighlights(_ matches: [FindMatch], currentIndex: Int?, in textView: UITextView) {
+        let storage = textView.textStorage
+        let fullText = textView.text ?? ""
+        let fullNSRange = NSRange(location: 0, length: (fullText as NSString).length)
+
+        // Clear previous highlights
+        storage.beginEditing()
+        storage.removeAttribute(Self.findHighlightKey, range: fullNSRange)
+        storage.removeAttribute(.backgroundColor, range: fullNSRange)
+
+        // Apply highlights for all matches
+        for (i, match) in matches.enumerated() {
+            let nsRange = NSRange(match.range, in: fullText)
+            let color: PlatformColor
+            if i == currentIndex {
+                color = PlatformColor.systemYellow.withAlphaComponent(0.5)
+            } else {
+                color = PlatformColor.systemYellow.withAlphaComponent(0.2)
+            }
+            storage.addAttribute(.backgroundColor, value: color, range: nsRange)
+            storage.addAttribute(Self.findHighlightKey, value: true, range: nsRange)
+        }
+        storage.endEditing()
+
+        // Scroll to current match
+        if let idx = currentIndex, idx < matches.count {
+            let nsRange = NSRange(matches[idx].range, in: fullText)
+            textView.scrollRangeToVisible(nsRange)
+        }
+    }
+
+    /// Replaces the entire document text as a single undo group per FEAT-017 AC-3.
+    /// Routes through text storage so the undo manager tracks the change.
+    func handleReplaceText(_ newText: String, in textView: UITextView) {
+        let oldText = textView.text ?? ""
+        guard oldText != newText else { return }
+
+        let fullRange = NSRange(location: 0, length: (oldText as NSString).length)
+        let undoManager = editorState.undoManager
+
+        undoManager.beginUndoGrouping()
+        undoManager.registerUndo(withTarget: textView) { [weak self] tv in
+            self?.handleReplaceText(oldText, in: tv)
+        }
+        undoManager.endUndoGrouping()
+
+        textView.textStorage.beginEditing()
+        textView.textStorage.replaceCharacters(in: fullRange, with: newText)
+        textView.textStorage.endEditing()
+
+        text.wrappedValue = newText
+        onTextChange?(newText)
+        if let emTextView = textView as? EMTextView {
+            scheduleRender(for: emTextView)
+        }
+    }
+
     /// Handles Shift-Tab for list outdent per FEAT-004.
     /// Called from EMTextView's key command handler.
     /// Returns true if the event was consumed by a formatting rule.
@@ -658,6 +720,12 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         // Restore selection and scroll
         textView.selectedRange = restoringSelection
         textView.setContentOffset(scrollOffset, animated: false)
+
+        // Reapply find highlights if find bar is active per FEAT-017
+        let findState = editorState.findReplaceState
+        if findState.isVisible, !findState.matches.isEmpty {
+            applyFindHighlights(findState.matches, currentIndex: findState.currentMatchIndex, in: textView)
+        }
     }
 
     // MARK: - Word counting
@@ -972,6 +1040,70 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         }
 
         signpost.end("keystroke")
+    }
+
+    /// Custom attribute key for find match highlighting per FEAT-017.
+    private static let findHighlightKey = NSAttributedString.Key("com.easymarkdown.findHighlight")
+
+    /// Applies find match highlighting to the text storage per FEAT-017.
+    /// All matches get a subtle background. The current match gets a stronger highlight.
+    func applyFindHighlights(_ matches: [FindMatch], currentIndex: Int?, in textView: NSTextView) {
+        guard let storage = textView.textStorage else { return }
+        let fullText = textView.string
+        let fullNSRange = NSRange(location: 0, length: (fullText as NSString).length)
+
+        // Clear previous highlights
+        storage.beginEditing()
+        storage.removeAttribute(Self.findHighlightKey, range: fullNSRange)
+        storage.removeAttribute(.backgroundColor, range: fullNSRange)
+
+        // Apply highlights for all matches
+        for (i, match) in matches.enumerated() {
+            let nsRange = NSRange(match.range, in: fullText)
+            let color: PlatformColor
+            if i == currentIndex {
+                color = PlatformColor.systemYellow.withAlphaComponent(0.5)
+            } else {
+                color = PlatformColor.systemYellow.withAlphaComponent(0.2)
+            }
+            storage.addAttribute(.backgroundColor, value: color, range: nsRange)
+            storage.addAttribute(Self.findHighlightKey, value: true, range: nsRange)
+        }
+        storage.endEditing()
+
+        // Scroll to current match
+        if let idx = currentIndex, idx < matches.count {
+            let nsRange = NSRange(matches[idx].range, in: fullText)
+            textView.scrollRangeToVisible(nsRange)
+        }
+    }
+
+    /// Replaces the entire document text as a single undo group per FEAT-017 AC-3.
+    /// Routes through text storage so the undo manager tracks the change.
+    func handleReplaceText(_ newText: String, in textView: NSTextView) {
+        let oldText = textView.string
+        guard oldText != newText else { return }
+
+        guard let textStorage = textView.textStorage else { return }
+        let fullRange = NSRange(location: 0, length: (oldText as NSString).length)
+
+        if let undoManager = textView.undoManager {
+            undoManager.beginUndoGrouping()
+            undoManager.registerUndo(withTarget: textView) { [weak self] tv in
+                self?.handleReplaceText(oldText, in: tv)
+            }
+            undoManager.endUndoGrouping()
+        }
+
+        textStorage.beginEditing()
+        textStorage.replaceCharacters(in: fullRange, with: newText)
+        textStorage.endEditing()
+
+        text.wrappedValue = newText
+        onTextChange?(newText)
+        if let emTextView = textView as? EMTextView {
+            scheduleRender(for: emTextView)
+        }
     }
 
     /// Handles Shift-Tab for list outdent per FEAT-004.
@@ -1342,6 +1474,12 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         textStorage.endEditing()
 
         textView.setSelectedRange(restoringSelection)
+
+        // Reapply find highlights if find bar is active per FEAT-017
+        let findState = editorState.findReplaceState
+        if findState.isVisible, !findState.matches.isEmpty {
+            applyFindHighlights(findState.matches, currentIndex: findState.currentMatchIndex, in: textView)
+        }
     }
 
     // MARK: - Word counting

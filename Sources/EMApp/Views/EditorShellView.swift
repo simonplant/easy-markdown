@@ -42,6 +42,8 @@ struct EditorShellView: View {
     @State private var showingNewFilePicker = false
     @State private var isProSubscriber = false
     @State private var showingProUpgrade = false
+    /// Find and replace engine per FEAT-017.
+    private let findReplaceEngine = FindReplaceEngine()
     @Environment(\.colorScheme) private var colorScheme
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -94,6 +96,7 @@ struct EditorShellView: View {
                 onOpenFile: { openFileFromEditor() },
                 onNewFile: { newFileFromEditor() },
                 onCloseFile: { closeFile() },
+                onFindReplace: { toggleFindReplace() },
                 showAIContextMenuActions: aiProviderManager.shouldShowAIUI,
                 onContextMenuImprove: { startImprove() },
                 onContextMenuSummarize: { startSummarize() }
@@ -130,6 +133,17 @@ struct EditorShellView: View {
                         onDismiss: { coordinator.dismiss() }
                     )
                 }
+            }
+
+            // Find and replace bar per FEAT-017
+            if editorState.findReplaceState.isVisible {
+                Divider()
+                FindReplaceBar(
+                    state: editorState.findReplaceState,
+                    onReplace: { performReplace() },
+                    onReplaceAll: { performReplaceAll() },
+                    onDismiss: { dismissFindReplace() }
+                )
             }
 
             // Doctor indicator bar per FEAT-005 — non-blocking overlay
@@ -273,6 +287,21 @@ struct EditorShellView: View {
             ghostTextCoordinator?.isEnabled = newValue
             if !newValue {
                 ghostTextCoordinator?.cancel()
+            }
+        }
+        .onChange(of: editorState.findReplaceState.searchQuery) { _, _ in
+            updateFindMatches()
+        }
+        .onChange(of: editorState.findReplaceState.mode) { _, _ in
+            updateFindMatches()
+        }
+        .onChange(of: editorState.findReplaceState.isCaseSensitive) { _, _ in
+            updateFindMatches()
+        }
+        .onChange(of: editorState.findReplaceState.currentMatchIndex) { _, _ in
+            let findState = editorState.findReplaceState
+            if !findState.matches.isEmpty {
+                editorState.applyFindHighlights?(findState.matches, findState.currentMatchIndex)
             }
         }
         .onChange(of: autoSaveManager?.savedWhileInBackground) { _, newValue in
@@ -696,6 +725,96 @@ struct EditorShellView: View {
 
     private func handleSaveElsewhere() {
         showingSaveElsewherePanel = true
+    }
+
+    // MARK: - Find and Replace per FEAT-017
+
+    /// Toggles the find bar visibility.
+    private func toggleFindReplace() {
+        let findState = editorState.findReplaceState
+        if findState.isVisible {
+            dismissFindReplace()
+        } else {
+            findState.isVisible = true
+            // If there's selected text, use it as the search query
+            let selectedRange = editorState.selectedRange
+            if selectedRange.length > 0,
+               let swiftRange = Range(selectedRange, in: text) {
+                findState.searchQuery = String(text[swiftRange])
+            }
+            updateFindMatches()
+        }
+    }
+
+    /// Dismisses the find bar and clears highlights.
+    private func dismissFindReplace() {
+        editorState.applyFindHighlights?([], nil)
+        let findState = editorState.findReplaceState
+        findState.isVisible = false
+        findState.reset()
+    }
+
+    /// Runs the search engine and updates matches in state.
+    /// Also applies visual highlighting to the document per FEAT-017 AC-1.
+    private func updateFindMatches() {
+        let findState = editorState.findReplaceState
+        let result = findReplaceEngine.findMatches(
+            query: findState.searchQuery,
+            in: text,
+            mode: findState.mode,
+            caseSensitive: findState.isCaseSensitive
+        )
+        findState.updateMatches(result.matches, errorMessage: result.errorMessage)
+        editorState.applyFindHighlights?(findState.matches, findState.currentMatchIndex)
+    }
+
+    /// Replaces the current match and advances to the next.
+    private func performReplace() {
+        let findState = editorState.findReplaceState
+        guard let index = findState.currentMatchIndex else { return }
+
+        guard let newText = findReplaceEngine.replaceOne(
+            at: index,
+            matches: findState.matches,
+            replacement: findState.replaceText,
+            in: text,
+            mode: findState.mode,
+            query: findState.searchQuery,
+            caseSensitive: findState.isCaseSensitive
+        ) else { return }
+
+        // Route through coordinator for undo tracking per [A-022]
+        if let replaceAction = editorState.performReplaceText {
+            replaceAction(newText)
+        } else {
+            text = newText
+        }
+        updateFindMatches()
+    }
+
+    /// Replaces all matches as a single undo step per FEAT-017 AC-3.
+    /// Routes through the coordinator's text storage replacement so the
+    /// entire operation is a single undo group.
+    private func performReplaceAll() {
+        let findState = editorState.findReplaceState
+        guard !findState.matches.isEmpty else { return }
+
+        let newText = findReplaceEngine.replaceAll(
+            matches: findState.matches,
+            replacement: findState.replaceText,
+            in: text,
+            mode: findState.mode,
+            query: findState.searchQuery,
+            caseSensitive: findState.isCaseSensitive
+        )
+
+        // Route through coordinator for single undo group per FEAT-017 AC-3
+        if let replaceAction = editorState.performReplaceText {
+            replaceAction(newText)
+        } else {
+            text = newText
+        }
+        updateFindMatches()
     }
 }
 

@@ -1,24 +1,22 @@
 {
-  "sprintId": "sprint-1774073409",
-  "startedAt": "2026-03-20T23:10:09-07:00",
-  "status": "completed",
+  "sprintId": "sprint-1774073898",
+  "startedAt": "2026-03-20T23:18:18-07:00",
+  "status": "in_progress",
   "item": {
-    "id": "FEAT-016",
-    "title": "F-011: Quick Open",
-    "intent": "Power users need instant file switching — fuzzy find across recent files must be faster than the system file picker",
-    "description": "Cmd+P or swipe gesture to invoke. Searches recent files and bookmarked directories. Fuzzy matching on filename and path. Results ranked by recency and match quality. Results within 200ms of typing 3 characters.",
+    "id": "FEAT-017",
+    "title": "F-012: Find and Replace",
+    "intent": "In-document search and replace is essential for editing longer documents — must support regex for power users",
+    "description": "Cmd+F to invoke find bar. Plain text and regex modes. Match highlighting in document. Replace one / replace all. Case-sensitive toggle.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "User presses Cmd+P, types 3 characters, correct file appears in top 3 results within 200ms",
-      "Empty state (no recent files) shows a helpful message, not a blank screen",
-      "Recents entry for deleted/inaccessible file is excluded from results"
+      "User searches for a regex pattern in a 500-line document — all matches highlighted",
+      "Replace-all correctly substitutes all occurrences",
+      "Replace-all is a single undo step",
+      "Search in a 5000-line document returns results within 200ms",
+      "Invalid regex shows a clear error message, does not crash"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T23:10:09-07:00",
-    "status": "passed",
-    "completedAt": "2026-03-20T23:18:17-07:00"
-  },
-  "completedAt": "2026-03-20T23:18:17-07:00",
-  "attempts": 1
+    "startedAt": "2026-03-20T23:18:18-07:00"
+  }
 }

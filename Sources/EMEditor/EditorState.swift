@@ -56,6 +56,22 @@ public final class EditorState {
     /// Format: "ruleID:line". Cleared on file close.
     public private(set) var dismissedDiagnosticKeys: Set<String> = []
 
+    /// Find and replace state per FEAT-017.
+    public let findReplaceState = FindReplaceState()
+
+    /// Handler for find bar invocation (Cmd+F) per FEAT-017.
+    public var onFindReplace: (() -> Void)?
+
+    /// Replaces all document text as a single undo group per FEAT-017 AC-3.
+    /// Wired by TextViewBridge to a coordinator method that modifies text storage
+    /// so the replacement is tracked by the undo manager.
+    public var performReplaceText: ((_ newText: String) -> Void)?
+
+    /// Applies find match highlighting to the document per FEAT-017.
+    /// Called with match ranges and the current match index.
+    /// Pass empty array to clear highlights.
+    public var applyFindHighlights: ((_ matches: [FindMatch], _ currentIndex: Int?) -> Void)?
+
     public init() {
         self.selectedRange = NSRange(location: 0, length: 0)
         self.isSourceView = false
