@@ -63,9 +63,9 @@ EasyMarkdown.xcworkspace
 
 **[A-005]** Use tree-sitter for syntax highlighting of fenced code blocks. Tree-sitter provides incremental parsing and supports all 15+ required languages per F-006.
 
-`[RESEARCH-needed]` **SPIKE-007**: Evaluate `swift-tree-sitter` (or `SwiftTreeSitter`) package for integration quality, build system compatibility, and language grammar bundling. Assess binary size impact of bundling 15+ grammars.
+`[RESEARCH-complete]` **SPIKE-007** ✅: `swift-tree-sitter` (v0.9.0+) validated. SPM-compatible, iOS 12+/macOS 10.13+. Binary size: ~1.8 MB for 3 grammars, ~6.6 MB for 18 grammars (acceptable). Parse+highlight performance: ~1-2.5 ms for 500-line blocks (well under 16ms budget). Incremental re-parsing supported for sub-millisecond edits. Highlighting accuracy significantly better than regex for nested constructs (string interpolation, generics). Grammars maintained upstream. See `docs/spikes/SPIKE-007.md`.
 
-**Fallback**: If tree-sitter integration proves too heavy, use regex-based highlighting with `NSRegularExpression` for a smaller set of languages. This is less accurate but simpler.
+**Fallback**: Regex-based `SyntaxHighlighter` retained as fallback for languages without tree-sitter grammars.
 
 ### Mermaid Rendering
 
@@ -144,7 +144,7 @@ What goes in UserDefaults:
 | Dependency | Purpose | Package |
 |-----------|---------|---------|
 | `swift-markdown` | Markdown parser (CommonMark + GFM) | apple/swift-markdown |
-| tree-sitter + grammars | Syntax highlighting for code blocks | `[RESEARCH-needed]` SPIKE-007 |
+| tree-sitter + grammars | Syntax highlighting for code blocks | `[RESEARCH-complete]` SPIKE-007 — `swift-tree-sitter` 0.9.0+, grammars via SPM |
 | `mermaid.js` | Diagram rendering (bundled JS, not a Swift dep) | mermaid-js/mermaid |
 | libgit2 (via SwiftGit2 or similar) | Git operations for GitHub storage (Phase 2) | `[RESEARCH-needed]` SPIKE-009 |
 
@@ -1289,7 +1289,7 @@ Items requiring prototyping before implementation. Each has a corresponding back
 | **SPIKE-004** ✅ | The Render animation feasibility | FEAT-014 (Signature Transition) | **Complete.** 120fps on iPad Pro (M2) and 60fps on iPhone SE (A15) with up to 450 animating layers. Reduced Motion crossfade validated. 1000-line documents performant. See `docs/spikes/SPIKE-004.md`. | `[A-020]` — **validated**, proceed with snapshot-based Core Animation |
 | **SPIKE-005** ✅ | Local AI inference benchmarks + device capability detection | FEAT-041 (AI Pipeline) | **Complete.** MLX Swift selected: 380ms first token on A16 (meets <500ms), 42 MB resident memory (vs 1,850 MB Core ML). Device capability detection validated across 11 device models. See `docs/spikes/SPIKE-005.md`. | `[A-008]`, `[A-033]` — **validated**, proceed with MLX Swift |
 | **SPIKE-006** ✅ | Mermaid WKWebView memory impact | FEAT-030 (Mermaid Rendering) | **Complete.** Offscreen WKWebView validated. Hybrid reuse lifecycle: ~30 MB for 10 diagrams. Render latency 180–220 ms warm. SHA256 content hash caching. See `docs/spikes/SPIKE-006.md`. | `[A-006]` — **validated**, proceed with offscreen WKWebView + hybrid reuse |
-| **SPIKE-007** | tree-sitter Swift integration | FEAT-006 (Syntax Highlighting) | Evaluate swift-tree-sitter package. Build prototype with 3 languages. Measure binary size and parse performance. | `[A-005]` — selects highlighting approach |
+| **SPIKE-007** ✅ | tree-sitter Swift integration | FEAT-006 (Syntax Highlighting) | **Complete.** `swift-tree-sitter` v0.9.0+ validated. ~6.6 MB for 18 grammars, ~1-2.5 ms highlight for 500-line blocks. Incremental parsing supported. See `docs/spikes/SPIKE-007.md`. | `[A-005]` — **validated**, proceed with tree-sitter via SwiftTreeSitter |
 | **SPIKE-008** | Apple platform AI — WWDC 2026 evaluation | FEAT-041 (AI Pipeline) | Evaluate Apple platform AI APIs after WWDC 2026. If on-device writing assistance APIs ship, prototype ApplePlatformAIProvider. | `[A-007]`, `[A-029]` — informs provider strategy |
 | **SPIKE-009** | libgit2 Swift bindings for iOS | FEAT-070, FEAT-071, FEAT-072 (GitHub Storage) | Evaluate SwiftGit2 or similar. Prototype clone + commit + push. Measure binary size and App Store compliance. | `[A-064]` — validates git integration approach |
 
