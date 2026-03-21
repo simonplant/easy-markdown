@@ -312,6 +312,27 @@ struct EditorShellView: View {
                 autoSaveManager?.clearBackgroundSaveFlag()
             }
         }
+        #if os(macOS)
+        // macOS menu bar command handling per FEAT-021.
+        // Toggle Source View and Find/Replace are forwarded from the menu bar
+        // via NotificationCenter to the active editor scene.
+        .onReceive(NotificationCenter.default.publisher(for: .macOSMenuToggleSourceView)) { _ in
+            toggleSourceView()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .macOSMenuFindReplace)) { _ in
+            toggleFindReplace()
+        }
+        // Format menu actions per FEAT-021 AC-5.
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("com.easymarkdown.menu.bold"))) { _ in
+            editorState.performBold?()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("com.easymarkdown.menu.italic"))) { _ in
+            editorState.performItalic?()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("com.easymarkdown.menu.insertLink"))) { _ in
+            editorState.performLink?()
+        }
+        #endif
     }
 
     /// The navigation title shows the filename or "Untitled".

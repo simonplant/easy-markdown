@@ -4,6 +4,9 @@ import EMFile
 import EMSettings
 import EMAI
 import EMCloud
+#if os(macOS)
+import AppKit
+#endif
 
 /// NSUserActivity type for per-scene state restoration per [A-034] and [A-061].
 /// Each window scene advertises its open document via this activity type.
@@ -55,6 +58,11 @@ public final class AppShell {
     /// Shared open file registry for cross-window duplicate detection per [A-028].
     private let openFileRegistry: OpenFileRegistry
 
+    #if os(macOS)
+    /// macOS Services menu provider per FEAT-021.
+    private let servicesProvider = MacOSServicesProvider()
+    #endif
+
     public init() {
         // Register custom bundled typefaces before any UI is created per [A-052].
         FontRegistration.registerFonts()
@@ -88,6 +96,11 @@ public final class AppShell {
         self.aiProviderManager = AIProviderManager(
             subscriptionStatus: subscriptionManager
         )
+
+        #if os(macOS)
+        // Register macOS Services menu provider per FEAT-021.
+        servicesProvider.registerServices()
+        #endif
     }
 
     /// Returns the configured root view with per-scene coordinators per [A-028].
@@ -119,7 +132,53 @@ public final class AppShell {
             aiProviderManager: aiProviderManager
         )
     }
+
+    #if os(macOS)
+    /// Returns the macOS menu bar commands per FEAT-021 AC-5.
+    /// Called by the host app's `App.body` scene builder via `.commands()`.
+    ///
+    /// Usage:
+    /// ```swift
+    /// WindowGroup { appShell.rootView() }
+    ///     .commands { appShell.macOSCommands() }
+    /// ```
+    public func macOSCommands() -> some Commands {
+        MacOSMenuCommands(
+            onOpenFile: { NotificationCenter.default.post(name: .macOSMenuOpenFile, object: nil) },
+            onNewFile: { NotificationCenter.default.post(name: .macOSMenuNewFile, object: nil) },
+            onCloseFile: { NotificationCenter.default.post(name: .macOSMenuCloseFile, object: nil) },
+            onToggleSourceView: { NotificationCenter.default.post(name: .macOSMenuToggleSourceView, object: nil) },
+            onFindReplace: { NotificationCenter.default.post(name: .macOSMenuFindReplace, object: nil) },
+            onSettings: { NotificationCenter.default.post(name: .macOSMenuSettings, object: nil) }
+        )
+    }
+
+    /// The macOS services provider, for wiring file open callbacks.
+    public var macServicesProvider: MacOSServicesProvider { servicesProvider }
+    #endif
 }
+
+// MARK: - macOS Menu Command Notifications per FEAT-021
+
+#if os(macOS)
+/// Notifications for macOS menu bar commands.
+/// Menu commands are scene-level (SwiftUI Commands) and need to reach per-scene views.
+/// NotificationCenter bridges this gap without violating module boundaries.
+public extension Notification.Name {
+    /// Triggered when File → Open is selected from the menu bar.
+    static let macOSMenuOpenFile = Notification.Name("com.easymarkdown.menu.openFile")
+    /// Triggered when File → New is selected from the menu bar.
+    static let macOSMenuNewFile = Notification.Name("com.easymarkdown.menu.newFile")
+    /// Triggered when File → Close is selected from the menu bar.
+    static let macOSMenuCloseFile = Notification.Name("com.easymarkdown.menu.closeFile")
+    /// Triggered when View → Toggle Source View is selected from the menu bar.
+    static let macOSMenuToggleSourceView = Notification.Name("com.easymarkdown.menu.toggleSourceView")
+    /// Triggered when Edit → Find is selected from the menu bar.
+    static let macOSMenuFindReplace = Notification.Name("com.easymarkdown.menu.findReplace")
+    /// Triggered when Settings is selected from the menu bar.
+    static let macOSMenuSettings = Notification.Name("com.easymarkdown.menu.settings")
+}
+#endif
 
 /// Internal wrapper that reactively applies color scheme preference per FEAT-007.
 /// Theme changes animate with a 200ms crossfade; Reduced Motion triggers instant switch.
