@@ -17,6 +17,9 @@ public enum MarkdownExtensions {
         "mdx",
     ]
 
+    /// Alias for `all`, used in drag-and-drop contexts for clarity.
+    public static let fileExtensions: [String] = all
+
     /// UTTypes for all recognized markdown extensions, for use with UIDocumentPickerViewController.
     public static let utTypes: [UTType] = all.compactMap { ext in
         UTType(filenameExtension: ext)

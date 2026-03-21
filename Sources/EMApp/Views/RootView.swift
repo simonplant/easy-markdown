@@ -1,7 +1,11 @@
 import SwiftUI
 import EMCore
 import EMSettings
+import EMFile
 import EMAI
+#if os(macOS)
+import AppKit
+#endif
 
 /// Root view with NavigationStack routing per [A-058].
 /// Error banners and modal alerts are attached here so they cover all navigation destinations.
@@ -14,6 +18,7 @@ public struct RootView: View {
     @Environment(RecentsManager.self) private var recentsManager
     @Environment(SettingsManager.self) private var settings
     @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
+    @Environment(FileCreateCoordinator.self) private var fileCreateCoordinator
     @Environment(AIProviderManager.self) private var aiProviderManager
     @State private var hasAttemptedRestore = false
     @State private var firstRunCoordinator: FirstRunCoordinator?
@@ -128,6 +133,27 @@ public struct RootView: View {
             firstRunCoordinator = coordinator
             await coordinator.evaluateFirstRunPrompt()
         }
+        #if os(macOS)
+        // macOS window configuration: tabs, full screen, split view per FEAT-021.
+        .macOSWindowConfiguration()
+        // Drag-and-drop file opening per FEAT-021.
+        .macOSDragDrop { url in
+            handleDroppedFile(url)
+        }
+        // macOS menu bar command handling per FEAT-021 AC-5.
+        .onReceive(NotificationCenter.default.publisher(for: .macOSMenuOpenFile)) { _ in
+            macOSOpenFile()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .macOSMenuNewFile)) { _ in
+            macOSNewFile()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .macOSMenuCloseFile)) { _ in
+            macOSCloseFile()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .macOSMenuSettings)) { _ in
+            router.showSettings()
+        }
+        #endif
     }
 
     // MARK: - Quick Open per F-011
@@ -162,6 +188,67 @@ public struct RootView: View {
             settings.clearStateRestoration()
         }
     }
+
+    // MARK: - macOS Menu and Drag-Drop per FEAT-021
+
+    #if os(macOS)
+    /// Handles a file dropped onto the window.
+    private func handleDroppedFile(_ url: URL) {
+        let attempt = fileOpenCoordinator.openFile(url: url)
+        switch attempt {
+        case .opened, .alreadyOpen:
+            router.openEditor()
+        case .failed:
+            break
+        }
+    }
+
+    /// Opens a file via NSOpenPanel from the menu bar.
+    private func macOSOpenFile() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = MarkdownExtensions.utTypes
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.begin { response in
+            guard response == .OK, let url = panel.url else { return }
+            Task { @MainActor in
+                let attempt = fileOpenCoordinator.openFile(url: url)
+                switch attempt {
+                case .opened, .alreadyOpen:
+                    router.openEditor()
+                case .failed:
+                    break
+                }
+            }
+        }
+    }
+
+    /// Creates a new file via NSSavePanel from the menu bar.
+    private func macOSNewFile() {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = MarkdownExtensions.utTypes
+        panel.nameFieldStringValue = "Untitled.md"
+        panel.canCreateDirectories = true
+        panel.begin { response in
+            guard response == .OK, let url = panel.url else { return }
+            Task { @MainActor in
+                let attempt = fileCreateCoordinator.createFile(at: url)
+                if case .created = attempt,
+                   let content = fileCreateCoordinator.createdFileContent {
+                    fileOpenCoordinator.setFileContent(content, url: url)
+                    fileCreateCoordinator.clearCreatedFile()
+                    router.openEditor()
+                }
+            }
+        }
+    }
+
+    /// Closes the current file from the menu bar.
+    private func macOSCloseFile() {
+        fileOpenCoordinator.closeCurrentFile()
+        router.popToHome()
+    }
+    #endif
 
     // MARK: - Per-Scene NSUserActivity per [A-034]
 
