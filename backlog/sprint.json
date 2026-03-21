@@ -1,25 +1,26 @@
 {
-  "sprintId": "sprint-1774082089",
-  "startedAt": "2026-03-21T01:34:49-07:00",
+  "sprintId": "sprint-1774106387",
+  "startedAt": "2026-03-21T08:19:47-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-061",
-    "title": "Export Watermark (Made with easy-markdown)",
-    "intent": "Every exported PDF is a billboard — a subtle watermark drives organic discovery without being obnoxious.",
-    "description": "Per PRODUCT.md §12. When exporting rendered PDF, include a subtle \"Made with easy-markdown\" watermark in the footer. User can disable in settings. Tasteful, not tacky — small, light gray, bottom margin. Never appears on printed output unless user explicitly enables it.",
+    "id": "SPIKE-003",
+    "title": "SPIKE: swift-markdown Incremental Parsing",
+    "intent": "Evaluate whether swift-markdown supports incremental parsing and design the debounce + local-update strategy for large documents",
+    "description": "Evaluate swift-markdown for partial/incremental re-parse capability. Benchmark full re-parse time on a 10,000-line markdown document on iPhone 15. If incremental parse is not feasible, design and validate the debounce strategy: full re-parse on ~300ms editing pause on background thread, with lightweight per-paragraph local attribute updates between parses for <16ms keystroke response. Blocks FEAT-038 (Parser). Updates architecture decisions [A-003] and [A-017].",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Exported PDF includes subtle footer watermark by default",
-      "Watermark can be disabled in settings",
-      "Watermark is unobtrusive — small, light gray, does not interfere with content",
-      "Print output does not include watermark by default"
+      "Full re-parse time for 10,000-line document measured on iPhone 15",
+      "Incremental parse feasibility documented (supported or not)",
+      "If not incremental: debounce + local-update strategy validated with prototype",
+      "Written finding committed to docs/spikes/SPIKE-003.md",
+      "Architecture decisions [A-003] and [A-017] updated based on findings"
     ],
     "scope": [],
-    "startedAt": "2026-03-21T01:34:49-07:00",
+    "startedAt": "2026-03-21T08:19:47-07:00",
     "status": "passed",
-    "completedAt": "2026-03-21T01:44:37-07:00"
+    "completedAt": "2026-03-21T08:27:00-07:00"
   },
-  "completedAt": "2026-03-21T01:44:37-07:00",
+  "completedAt": "2026-03-21T08:27:00-07:00",
   "attempts": 1
 }
