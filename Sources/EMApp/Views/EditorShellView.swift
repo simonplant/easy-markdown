@@ -45,6 +45,7 @@ struct EditorShellView: View {
     @State private var showingProUpgrade = false
     @State private var showingPDFShareSheet = false
     @State private var exportedPDFURL: URL?
+    @State private var showingMarkdownShareSheet = false
     /// Find and replace engine per FEAT-017.
     private let findReplaceEngine = FindReplaceEngine()
     @Environment(\.colorScheme) private var colorScheme
@@ -207,6 +208,8 @@ struct EditorShellView: View {
                 isSourceView: editorState.isSourceView,
                 onToggleSource: toggleSourceView,
                 onExportPDF: { exportPDF() },
+                onShareMarkdown: { shareMarkdownFile() },
+                onPrint: { printDocument() },
                 onSettings: { router.showSettings() }
             )
         }
@@ -230,6 +233,11 @@ struct EditorShellView: View {
         #if os(iOS)
         .sheet(isPresented: $showingPDFShareSheet) {
             if let url = exportedPDFURL {
+                ShareSheetView(activityItems: [url])
+            }
+        }
+        .sheet(isPresented: $showingMarkdownShareSheet) {
+            if let url = markdownShareURL() {
                 ShareSheetView(activityItems: [url])
             }
         }
@@ -769,6 +777,7 @@ struct EditorShellView: View {
     private func exportPDF() {
         let pdfData = PDFExporter.exportPDF(
             text: text,
+            documentURL: fileOpenCoordinator.currentFileURL,
             includeWatermark: settings.isPDFExportWatermarkEnabled
         )
 
@@ -804,6 +813,83 @@ struct EditorShellView: View {
         } catch {
             errorPresenter.present(.unexpected(underlying: error))
         }
+    }
+
+    // MARK: - Share Markdown per FEAT-018
+
+    /// Shares the .md file via the system share sheet (AirDrop, email, Messages, etc.).
+    private func shareMarkdownFile() {
+        #if os(iOS)
+        showingMarkdownShareSheet = true
+        #else
+        guard let url = markdownShareURL() else { return }
+        let picker = NSSharingServicePicker(items: [url])
+        // Present from the toolbar area — best-effort positioning
+        if let window = NSApp.keyWindow, let contentView = window.contentView {
+            picker.show(relativeTo: .zero, of: contentView, preferredEdge: .maxY)
+        }
+        #endif
+    }
+
+    /// Returns a URL to share the markdown file. Uses the original file URL if available,
+    /// otherwise writes to a temp file.
+    private func markdownShareURL() -> URL? {
+        if let fileURL = fileOpenCoordinator.currentFileURL {
+            return fileURL
+        }
+        // No file on disk — write to temp
+        let tempURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("Untitled.md")
+        guard let data = text.data(using: .utf8) else { return nil }
+        try? data.write(to: tempURL)
+        return tempURL
+    }
+
+    // MARK: - Print per FEAT-018
+
+    /// Prints the rendered document matching in-editor rich text appearance.
+    private func printDocument() {
+        #if os(iOS)
+        let printController = UIPrintInteractionController.shared
+        printController.printInfo = UIPrintInfo(dictionary: nil)
+        printController.printInfo?.jobName = fileOpenCoordinator.currentFileURL?
+            .deletingPathExtension().lastPathComponent ?? "Untitled"
+        printController.printInfo?.outputType = .general
+
+        // Use the PDF data for highest fidelity, no watermark for print per [A-056]
+        let pdfData = PDFExporter.exportPDF(
+            text: text,
+            documentURL: fileOpenCoordinator.currentFileURL,
+            includeWatermark: false
+        )
+        printController.printingItem = pdfData
+        printController.present(animated: true)
+        #else
+        // macOS: use NSPrintOperation with the rich attributed string
+        let richText = PDFExporter.renderAttributedString(
+            text: text,
+            documentURL: fileOpenCoordinator.currentFileURL
+        )
+        let printView = NSTextView(frame: NSRect(
+            x: 0, y: 0,
+            width: 468, // US Letter content width (612 - 72*2)
+            height: 648  // US Letter content height (792 - 72*2)
+        ))
+        printView.textStorage?.setAttributedString(richText)
+        printView.isEditable = false
+
+        let printInfo = NSPrintInfo.shared.copy() as! NSPrintInfo
+        printInfo.topMargin = 72
+        printInfo.bottomMargin = 72
+        printInfo.leftMargin = 72
+        printInfo.rightMargin = 72
+        printInfo.jobDisposition = .spool
+
+        let printOp = NSPrintOperation(view: printView, printInfo: printInfo)
+        printOp.showsPrintPanel = true
+        printOp.showsProgressPanel = true
+        printOp.run()
+        #endif
     }
 
     // MARK: - Find and Replace per FEAT-017
