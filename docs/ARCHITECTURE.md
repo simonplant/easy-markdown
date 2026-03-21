@@ -100,7 +100,7 @@ Provider implementations:
 
 `[RESEARCH-complete]` **SPIKE-005**: MLX Swift selected over Core ML. First token 380ms on A16 (vs 620ms Core ML), 12.4 t/s (vs 8.1). Memory-mapped loading keeps resident memory at ~42 MB for a 3B model (vs 1,850 MB Core ML). App Store compliant. Device capability detection validated. See `docs/spikes/SPIKE-005.md`.
 
-`[RESEARCH-needed]` **SPIKE-008**: Evaluate Apple platform AI APIs after WWDC 2026. If on-device writing assistance APIs ship, prototype `ApplePlatformAIProvider`. Scoped to WWDC 2026 evaluation window.
+`[RESEARCH-deferred]` **SPIKE-008**: Apple platform AI evaluation deferred — WWDC 2026 has not yet occurred (expected June 2026). No public on-device text generation APIs available as of March 2026. Current architecture (`ApplePlatformAIProvider` stub, `LocalModelProvider` via MLX Swift) is correctly designed for future adoption. Re-evaluate post-WWDC 2026. See `docs/spikes/SPIKE-008.md`.
 
 **Model download** (for `LocalModelProvider` only): Use Background Assets framework or On-Demand Resources (ODR) per `[D-AI-9]`. Wi-Fi default, cellular opt-in. Resumable downloads. This entire subsystem may become unnecessary if Apple ships platform AI.
 
@@ -1290,7 +1290,7 @@ Items requiring prototyping before implementation. Each has a corresponding back
 | **SPIKE-005** ✅ | Local AI inference benchmarks + device capability detection | FEAT-041 (AI Pipeline) | **Complete.** MLX Swift selected: 380ms first token on A16 (meets <500ms), 42 MB resident memory (vs 1,850 MB Core ML). Device capability detection validated across 11 device models. See `docs/spikes/SPIKE-005.md`. | `[A-008]`, `[A-033]` — **validated**, proceed with MLX Swift |
 | **SPIKE-006** ✅ | Mermaid WKWebView memory impact | FEAT-030 (Mermaid Rendering) | **Complete.** Offscreen WKWebView validated. Hybrid reuse lifecycle: ~30 MB for 10 diagrams. Render latency 180–220 ms warm. SHA256 content hash caching. See `docs/spikes/SPIKE-006.md`. | `[A-006]` — **validated**, proceed with offscreen WKWebView + hybrid reuse |
 | **SPIKE-007** ✅ | tree-sitter Swift integration | FEAT-006 (Syntax Highlighting) | **Complete.** `swift-tree-sitter` v0.9.0+ validated. ~6.6 MB for 18 grammars, ~1-2.5 ms highlight for 500-line blocks. Incremental parsing supported. See `docs/spikes/SPIKE-007.md`. | `[A-005]` — **validated**, proceed with tree-sitter via SwiftTreeSitter |
-| **SPIKE-008** | Apple platform AI — WWDC 2026 evaluation | FEAT-041 (AI Pipeline) | Evaluate Apple platform AI APIs after WWDC 2026. If on-device writing assistance APIs ship, prototype ApplePlatformAIProvider. | `[A-007]`, `[A-029]` — informs provider strategy |
+| **SPIKE-008** ⏸️ | Apple platform AI — WWDC 2026 evaluation | FEAT-041 (AI Pipeline) | **Deferred.** WWDC 2026 not yet occurred (expected June 2026). No public on-device text generation APIs available. Architecture correctly designed for future adoption. Re-evaluate post-WWDC. See `docs/spikes/SPIKE-008.md`. | `[A-007]`, `[A-029]` — no changes needed, design accommodates future platform AI |
 | **SPIKE-009** | libgit2 Swift bindings for iOS | FEAT-070, FEAT-071, FEAT-072 (GitHub Storage) | Evaluate SwiftGit2 or similar. Prototype clone + commit + push. Measure binary size and App Store compliance. | `[A-064]` — validates git integration approach |
 
 ### Spike Output Requirements

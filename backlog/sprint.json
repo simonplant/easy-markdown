@@ -1,27 +1,27 @@
 {
-  "sprintId": "sprint-1774072625",
-  "startedAt": "2026-03-20T22:57:05-07:00",
+  "sprintId": "sprint-1774073215",
+  "startedAt": "2026-03-20T23:06:55-07:00",
   "status": "completed",
   "item": {
-    "id": "SPIKE-007",
-    "title": "SPIKE: tree-sitter Swift Integration",
-    "intent": "Evaluate swift-tree-sitter package for syntax highlighting of fenced code blocks and measure binary size impact",
-    "description": "Evaluate the swift-tree-sitter (or SwiftTreeSitter) package for integration into the EMEditor package. Build a prototype that highlights 3 languages (Swift, Python, JavaScript). Measure: binary size impact of bundling grammars, parse performance on a 500-line code block, and API ergonomics for incremental updates. Assess build system compatibility with SPM. Blocks FEAT-006 (Syntax Highlighting). Updates architecture decision [A-005].",
+    "id": "SPIKE-008",
+    "title": "SPIKE: Apple Platform AI — WWDC 2026 Evaluation",
+    "intent": "Evaluate Apple platform AI APIs after WWDC 2026 and prototype ApplePlatformAIProvider if APIs are available",
+    "description": "Scoped to the WWDC 2026 evaluation window (June 2026). After WWDC, review all new Apple developer documentation for system-level AI APIs (on-device LLM, text generation, writing assistance APIs). If relevant APIs are announced: prototype the ApplePlatformAIProvider implementation against the AIProvider protocol, measure performance, and assess whether it replaces or supplements LocalModelProvider. If no relevant APIs: document findings and close the spike. Updates architecture decisions [A-007] and [A-029].",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Prototype highlights Swift, Python, and JavaScript code blocks",
-      "Binary size impact of 3 grammars measured (and extrapolated for 15+)",
-      "Parse performance on 500-line code block measured",
-      "SPM build compatibility verified",
-      "Written finding committed to docs/spikes/SPIKE-007.md",
-      "Architecture decision [A-005] updated based on findings"
+      "WWDC 2026 sessions and documentation reviewed for on-device AI APIs",
+      "Finding documented: APIs available (with prototype) or not available (with rationale)",
+      "If APIs available: prototype ApplePlatformAIProvider with performance measurements",
+      "Written finding committed to docs/spikes/SPIKE-008.md",
+      "Architecture decisions [A-007] and [A-029] updated based on findings",
+      "Spike closed with clear resolution (adopt, defer, or not applicable)"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T22:57:05-07:00",
+    "startedAt": "2026-03-20T23:06:55-07:00",
     "status": "passed",
-    "completedAt": "2026-03-20T23:06:53-07:00"
+    "completedAt": "2026-03-20T23:10:08-07:00"
   },
-  "completedAt": "2026-03-20T23:06:53-07:00",
+  "completedAt": "2026-03-20T23:10:08-07:00",
   "attempts": 1
 }
