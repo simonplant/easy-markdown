@@ -58,6 +58,8 @@ public struct TextViewBridge: UIViewRepresentable {
     public var onNewFile: (() -> Void)?
     /// Called when Cmd+W is pressed (close file).
     public var onCloseFile: (() -> Void)?
+    /// Called when Cmd+F is pressed (find and replace) per FEAT-017.
+    public var onFindReplace: (() -> Void)?
 
     // MARK: - Context menu AI actions per FEAT-058
 
@@ -86,6 +88,7 @@ public struct TextViewBridge: UIViewRepresentable {
         onOpenFile: (() -> Void)? = nil,
         onNewFile: (() -> Void)? = nil,
         onCloseFile: (() -> Void)? = nil,
+        onFindReplace: (() -> Void)? = nil,
         showAIContextMenuActions: Bool = false,
         onContextMenuImprove: (() -> Void)? = nil,
         onContextMenuSummarize: (() -> Void)? = nil
@@ -107,6 +110,7 @@ public struct TextViewBridge: UIViewRepresentable {
         self.onOpenFile = onOpenFile
         self.onNewFile = onNewFile
         self.onCloseFile = onCloseFile
+        self.onFindReplace = onFindReplace
         self.showAIContextMenuActions = showAIContextMenuActions
         self.onContextMenuImprove = onContextMenuImprove
         self.onContextMenuSummarize = onContextMenuSummarize
@@ -185,12 +189,25 @@ public struct TextViewBridge: UIViewRepresentable {
         editorState.performItalic = italicAction
         editorState.performLink = linkAction
 
+        // Expose replace-text action for find/replace per FEAT-017 AC-3.
+        editorState.performReplaceText = { [weak coordinator = context.coordinator, weak textView] newText in
+            guard let coordinator, let textView else { return }
+            coordinator.handleReplaceText(newText, in: textView)
+        }
+
+        // Expose find highlight action per FEAT-017.
+        editorState.applyFindHighlights = { [weak coordinator = context.coordinator, weak textView] matches, currentIndex in
+            guard let coordinator, let textView else { return }
+            coordinator.applyFindHighlights(matches, currentIndex: currentIndex, in: textView)
+        }
+
         // Wire app-level shortcut handlers per FEAT-009
         textView.onAIAssist = onAIAssist
         textView.onToggleSourceView = onToggleSourceView
         textView.onOpenFile = onOpenFile
         textView.onNewFile = onNewFile
         textView.onCloseFile = onCloseFile
+        textView.onFindReplace = onFindReplace
 
         // Wire context menu AI actions per FEAT-058
         context.coordinator.showAIContextMenuActions = showAIContextMenuActions
@@ -330,6 +347,8 @@ public struct TextViewBridge: NSViewRepresentable {
     public var onNewFile: (() -> Void)?
     /// Called when Cmd+W is pressed (close file).
     public var onCloseFile: (() -> Void)?
+    /// Called when Cmd+F is pressed (find and replace) per FEAT-017.
+    public var onFindReplace: (() -> Void)?
 
     // MARK: - Context menu AI actions per FEAT-058
 
@@ -358,6 +377,7 @@ public struct TextViewBridge: NSViewRepresentable {
         onOpenFile: (() -> Void)? = nil,
         onNewFile: (() -> Void)? = nil,
         onCloseFile: (() -> Void)? = nil,
+        onFindReplace: (() -> Void)? = nil,
         showAIContextMenuActions: Bool = false,
         onContextMenuImprove: (() -> Void)? = nil,
         onContextMenuSummarize: (() -> Void)? = nil
@@ -379,6 +399,7 @@ public struct TextViewBridge: NSViewRepresentable {
         self.onOpenFile = onOpenFile
         self.onNewFile = onNewFile
         self.onCloseFile = onCloseFile
+        self.onFindReplace = onFindReplace
         self.showAIContextMenuActions = showAIContextMenuActions
         self.onContextMenuImprove = onContextMenuImprove
         self.onContextMenuSummarize = onContextMenuSummarize
@@ -463,12 +484,25 @@ public struct TextViewBridge: NSViewRepresentable {
         editorState.performItalic = italicAction
         editorState.performLink = linkAction
 
+        // Expose replace-text action for find/replace per FEAT-017 AC-3.
+        editorState.performReplaceText = { [weak coordinator = context.coordinator, weak textView] newText in
+            guard let coordinator, let textView else { return }
+            coordinator.handleReplaceText(newText, in: textView)
+        }
+
+        // Expose find highlight action per FEAT-017.
+        editorState.applyFindHighlights = { [weak coordinator = context.coordinator, weak textView] matches, currentIndex in
+            guard let coordinator, let textView else { return }
+            coordinator.applyFindHighlights(matches, currentIndex: currentIndex, in: textView)
+        }
+
         // Wire app-level shortcut handlers per FEAT-009
         textView.onAIAssist = onAIAssist
         textView.onToggleSourceView = onToggleSourceView
         textView.onOpenFile = onOpenFile
         textView.onNewFile = onNewFile
         textView.onCloseFile = onCloseFile
+        textView.onFindReplace = onFindReplace
 
         // Wire context menu AI actions per FEAT-058
         textView.showAIContextMenuActions = showAIContextMenuActions

@@ -63,6 +63,8 @@ public final class EMTextView: UITextView {
     public var onNewFile: (() -> Void)?
     /// Handler for close file (Cmd+W).
     public var onCloseFile: (() -> Void)?
+    /// Handler for find/replace (Cmd+F) per FEAT-017.
+    public var onFindReplace: (() -> Void)?
 
     /// Handler for Tab key when ghost text is active per FEAT-056.
     /// Returns true if ghost text was accepted (Tab consumed), false otherwise.
@@ -316,6 +318,11 @@ public final class EMTextView: UITextView {
         closeFile.discoverabilityTitle = NSLocalizedString("Close File", comment: "Keyboard shortcut")
         commands.append(closeFile)
 
+        // Find and replace per FEAT-017
+        let find = UIKeyCommand(input: "F", modifierFlags: .command, action: #selector(handleFindReplace))
+        find.discoverabilityTitle = NSLocalizedString("Find and Replace", comment: "Keyboard shortcut")
+        commands.append(find)
+
         return commands
     }
 
@@ -332,6 +339,7 @@ public final class EMTextView: UITextView {
     @objc private func handleOpenFile() { onOpenFile?() }
     @objc private func handleNewFile() { onNewFile?() }
     @objc private func handleCloseFile() { onCloseFile?() }
+    @objc private func handleFindReplace() { onFindReplace?() }
 
     // MARK: - Theme
 
@@ -487,6 +495,8 @@ public final class EMTextView: NSTextView {
     public var onNewFile: (() -> Void)?
     /// Handler for close file (Cmd+W).
     public var onCloseFile: (() -> Void)?
+    /// Handler for find/replace (Cmd+F) per FEAT-017.
+    public var onFindReplace: (() -> Void)?
 
     /// Handler for Tab key when ghost text is active per FEAT-056.
     /// Returns true if ghost text was accepted (Tab consumed), false otherwise.
@@ -606,6 +616,8 @@ public final class EMTextView: NSTextView {
             onNewFile?(); return true
         case ("w", .command):
             onCloseFile?(); return true
+        case ("f", .command):
+            onFindReplace?(); return true
         default:
             return super.performKeyEquivalent(with: event)
         }
