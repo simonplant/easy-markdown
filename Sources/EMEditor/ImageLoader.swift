@@ -208,7 +208,7 @@ public final class ImageLoader {
     ///   - maxDimension: Maximum pixel dimension (width or height).
     ///   - maxWidth: Maximum display width for content-fit scaling.
     /// - Returns: A downsampled platform image, or nil on failure.
-    static func downsampleImage(
+    public static func downsampleImage(
         data: Data,
         maxDimension: CGFloat,
         maxWidth: CGFloat

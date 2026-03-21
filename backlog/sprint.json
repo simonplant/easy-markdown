@@ -1,26 +1,24 @@
 {
-  "sprintId": "sprint-1774106387",
-  "startedAt": "2026-03-21T08:19:47-07:00",
-  "status": "completed",
+  "sprintId": "sprint-1774106821",
+  "startedAt": "2026-03-21T08:27:01-07:00",
+  "status": "in_progress",
   "item": {
-    "id": "SPIKE-003",
-    "title": "SPIKE: swift-markdown Incremental Parsing",
-    "intent": "Evaluate whether swift-markdown supports incremental parsing and design the debounce + local-update strategy for large documents",
-    "description": "Evaluate swift-markdown for partial/incremental re-parse capability. Benchmark full re-parse time on a 10,000-line markdown document on iPhone 15. If incremental parse is not feasible, design and validate the debounce strategy: full re-parse on ~300ms editing pause on background thread, with lightweight per-paragraph local attribute updates between parses for <16ms keystroke response. Blocks FEAT-038 (Parser). Updates architecture decisions [A-003] and [A-017].",
+    "id": "FEAT-018",
+    "title": "F-013: Render, Print, and Share",
+    "intent": "Share markdown with the world — as a .md file via share sheet, as a beautiful print, or as a rendered PDF. Markdown is the primary format; rendering is for handoff to non-markdown users.",
+    "description": "Share as markdown: iOS share sheet for .md file (AirDrop, email, Messages, any app). Save to new location: copy .md to different directory/cloud/external storage. Print: rendered rich text matching in-editor appearance. Rendered PDF: polished PDF for sharing with non-markdown users. No Word, Pages, RTF, or proprietary format export (D-NO-12).",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Full re-parse time for 10,000-line document measured on iPhone 15",
-      "Incremental parse feasibility documented (supported or not)",
-      "If not incremental: debounce + local-update strategy validated with prototype",
-      "Written finding committed to docs/spikes/SPIKE-003.md",
-      "Architecture decisions [A-003] and [A-017] updated based on findings"
+      "User exports a document with headings, lists, code blocks, and images to PDF — result looks like a polished document",
+      "PDF export includes images from relative paths",
+      "User can save/copy the .md file to a different directory or cloud drive",
+      "User shares .md file via AirDrop to a colleague",
+      "User prints document and output matches in-editor rich text appearance",
+      "Rendered PDF includes images and code blocks with syntax highlighting",
+      "No proprietary format options appear anywhere in the export flow (no Word, Pages, RTF, HTML)"
     ],
     "scope": [],
-    "startedAt": "2026-03-21T08:19:47-07:00",
-    "status": "passed",
-    "completedAt": "2026-03-21T08:27:00-07:00"
-  },
-  "completedAt": "2026-03-21T08:27:00-07:00",
-  "attempts": 1
+    "startedAt": "2026-03-21T08:27:01-07:00"
+  }
 }

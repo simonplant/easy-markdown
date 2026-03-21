@@ -1,12 +1,14 @@
 import SwiftUI
 
-/// Top toolbar for the editor view per FEAT-037.
-/// Source toggle and settings gear in the navigation bar.
+/// Top toolbar for the editor view per FEAT-037 and FEAT-018.
+/// Source toggle, share menu (PDF export, share markdown, print), and settings gear.
 /// Trackpad hover states per FEAT-015 AC-4.
 struct EditorToolbar: ToolbarContent {
     let isSourceView: Bool
     let onToggleSource: () -> Void
     let onExportPDF: () -> Void
+    let onShareMarkdown: () -> Void
+    let onPrint: () -> Void
     let onSettings: () -> Void
 
     var body: some ToolbarContent {
@@ -21,12 +23,27 @@ struct EditorToolbar: ToolbarContent {
             .hoverEffect(.highlight)
             #endif
 
-            Button(action: onExportPDF) {
-                Image(systemName: "arrow.up.doc")
+            Menu {
+                Button(action: onExportPDF) {
+                    Label("Export PDF", systemImage: "doc.richtext")
+                }
+                .keyboardShortcut("e", modifiers: [.command, .shift])
+
+                Button(action: onShareMarkdown) {
+                    Label("Share Markdown", systemImage: "paperplane")
+                }
+
+                Divider()
+
+                Button(action: onPrint) {
+                    Label("Print", systemImage: "printer")
+                }
+                .keyboardShortcut("p", modifiers: .command)
+            } label: {
+                Image(systemName: "square.and.arrow.up")
             }
-            .keyboardShortcut("e", modifiers: [.command, .shift])
-            .accessibilityLabel("Export PDF")
-            .accessibilityHint("Export the document as a PDF file")
+            .accessibilityLabel("Share")
+            .accessibilityHint("Share, export, or print the document")
             #if os(iOS)
             .hoverEffect(.highlight)
             #endif
