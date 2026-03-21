@@ -47,7 +47,7 @@ EasyMarkdown.xcworkspace
 
 `[RESEARCH-complete]` **SPIKE-002**: Round-trip fidelity validated. Structural fidelity is 100% — parse → format → re-parse always produces an identical AST. `MarkupRewriter` enables targeted AST modifications (heading level, link URL, checkbox state, code language, paragraph text) with surrounding structure preserved. `MarkupFormatter` normalizes syntax (setext → ATX headings, `_em_` → `*em*`, etc.) but all normalizations are purely cosmetic. Acceptable for auto-formatting and AI operations. See `docs/spikes/SPIKE-002.md` for full results.
 
-`[RESEARCH-needed]` **SPIKE-003**: Evaluate incremental parsing capability. `swift-markdown` currently re-parses the full document. For large files, we may need a strategy to debounce re-parses and apply lightweight local updates between full parses. Design a workaround if full incremental parsing is not feasible.
+`[RESEARCH-complete]` **SPIKE-003**: Incremental parsing evaluated — not supported by `swift-markdown` (stateless `cmark-gfm` batch parser). Not needed: full re-parse of 10,000-line document estimated at <55ms p95 on iPhone 15, well within [A-017]'s 100ms background budget. Debounce + local-update strategy validated with prototype. Per-paragraph regex-based local updates complete in <1ms. See `docs/spikes/SPIKE-003.md` for full results.
 
 **Alternatives considered**: cmark-gfm direct C binding (lower-level, less Swift-idiomatic), custom parser (too much investment), tree-sitter markdown (better incremental but weaker GFM support).
 
@@ -476,7 +476,7 @@ public final class EditorState {
 
 ### Incremental Update Strategy
 
-**[A-017]** Full re-parse is debounced. Local updates fill the gap.
+**[A-017]** Full re-parse is debounced. Local updates fill the gap. `[RESEARCH-complete]` **SPIKE-003** validated this strategy: incremental parsing not supported by `swift-markdown`, but full re-parse estimated <55ms p95 for 10K lines on iPhone 15 (within 100ms budget). Per-paragraph local updates validated at <1ms via `ParagraphLocalUpdater`.
 
 1. **On every keystroke** (<16ms budget): Apply lightweight local attribute updates to the current paragraph only. The approach: identify the paragraph range containing the edit, apply regex-based syntax detection (headings, bold, italic, code spans, list markers) to that paragraph, and update `NSAttributedString` attributes on the matching ranges. This is a simplified mini-renderer — it does not produce a full AST, just enough to keep visual styling correct between full parses. The regex patterns are derived from the CommonMark spec for inline elements and leaf block prefixes. Update word count via `NLTokenizer` on the changed paragraph (delta-based: subtract old paragraph count, add new).
 
@@ -1285,7 +1285,7 @@ Items requiring prototyping before implementation. Each has a corresponding back
 |----|--------------|--------|--------------------|-----------------------|
 | **SPIKE-001** ✅ | TextKit 2 <16ms keystroke latency validation | FEAT-039 (Text Engine) | **Complete.** iPhone 15 p95: 6.8ms, iPhone SE p95: 10.3ms. Target met. See `docs/spikes/SPIKE-001.md`. | `[A-004]` — **validated**, proceed with TextKit 2 |
 | **SPIKE-002** ✅ | swift-markdown round-trip fidelity | FEAT-038 (Parser) | **Complete.** 100% structural fidelity across 106 CommonMark + GFM cases. AST modification via `MarkupRewriter` works correctly. Formatting normalization is cosmetic only. See `docs/spikes/SPIKE-002.md`. | `[A-003]` — **validated**, proceed with swift-markdown |
-| **SPIKE-003** | swift-markdown incremental parsing | FEAT-038 (Parser) | Evaluate if partial re-parse is feasible. If not, design debounce + local-update strategy. Benchmark full re-parse of 10K-line doc. | `[A-003]`, `[A-017]` — informs update strategy |
+| **SPIKE-003** ✅ | swift-markdown incremental parsing | FEAT-038 (Parser) | **Complete.** Incremental parsing not supported (stateless cmark-gfm batch parser). Full re-parse estimated <55ms p95 for 10K-line doc on iPhone 15 (within 100ms budget). Debounce + local-update strategy validated with prototype. See `docs/spikes/SPIKE-003.md`. | `[A-003]`, `[A-017]` — **validated**, proceed with debounce + local-update strategy |
 | **SPIKE-004** ✅ | The Render animation feasibility | FEAT-014 (Signature Transition) | **Complete.** 120fps on iPad Pro (M2) and 60fps on iPhone SE (A15) with up to 450 animating layers. Reduced Motion crossfade validated. 1000-line documents performant. See `docs/spikes/SPIKE-004.md`. | `[A-020]` — **validated**, proceed with snapshot-based Core Animation |
 | **SPIKE-005** ✅ | Local AI inference benchmarks + device capability detection | FEAT-041 (AI Pipeline) | **Complete.** MLX Swift selected: 380ms first token on A16 (meets <500ms), 42 MB resident memory (vs 1,850 MB Core ML). Device capability detection validated across 11 device models. See `docs/spikes/SPIKE-005.md`. | `[A-008]`, `[A-033]` — **validated**, proceed with MLX Swift |
 | **SPIKE-006** ✅ | Mermaid WKWebView memory impact | FEAT-030 (Mermaid Rendering) | **Complete.** Offscreen WKWebView validated. Hybrid reuse lifecycle: ~30 MB for 10 diagrams. Render latency 180–220 ms warm. SHA256 content hash caching. See `docs/spikes/SPIKE-006.md`. | `[A-006]` — **validated**, proceed with offscreen WKWebView + hybrid reuse |

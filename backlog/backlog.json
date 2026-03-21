@@ -649,8 +649,8 @@
       "passes": false,
       "readyForSprint": true,
       "lastFailReason": "Validator agent rejected implementation",
-      "lastFailAt": "2026-03-20T22:57:05-07:00",
-      "failCount": 1
+      "lastFailAt": "2026-03-21T08:19:47-07:00",
+      "failCount": 2
     },
     {
       "id": "FEAT-031",
@@ -1451,12 +1451,13 @@
         "Written finding committed to docs/spikes/SPIKE-003.md",
         "Architecture decisions [A-003] and [A-017] updated based on findings"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "lastFailReason": "Validator agent rejected implementation",
       "lastFailAt": "2026-03-20T21:54:19-07:00",
-      "failCount": 1
+      "failCount": 1,
+      "completedAt": "2026-03-21T08:27:00-07:00"
     },
     {
       "id": "SPIKE-004",
