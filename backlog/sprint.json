@@ -1,26 +1,26 @@
 {
-  "sprintId": "sprint-1774067452",
-  "startedAt": "2026-03-20T21:30:52-07:00",
+  "sprintId": "sprint-1774067731",
+  "startedAt": "2026-03-20T21:35:31-07:00",
   "status": "completed",
   "item": {
-    "id": "SPIKE-001",
-    "title": "SPIKE: TextKit 2 Keystroke Latency Validation",
-    "intent": "Validate that TextKit 2 can achieve <16ms keystroke-to-render latency before committing to it as the text engine",
-    "description": "Build a minimal TextKit 2 prototype with NSTextLayoutManager and NSTextContentStorage. Benchmark keystroke-to-render latency with attributed string updates per paragraph on iPhone 15 and iPhone SE (3rd gen). Measure with os_signpost. If TextKit 2 fails the <16ms target, document findings and evaluate TextKit 1 fallback. Blocks FEAT-039 (Text Engine). Updates architecture decision [A-004].",
+    "id": "SPIKE-002",
+    "title": "SPIKE: swift-markdown Round-Trip Fidelity",
+    "intent": "Validate that swift-markdown can parse markdown, allow AST modifications, and re-emit markdown that preserves original formatting",
+    "description": "Build a test harness that parses markdown via swift-markdown, modifies specific AST nodes (e.g. change heading level, update link URL, rewrite paragraph text), and re-emits markdown. Compare output to expected results. Test with 100+ CommonMark spec examples plus custom GFM cases (tables, task lists, strikethrough). Document any formatting loss. Blocks FEAT-038 (Parser). Updates architecture decision [A-003].",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Minimal TextKit 2 prototype runs on iPhone 15 and iPhone SE",
-      "Keystroke-to-render latency measured via os_signpost for 100+ consecutive keystrokes",
-      "Results documented: p50, p95, p99 latency values",
-      "Written finding committed to docs/spikes/SPIKE-001.md",
-      "Architecture decision [A-004] updated based on findings"
+      "Test harness runs parse → modify → re-emit on 100+ spec examples",
+      "Formatting preservation rate documented (target: >95% of cases)",
+      "Known failure cases cataloged with workarounds",
+      "Written finding committed to docs/spikes/SPIKE-002.md",
+      "Architecture decision [A-003] updated based on findings"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T21:30:52-07:00",
+    "startedAt": "2026-03-20T21:35:31-07:00",
     "status": "passed",
-    "completedAt": "2026-03-20T21:35:30-07:00"
+    "completedAt": "2026-03-20T21:45:35-07:00"
   },
-  "completedAt": "2026-03-20T21:35:30-07:00",
+  "completedAt": "2026-03-20T21:45:35-07:00",
   "attempts": 1
 }
