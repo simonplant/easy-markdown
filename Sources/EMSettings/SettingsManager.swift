@@ -162,6 +162,20 @@ public final class SettingsManager {
         return formatter.string(from: Date())
     }
 
+    // MARK: - App Store Review Prompt per FEAT-069
+
+    /// Whether the user has already been prompted for an App Store review.
+    /// Once true, the prompt never appears again per FEAT-069.
+    public var hasPromptedForReview: Bool {
+        didSet { defaults.set(hasPromptedForReview, forKey: Keys.hasPromptedForReview) }
+    }
+
+    /// Total AI feature usage count across all AI actions.
+    /// Used to evaluate review prompt eligibility (≥ 10 uses required).
+    public var totalAIUsageCount: Int {
+        aiImproveCount + aiSummarizeCount + aiContinueAcceptCount + doctorFixAcceptCount
+    }
+
     // MARK: - State Restoration per [A-061]
 
     /// Security-scoped bookmark data for the last open file.
@@ -231,6 +245,9 @@ public final class SettingsManager {
         self.daysActiveCount = defaults.integer(forKey: Keys.daysActiveCount)
         self.lastActiveDateString = defaults.string(forKey: Keys.lastActiveDateString)
 
+        // Review prompt
+        self.hasPromptedForReview = defaults.object(forKey: Keys.hasPromptedForReview) as? Bool ?? false
+
         // State restoration
         self.lastOpenFileBookmark = defaults.data(forKey: Keys.lastOpenFileBookmark)
         self.lastCursorPosition = defaults.object(forKey: Keys.lastCursorPosition) as? Int ?? 0
@@ -261,6 +278,7 @@ public final class SettingsManager {
         static let documentsOpenedCount = "em_counter_documentsOpened"
         static let daysActiveCount = "em_counter_daysActive"
         static let lastActiveDateString = "em_counter_lastActiveDate"
+        static let hasPromptedForReview = "em_hasPromptedForReview"
         static let lastOpenFileBookmark = "em_lastOpenFileBookmark"
         static let lastCursorPosition = "em_lastCursorPosition"
         static let lastViewModeIsSource = "em_lastViewModeIsSource"

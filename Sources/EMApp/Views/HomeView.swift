@@ -12,6 +12,7 @@ struct HomeView: View {
     @Environment(RecentsManager.self) private var recentsManager
     @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
     @Environment(FileCreateCoordinator.self) private var fileCreateCoordinator
+    @Environment(ReviewPromptCoordinator.self) private var reviewPromptCoordinator
     @State private var showingFilePicker = false
     @State private var showingSavePicker = false
 
@@ -75,6 +76,9 @@ struct HomeView: View {
         }
         .task {
             recentsManager.pruneStaleEntries()
+        }
+        .onAppear {
+            reviewPromptCoordinator.requestReviewIfEligible()
         }
         #if os(iOS)
         .sheet(isPresented: $showingFilePicker) {
