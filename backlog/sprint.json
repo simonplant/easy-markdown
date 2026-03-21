@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774073898",
   "startedAt": "2026-03-20T23:18:18-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-017",
     "title": "F-012: Find and Replace",
@@ -17,6 +17,10 @@
       "Invalid regex shows a clear error message, does not crash"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T23:18:18-07:00"
-  }
+    "startedAt": "2026-03-20T23:18:18-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-20T23:35:12-07:00"
+  },
+  "completedAt": "2026-03-20T23:35:12-07:00",
+  "attempts": 1
 }
