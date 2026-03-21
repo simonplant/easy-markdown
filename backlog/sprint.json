@@ -1,27 +1,28 @@
 {
-  "sprintId": "sprint-1774068859",
-  "startedAt": "2026-03-20T21:54:19-07:00",
-  "status": "completed",
+  "sprintId": "sprint-1774069348",
+  "startedAt": "2026-03-20T22:02:28-07:00",
+  "status": "in_progress",
   "item": {
-    "id": "SPIKE-004",
-    "title": "SPIKE: The Render Animation Feasibility",
-    "intent": "Validate the snapshot-based Core Animation approach for The Render signature transition at 120fps",
-    "description": "Prototype the snapshot-based Core Animation approach for The Render (source-to-rich text transition). Capture layer snapshots, compute target positions, animate with CASpringAnimation (~400ms, damping 0.8, response 0.4). Measure frame rate on iPad Pro (ProMotion) and iPhone SE. Test with documents of varying sizes (10 lines, 100 lines, 1000 lines). Test Reduced Motion crossfade path. Blocks FEAT-014 (Signature Transition). Updates architecture decision [A-020].",
+    "id": "FEAT-014",
+    "title": "F-035: The Render (Signature Transition)",
+    "intent": "The source-to-rich transition is our brand — a designed animation that makes people say 'whoa' and toggle it just to watch. This is the show-someone moment.",
+    "description": "When opening a file or toggling source to rich: # markers shrink as headings scale up, ** dissolves as text boldfaces, list markers morph into styled bullets, code fences fade as blocks materialize, links compact to styled form, blockquote markers become visual borders. ~400ms spring-animated. Reverse plays on rich-to-source. Reduced Motion: instant crossfade 200ms. Uses Core Animation for guaranteed 120fps on ProMotion. VoiceOver unaffected — announces rendered content immediately.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Prototype demonstrates source-to-rich animation with at least heading and bold transitions",
-      "Frame rate measured on iPad Pro (target: 120fps) and iPhone SE (target: 60fps)",
-      "Reduced Motion crossfade (200ms) alternative tested",
-      "Performance with 1000-line document documented",
-      "Written finding committed to docs/spikes/SPIKE-004.md",
-      "Architecture decision [A-020] updated based on findings"
+      "Non-technical observer watching over the shoulder finds the transition visually striking",
+      "Animation runs at 120fps on ProMotion devices with no dropped frames",
+      "Reduced Motion setting triggers instant crossfade instead",
+      "User toggles source/rich multiple times because the animation is delightful",
+      "Animation duration is 350-450ms using spring curve with damping 0.8 and response 0.4",
+      "Every element type has an interpolated transition (no elements pop in or out)",
+      "Reverse animation rich-to-source plays at equal quality to forward",
+      "Toggle latency (tap to first animation frame) under 50ms",
+      "Works correctly on empty document and on 1-line document",
+      "Rapid toggle (tap 5 times quickly) does not crash or produce glitched state",
+      "The Render animation plays when opening a file (not just on source toggle)"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T21:54:19-07:00",
-    "status": "passed",
-    "completedAt": "2026-03-20T22:02:27-07:00"
-  },
-  "completedAt": "2026-03-20T22:02:27-07:00",
-  "attempts": 1
+    "startedAt": "2026-03-20T22:02:28-07:00"
+  }
 }
