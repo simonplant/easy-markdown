@@ -403,7 +403,10 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": true
+      "readyForSprint": true,
+      "lastFailReason": "Validator agent rejected implementation",
+      "lastFailAt": "2026-03-20T23:44:46-07:00",
+      "failCount": 1
     },
     {
       "id": "FEAT-019",
@@ -421,7 +424,10 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": true
+      "readyForSprint": true,
+      "lastFailReason": "Validator agent rejected implementation",
+      "lastFailAt": "2026-03-20T23:56:14-07:00",
+      "failCount": 1
     },
     {
       "id": "FEAT-020",
@@ -439,7 +445,10 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": true
+      "readyForSprint": true,
+      "lastFailReason": "Validator agent rejected implementation",
+      "lastFailAt": "2026-03-21T00:11:17-07:00",
+      "failCount": 1
     },
     {
       "id": "FEAT-021",
@@ -458,9 +467,10 @@
         "Cmd+comma opens preferences, Cmd+Q quits",
         "Right-click context menu matches system style and includes AI actions on selected text"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-21T00:22:16-07:00"
     },
     {
       "id": "FEAT-022",
