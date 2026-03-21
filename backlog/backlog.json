@@ -1422,7 +1422,10 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": true
+      "readyForSprint": true,
+      "lastFailReason": "Validator agent rejected implementation",
+      "lastFailAt": "2026-03-20T21:54:19-07:00",
+      "failCount": 1
     },
     {
       "id": "SPIKE-004",
@@ -1440,9 +1443,10 @@
         "Written finding committed to docs/spikes/SPIKE-004.md",
         "Architecture decision [A-020] updated based on findings"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T22:02:27-07:00"
     },
     {
       "id": "SPIKE-005",

@@ -1,26 +1,27 @@
 {
-  "sprintId": "sprint-1774067731",
-  "startedAt": "2026-03-20T21:35:31-07:00",
+  "sprintId": "sprint-1774068859",
+  "startedAt": "2026-03-20T21:54:19-07:00",
   "status": "completed",
   "item": {
-    "id": "SPIKE-002",
-    "title": "SPIKE: swift-markdown Round-Trip Fidelity",
-    "intent": "Validate that swift-markdown can parse markdown, allow AST modifications, and re-emit markdown that preserves original formatting",
-    "description": "Build a test harness that parses markdown via swift-markdown, modifies specific AST nodes (e.g. change heading level, update link URL, rewrite paragraph text), and re-emits markdown. Compare output to expected results. Test with 100+ CommonMark spec examples plus custom GFM cases (tables, task lists, strikethrough). Document any formatting loss. Blocks FEAT-038 (Parser). Updates architecture decision [A-003].",
+    "id": "SPIKE-004",
+    "title": "SPIKE: The Render Animation Feasibility",
+    "intent": "Validate the snapshot-based Core Animation approach for The Render signature transition at 120fps",
+    "description": "Prototype the snapshot-based Core Animation approach for The Render (source-to-rich text transition). Capture layer snapshots, compute target positions, animate with CASpringAnimation (~400ms, damping 0.8, response 0.4). Measure frame rate on iPad Pro (ProMotion) and iPhone SE. Test with documents of varying sizes (10 lines, 100 lines, 1000 lines). Test Reduced Motion crossfade path. Blocks FEAT-014 (Signature Transition). Updates architecture decision [A-020].",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Test harness runs parse → modify → re-emit on 100+ spec examples",
-      "Formatting preservation rate documented (target: >95% of cases)",
-      "Known failure cases cataloged with workarounds",
-      "Written finding committed to docs/spikes/SPIKE-002.md",
-      "Architecture decision [A-003] updated based on findings"
+      "Prototype demonstrates source-to-rich animation with at least heading and bold transitions",
+      "Frame rate measured on iPad Pro (target: 120fps) and iPhone SE (target: 60fps)",
+      "Reduced Motion crossfade (200ms) alternative tested",
+      "Performance with 1000-line document documented",
+      "Written finding committed to docs/spikes/SPIKE-004.md",
+      "Architecture decision [A-020] updated based on findings"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T21:35:31-07:00",
+    "startedAt": "2026-03-20T21:54:19-07:00",
     "status": "passed",
-    "completedAt": "2026-03-20T21:45:35-07:00"
+    "completedAt": "2026-03-20T22:02:27-07:00"
   },
-  "completedAt": "2026-03-20T21:45:35-07:00",
+  "completedAt": "2026-03-20T22:02:27-07:00",
   "attempts": 1
 }
