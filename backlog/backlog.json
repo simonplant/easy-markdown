@@ -1218,9 +1218,10 @@
         "Prompt never interrupts active editing",
         "If user has not used AI features, prompt never appears regardless of time"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-21T01:34:47-07:00"
     },
     {
       "id": "FEAT-060",

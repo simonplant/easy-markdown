@@ -1,26 +1,25 @@
 {
-  "sprintId": "sprint-1774080945",
-  "startedAt": "2026-03-21T01:15:45-07:00",
+  "sprintId": "sprint-1774081604",
+  "startedAt": "2026-03-21T01:26:44-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-046",
-    "title": "INFRA: Pro AI Cloud Infrastructure",
-    "intent": "The cloud relay for Pro AI must be minimal, private, and reliable — it routes requests to the AI provider and validates subscriptions, nothing more.",
-    "description": "Lightweight API relay (serverless function or minimal server) that: validates App Store subscription receipt via StoreKit 2 server-side verification, forwards selected text to AI provider (initially Anthropic Claude per D-AI-7), streams response back to client, logs nothing (no prompts, no responses, no user data per D-AI-8). Client-side: StoreKit 2 subscription management, subscription status caching, graceful degradation on network failure (suggest local AI alternative). Privacy pipeline: only user-selected text sent (never full document silently), provider contractual no-retention.",
+    "id": "FEAT-069",
+    "title": "App Store Review Prompt",
+    "intent": "The review prompt must appear at the right moment — when the user is happy and engaged, never before. One shot, never again.",
+    "description": "Per PRODUCT.md §12. Prompt for App Store review only after: 7 days of active use AND 10+ AI feature uses. Uses SKStoreReviewController. Prompt appears at most once, ever. Timing tracked via on-device aggregate counters (FEAT-060). Never interrupts active editing — shown on return to home screen or after completing an AI action.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Pro AI request completes end-to-end (client → relay → provider → client) in <5 seconds",
-      "Expired/invalid subscription receipt is rejected with clear user-facing message",
-      "Network failure during Pro AI request shows error and suggests using local AI instead",
-      "Server logs contain zero user content (prompts, responses, or file data)",
-      "Subscription status is cached client-side so the app doesn't block on network for every AI action"
+      "Review prompt does not appear before 7 days of active use AND 10+ AI uses",
+      "Review prompt appears at most once per user, ever",
+      "Prompt never interrupts active editing",
+      "If user has not used AI features, prompt never appears regardless of time"
     ],
     "scope": [],
-    "startedAt": "2026-03-21T01:15:45-07:00",
+    "startedAt": "2026-03-21T01:26:44-07:00",
     "status": "passed",
-    "completedAt": "2026-03-21T01:26:43-07:00"
+    "completedAt": "2026-03-21T01:34:47-07:00"
   },
-  "completedAt": "2026-03-21T01:26:43-07:00",
+  "completedAt": "2026-03-21T01:34:47-07:00",
   "attempts": 1
 }
