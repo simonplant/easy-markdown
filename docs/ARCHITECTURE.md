@@ -71,7 +71,7 @@ EasyMarkdown.xcworkspace
 
 **[A-006]** Render Mermaid diagrams using `mermaid.js` in an offscreen `WKWebView`. Capture the rendered SVG, convert to a cached `UIImage` / `NSImage`, and display as a text attachment in the editor. Per `[D-MD-2]`: Mermaid rendering is P1, core to AI-generated markdown.
 
-`[RESEARCH-needed]` **SPIKE-006**: Prototype the offscreen `WKWebView` approach. Measure memory impact of creating/destroying web views for rendering. Evaluate caching strategies (render once per Mermaid block content hash, invalidate on edit). Test with 10+ diagrams in a single document.
+`[RESEARCH-complete]` **SPIKE-006** ✅: Offscreen WKWebView validated. Hybrid reuse lifecycle recommended: ~30 MB for 10 diagrams (18 MB WKWebView + 12 MB cached images). Render latency 180–220 ms (warm, within 500 ms budget). Cache keyed by SHA256(theme + content). See `docs/spikes/SPIKE-006.md`.
 
 **Rendering pipeline**:
 1. Parser identifies fenced code block with `mermaid` info string
@@ -1288,7 +1288,7 @@ Items requiring prototyping before implementation. Each has a corresponding back
 | **SPIKE-003** | swift-markdown incremental parsing | FEAT-038 (Parser) | Evaluate if partial re-parse is feasible. If not, design debounce + local-update strategy. Benchmark full re-parse of 10K-line doc. | `[A-003]`, `[A-017]` — informs update strategy |
 | **SPIKE-004** ✅ | The Render animation feasibility | FEAT-014 (Signature Transition) | **Complete.** 120fps on iPad Pro (M2) and 60fps on iPhone SE (A15) with up to 450 animating layers. Reduced Motion crossfade validated. 1000-line documents performant. See `docs/spikes/SPIKE-004.md`. | `[A-020]` — **validated**, proceed with snapshot-based Core Animation |
 | **SPIKE-005** ✅ | Local AI inference benchmarks + device capability detection | FEAT-041 (AI Pipeline) | **Complete.** MLX Swift selected: 380ms first token on A16 (meets <500ms), 42 MB resident memory (vs 1,850 MB Core ML). Device capability detection validated across 11 device models. See `docs/spikes/SPIKE-005.md`. | `[A-008]`, `[A-033]` — **validated**, proceed with MLX Swift |
-| **SPIKE-006** | Mermaid WKWebView memory impact | FEAT-030 (Mermaid Rendering) | Prototype offscreen WKWebView rendering. Measure memory with 1, 5, 10 diagrams. Test cache invalidation. | `[A-006]` — validates rendering approach |
+| **SPIKE-006** ✅ | Mermaid WKWebView memory impact | FEAT-030 (Mermaid Rendering) | **Complete.** Offscreen WKWebView validated. Hybrid reuse lifecycle: ~30 MB for 10 diagrams. Render latency 180–220 ms warm. SHA256 content hash caching. See `docs/spikes/SPIKE-006.md`. | `[A-006]` — **validated**, proceed with offscreen WKWebView + hybrid reuse |
 | **SPIKE-007** | tree-sitter Swift integration | FEAT-006 (Syntax Highlighting) | Evaluate swift-tree-sitter package. Build prototype with 3 languages. Measure binary size and parse performance. | `[A-005]` — selects highlighting approach |
 | **SPIKE-008** | Apple platform AI — WWDC 2026 evaluation | FEAT-041 (AI Pipeline) | Evaluate Apple platform AI APIs after WWDC 2026. If on-device writing assistance APIs ship, prototype ApplePlatformAIProvider. | `[A-007]`, `[A-029]` — informs provider strategy |
 | **SPIKE-009** | libgit2 Swift bindings for iOS | FEAT-070, FEAT-071, FEAT-072 (GitHub Storage) | Evaluate SwiftGit2 or similar. Prototype clone + commit + push. Measure binary size and App Store compliance. | `[A-064]` — validates git integration approach |
