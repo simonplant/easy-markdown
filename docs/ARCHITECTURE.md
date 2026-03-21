@@ -146,7 +146,7 @@ What goes in UserDefaults:
 | `swift-markdown` | Markdown parser (CommonMark + GFM) | apple/swift-markdown |
 | tree-sitter + grammars | Syntax highlighting for code blocks | `[RESEARCH-complete]` SPIKE-007 — `swift-tree-sitter` 0.9.0+, grammars via SPM |
 | `mermaid.js` | Diagram rendering (bundled JS, not a Swift dep) | mermaid-js/mermaid |
-| libgit2 (via SwiftGit2 or similar) | Git operations for GitHub storage (Phase 2) | `[RESEARCH-needed]` SPIKE-009 |
+| libgit2 (via mbernson/SwiftGit2) | Git operations for GitHub storage (Phase 2) | `[RESEARCH-complete]` SPIKE-009 — mbernson/SwiftGit2 (SPM, iOS 15.5+), push to be added |
 
 **Rule**: No third-party dependency may be added without an architecture decision record (`[A-XXX]`) documenting the rationale and alternatives. Per `DP-5`: simplicity is a feature.
 
@@ -773,7 +773,7 @@ When `presentedItemDidChange()` fires:
 
 **[A-064]** GitHub as a transparent storage option alongside iCloud, Dropbox, OneDrive, Google Drive. Lives in EMGit. GitHub-only initially; generic git remotes later if demand warrants.
 
-`[RESEARCH-needed]` **SPIKE-009**: Evaluate libgit2 Swift bindings (SwiftGit2 or similar) for iOS. Assess: SPM compatibility, binary size, clone/commit/push performance on cellular, and App Store compliance. Prototype clone + commit + push cycle.
+`[RESEARCH-complete]` **SPIKE-009**: libgit2 validated for iOS via mbernson/SwiftGit2 (SPM, swift-tools-version 5.9, iOS 15.5+). Binary size impact ~2–4 MB (arm64). App Store compliant (Working Copy precedent). Clone/commit available; push needs ~50-line wrapper around `git_push`. GitHub OAuth device flow validated for auth. See `docs/spikes/SPIKE-009.md`.
 
 **Core principle**: GitHub is just another place your files live. The user experience should be as friction-free as iCloud. Files are local clones — we edit local files. Git operations happen at the edges.
 
@@ -1291,7 +1291,7 @@ Items requiring prototyping before implementation. Each has a corresponding back
 | **SPIKE-006** ✅ | Mermaid WKWebView memory impact | FEAT-030 (Mermaid Rendering) | **Complete.** Offscreen WKWebView validated. Hybrid reuse lifecycle: ~30 MB for 10 diagrams. Render latency 180–220 ms warm. SHA256 content hash caching. See `docs/spikes/SPIKE-006.md`. | `[A-006]` — **validated**, proceed with offscreen WKWebView + hybrid reuse |
 | **SPIKE-007** ✅ | tree-sitter Swift integration | FEAT-006 (Syntax Highlighting) | **Complete.** `swift-tree-sitter` v0.9.0+ validated. ~6.6 MB for 18 grammars, ~1-2.5 ms highlight for 500-line blocks. Incremental parsing supported. See `docs/spikes/SPIKE-007.md`. | `[A-005]` — **validated**, proceed with tree-sitter via SwiftTreeSitter |
 | **SPIKE-008** ⏸️ | Apple platform AI — WWDC 2026 evaluation | FEAT-041 (AI Pipeline) | **Deferred.** WWDC 2026 not yet occurred (expected June 2026). No public on-device text generation APIs available. Architecture correctly designed for future adoption. Re-evaluate post-WWDC. See `docs/spikes/SPIKE-008.md`. | `[A-007]`, `[A-029]` — no changes needed, design accommodates future platform AI |
-| **SPIKE-009** | libgit2 Swift bindings for iOS | FEAT-070, FEAT-071, FEAT-072 (GitHub Storage) | Evaluate SwiftGit2 or similar. Prototype clone + commit + push. Measure binary size and App Store compliance. | `[A-064]` — validates git integration approach |
+| **SPIKE-009** ✅ | libgit2 Swift bindings for iOS | FEAT-070, FEAT-071, FEAT-072 (GitHub Storage) | **Complete.** mbernson/SwiftGit2 selected (SPM, iOS 15.5+). Binary size ~2–4 MB. App Store compliant. Clone/commit/fetch available; push wrapper needed. OAuth device flow validated. See `docs/spikes/SPIKE-009.md`. | `[A-064]` — **validated**, proceed with mbernson/SwiftGit2 |
 
 ### Spike Output Requirements
 

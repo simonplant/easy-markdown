@@ -535,8 +535,8 @@
       "passes": false,
       "readyForSprint": true,
       "lastFailReason": "Validator agent rejected implementation",
-      "lastFailAt": "2026-03-21T01:06:02-07:00",
-      "failCount": 1
+      "lastFailAt": "2026-03-21T09:48:43-07:00",
+      "failCount": 2
     },
     {
       "id": "FEAT-025",
@@ -555,8 +555,8 @@
       "passes": false,
       "readyForSprint": true,
       "lastFailReason": "Validator agent rejected implementation",
-      "lastFailAt": "2026-03-21T01:15:45-07:00",
-      "failCount": 1
+      "lastFailAt": "2026-03-21T10:00:31-07:00",
+      "failCount": 2
     },
     {
       "id": "FEAT-026",
@@ -1281,7 +1281,10 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": true
+      "readyForSprint": true,
+      "lastFailReason": "Validator agent rejected implementation",
+      "lastFailAt": "2026-03-21T10:08:44-07:00",
+      "failCount": 1
     },
     {
       "id": "FEAT-063",
@@ -1584,9 +1587,10 @@
         "Written finding committed to docs/spikes/SPIKE-009.md",
         "Architecture decision [A-064] updated based on findings"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-21T10:16:17-07:00"
     },
     {
       "id": "FEAT-070",

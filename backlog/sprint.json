@@ -1,26 +1,28 @@
 {
-  "sprintId": "sprint-1774109970",
-  "startedAt": "2026-03-21T09:19:30-07:00",
+  "sprintId": "sprint-1774112924",
+  "startedAt": "2026-03-21T10:08:44-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-023",
-    "title": "F-026: AI — Tone and Style Adjustment (Pro AI)",
-    "intent": "Users need to adapt their writing tone for different audiences — Pro AI delivers quality tone shifts that exceed local model capability",
-    "description": "Select text, adjust tone: more formal, more casual, more technical, simpler. 4 preset tone adjustments + custom instruction option. Same inline diff preview as F-025. Appears in floating action bar with Pro badge. Non-subscribers see tasteful upgrade prompt. Only selected text sent to cloud per D-AI-8.",
+    "id": "SPIKE-009",
+    "title": "SPIKE: libgit2 Swift Bindings for iOS",
+    "intent": "Evaluate libgit2 Swift bindings for git operations on iOS — clone, commit, push — to validate the GitHub storage approach",
+    "description": "Evaluate SwiftGit2 or similar libgit2 Swift wrapper for iOS. Build a prototype that clones a GitHub repo, modifies a file, commits, and pushes. Measure: binary size impact, clone performance on Wi-Fi and cellular, commit+push latency, and SPM build compatibility. Verify App Store compliance (libgit2 is used by Working Copy and other shipped apps). Assess OAuth device flow for GitHub auth. Blocks FEAT-070, FEAT-071, FEAT-072 (GitHub Storage). Updates architecture decision [A-064].",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Pro subscriber selects casual paragraph, taps More Formal, sees rewritten version within 3 seconds, accepts with one tap",
-      "Non-subscriber sees a non-intrusive explanation of Pro AI with subscribe option",
-      "Only selected text is sent to cloud API",
-      "Cloud API timeout after 10 seconds shows error and suggests using local AI Improve instead",
-      "Malformed API response does not crash — shows generic error and preserves original text"
+      "Prototype clones a GitHub repo, modifies a file, commits, and pushes successfully",
+      "Binary size impact of libgit2 measured",
+      "Clone and push performance measured on Wi-Fi and cellular",
+      "SPM build compatibility verified",
+      "GitHub OAuth device flow prototyped and working",
+      "Written finding committed to docs/spikes/SPIKE-009.md",
+      "Architecture decision [A-064] updated based on findings"
     ],
     "scope": [],
-    "startedAt": "2026-03-21T09:19:30-07:00",
+    "startedAt": "2026-03-21T10:08:44-07:00",
     "status": "passed",
-    "completedAt": "2026-03-21T09:35:44-07:00"
+    "completedAt": "2026-03-21T10:16:17-07:00"
   },
-  "completedAt": "2026-03-21T09:35:44-07:00",
+  "completedAt": "2026-03-21T10:16:17-07:00",
   "attempts": 1
 }
