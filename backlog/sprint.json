@@ -1,20 +1,22 @@
 {
-  "sprintId": "sprint-1774109187",
-  "startedAt": "2026-03-21T09:06:27-07:00",
+  "sprintId": "sprint-1774109970",
+  "startedAt": "2026-03-21T09:19:30-07:00",
   "status": "in_progress",
   "item": {
-    "id": "FEAT-022",
-    "title": "F-017: Extended Document Doctor",
-    "intent": "Deepen writing intelligence beyond structural checks — help users write better prose, not just better markdown",
-    "description": "Readability scoring (Flesch-Kincaid or similar) in status bar. Writing goals: user sets target word count, progress shown visually. Prose suggestions (opt-in): flag very long sentences, passive voice, repeated words.",
+    "id": "FEAT-023",
+    "title": "F-026: AI — Tone and Style Adjustment (Pro AI)",
+    "intent": "Users need to adapt their writing tone for different audiences — Pro AI delivers quality tone shifts that exceed local model capability",
+    "description": "Select text, adjust tone: more formal, more casual, more technical, simpler. 4 preset tone adjustments + custom instruction option. Same inline diff preview as F-025. Appears in floating action bar with Pro badge. Non-subscribers see tasteful upgrade prompt. Only selected text sent to cloud per D-AI-8.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "User enables prose suggestions — doctor flags a 60-word sentence with suggestion to break it up",
-      "User can accept suggestion (cursor positioned for edit) or dismiss",
-      "Writing goal progress is shown visually as user approaches target word count"
+      "Pro subscriber selects casual paragraph, taps More Formal, sees rewritten version within 3 seconds, accepts with one tap",
+      "Non-subscriber sees a non-intrusive explanation of Pro AI with subscribe option",
+      "Only selected text is sent to cloud API",
+      "Cloud API timeout after 10 seconds shows error and suggests using local AI Improve instead",
+      "Malformed API response does not crash — shows generic error and preserves original text"
     ],
     "scope": [],
-    "startedAt": "2026-03-21T09:06:27-07:00"
+    "startedAt": "2026-03-21T09:19:30-07:00"
   }
 }
