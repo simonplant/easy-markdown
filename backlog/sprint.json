@@ -1,25 +1,21 @@
 {
-  "sprintId": "sprint-1774066275",
-  "startedAt": "2026-03-20T21:11:15-07:00",
-  "status": "completed",
+  "sprintId": "sprint-1774066990",
+  "startedAt": "2026-03-20T21:23:10-07:00",
+  "status": "in_progress",
   "item": {
-    "id": "FEAT-058",
-    "title": "F-036c: iPad Pointer and Trackpad Support",
-    "intent": "iPad with trackpad should feel like a desktop app — hover states, right-click menus, precise cursor placement",
-    "description": "Depends on: FEAT-003 (Core Rendering), FEAT-005 (Doctor). Full trackpad and mouse support via UIPointerInteraction. Hover states on: toolbar buttons, doctor indicators, AI action bar items, links, settings controls. Right-click context menu with: Cut, Copy, Paste, AI actions (if text selected), Look Up. Pointer automatically switches between arrow (UI) and I-beam (text) based on target. Smooth pointer acceleration.",
+    "id": "FEAT-063",
+    "title": "INFRA: App Store Purchase and Receipt Validation",
+    "intent": "The $9.99 one-time purchase must just work — StoreKit handles it, we validate the receipt, done.",
+    "description": "Per D-BIZ-1 and D-BIZ-2. Implement StoreKit 2 for the one-time $9.99 app purchase. Receipt validation for purchase verification. Handles: purchase flow, restore purchases, family sharing eligibility. The app must be fully functional after purchase with no additional gates.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Hovering over a toolbar button shows a highlight/tooltip",
-      "Hovering over a doctor indicator shows the issue preview",
-      "Right-clicking selected text shows context menu with AI actions",
-      "Pointer changes from arrow to I-beam when entering the text editing area"
+      "User can purchase the app for $9.99 via standard App Store flow",
+      "Purchase receipt validates correctly",
+      "Restore purchases works for users who reinstall or switch devices",
+      "No additional purchase gates after the initial $9.99 for non-Pro features"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T21:11:15-07:00",
-    "status": "passed",
-    "completedAt": "2026-03-20T21:23:08-07:00"
-  },
-  "completedAt": "2026-03-20T21:23:08-07:00",
-  "attempts": 1
+    "startedAt": "2026-03-20T21:23:10-07:00"
+  }
 }

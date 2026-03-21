@@ -3,6 +3,7 @@ import EMCore
 import EMFile
 import EMSettings
 import EMAI
+import EMCloud
 
 /// NSUserActivity type for per-scene state restoration per [A-034] and [A-061].
 /// Each window scene advertises its open document via this activity type.
@@ -35,6 +36,12 @@ public final class AppShell {
     private let settings: SettingsManager
     private let errorPresenter: ErrorPresenter
     private let recentsManager: RecentsManager
+
+    /// Purchase manager — handles one-time app purchase per [A-012].
+    private let purchaseManager: PurchaseManager
+
+    /// Subscription manager — provides subscription status to EMAI per [A-057].
+    private let subscriptionManager: SubscriptionManager
 
     /// AI provider manager — shared singleton per [A-059].
     /// Gates AI UI visibility via `shouldShowAIUI` per AC-6.
@@ -71,11 +78,15 @@ public final class AppShell {
         )
         self.openFileRegistry = OpenFileRegistry()
 
-        // Wire EMAI per [A-057] and [A-059].
-        // SubscriptionStatusProviding bridge: use a placeholder until EMCloud is implemented.
-        // EMApp will replace this with the real EMCloud SubscriptionManager when FEAT-046 ships.
+        // EMCloud: purchase and subscription management per [A-012].
+        let purchaseManager = PurchaseManager()
+        let subscriptionManager = SubscriptionManager()
+        self.purchaseManager = purchaseManager
+        self.subscriptionManager = subscriptionManager
+
+        // Wire EMCloud → EMAI via EMCore protocol per [A-057] and [A-059].
         self.aiProviderManager = AIProviderManager(
-            subscriptionStatus: PlaceholderSubscriptionStatus()
+            subscriptionStatus: subscriptionManager
         )
     }
 
@@ -102,18 +113,12 @@ public final class AppShell {
             settings: settings,
             errorPresenter: errorPresenter,
             recentsManager: recentsManager,
+            purchaseManager: purchaseManager,
             fileOpenCoordinator: fileOpenCoordinator,
             fileCreateCoordinator: fileCreateCoordinator,
             aiProviderManager: aiProviderManager
         )
     }
-}
-
-/// Placeholder subscription status until EMCloud is implemented (FEAT-046).
-/// Returns inactive — cloud AI is unavailable until the subscription system ships.
-private struct PlaceholderSubscriptionStatus: SubscriptionStatusProviding {
-    var isProSubscriptionActive: Bool { false }
-    var subscriptionExpirationDate: Date? { nil }
 }
 
 /// Internal wrapper that reactively applies color scheme preference per FEAT-007.
@@ -123,6 +128,7 @@ struct AppRootWrapper: View {
     @State var settings: SettingsManager
     @State var errorPresenter: ErrorPresenter
     @State var recentsManager: RecentsManager
+    @State var purchaseManager: PurchaseManager
     @State var fileOpenCoordinator: FileOpenCoordinator
     @State var fileCreateCoordinator: FileCreateCoordinator
     @State var aiProviderManager: AIProviderManager
@@ -133,6 +139,7 @@ struct AppRootWrapper: View {
             .environment(settings)
             .environment(errorPresenter)
             .environment(recentsManager)
+            .environment(purchaseManager)
             .environment(fileOpenCoordinator)
             .environment(fileCreateCoordinator)
             .environment(aiProviderManager)
