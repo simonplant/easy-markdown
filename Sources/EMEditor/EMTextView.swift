@@ -492,6 +492,15 @@ public final class EMTextView: NSTextView {
     /// Returns true if ghost text was accepted (Tab consumed), false otherwise.
     public var onGhostTextAccept: (() -> Bool)?
 
+    // MARK: - Context Menu AI Actions per FEAT-058
+
+    /// Whether AI actions should appear in the right-click context menu.
+    public var showAIContextMenuActions: Bool = false
+    /// Handler for AI Improve from context menu per FEAT-058.
+    public var onContextMenuImprove: (() -> Void)?
+    /// Handler for AI Summarize from context menu per FEAT-058.
+    public var onContextMenuSummarize: (() -> Void)?
+
     /// Current layout metrics for device-aware spacing per FEAT-010.
     public var layoutMetrics: LayoutMetrics = .current {
         didSet { applyLayoutMetrics() }
@@ -661,8 +670,11 @@ public final class EMTextView: NSTextView {
     }
 
     /// Shows a context menu with URL preview and copy option on right-click per FEAT-049 AC-4.
+    /// Adds AI actions when text is selected per FEAT-058 AC-3.
     public override func menu(for event: NSEvent) -> NSMenu? {
         let point = convert(event.locationInWindow, from: nil)
+
+        // Link-specific context menu per FEAT-049 AC-4
         if let element = interactiveElement(at: point), case .link(let url) = element {
             let menu = NSMenu()
 
@@ -694,7 +706,53 @@ public final class EMTextView: NSTextView {
 
             return menu
         }
-        return super.menu(for: event)
+
+        // Standard context menu with AI actions per FEAT-058
+        let menu = super.menu(for: event) ?? NSMenu()
+
+        if selectedRange().length > 0 && showAIContextMenuActions {
+            menu.addItem(NSMenuItem.separator())
+
+            // AI submenu per FEAT-058 AC-3
+            let aiMenu = NSMenu(title: NSLocalizedString("AI", comment: "AI context menu section"))
+
+            let improveItem = NSMenuItem(
+                title: NSLocalizedString("Improve Writing", comment: "Context menu AI action"),
+                action: #selector(handleContextMenuImprove),
+                keyEquivalent: ""
+            )
+            improveItem.image = NSImage(systemSymbolName: "wand.and.stars", accessibilityDescription: "Improve Writing")
+            improveItem.target = self
+            aiMenu.addItem(improveItem)
+
+            let summarizeItem = NSMenuItem(
+                title: NSLocalizedString("Summarize", comment: "Context menu AI action"),
+                action: #selector(handleContextMenuSummarize),
+                keyEquivalent: ""
+            )
+            summarizeItem.image = NSImage(systemSymbolName: "text.badge.minus", accessibilityDescription: "Summarize")
+            summarizeItem.target = self
+            aiMenu.addItem(summarizeItem)
+
+            let aiMenuItem = NSMenuItem(
+                title: NSLocalizedString("AI", comment: "AI context menu section"),
+                action: nil,
+                keyEquivalent: ""
+            )
+            aiMenuItem.image = NSImage(systemSymbolName: "sparkles", accessibilityDescription: "AI")
+            aiMenuItem.submenu = aiMenu
+            menu.addItem(aiMenuItem)
+        }
+
+        return menu
+    }
+
+    @objc private func handleContextMenuImprove() {
+        onContextMenuImprove?()
+    }
+
+    @objc private func handleContextMenuSummarize() {
+        onContextMenuSummarize?()
     }
 
     @objc private func copyLinkURL(_ sender: NSMenuItem) {

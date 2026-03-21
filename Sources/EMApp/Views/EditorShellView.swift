@@ -93,7 +93,10 @@ struct EditorShellView: View {
                 onToggleSourceView: { toggleSourceView() },
                 onOpenFile: { openFileFromEditor() },
                 onNewFile: { newFileFromEditor() },
-                onCloseFile: { closeFile() }
+                onCloseFile: { closeFile() },
+                showAIContextMenuActions: aiProviderManager.shouldShowAIUI,
+                onContextMenuImprove: { startImprove() },
+                onContextMenuSummarize: { startSummarize() }
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .accessibilityLabel("Document editor")

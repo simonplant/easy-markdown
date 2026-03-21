@@ -1170,9 +1170,10 @@
         "Right-clicking selected text shows context menu with AI actions",
         "Pointer changes from arrow to I-beam when entering the text editing area"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T21:23:08-07:00"
     },
     {
       "id": "FEAT-069",

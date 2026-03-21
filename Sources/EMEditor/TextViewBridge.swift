@@ -59,6 +59,15 @@ public struct TextViewBridge: UIViewRepresentable {
     /// Called when Cmd+W is pressed (close file).
     public var onCloseFile: (() -> Void)?
 
+    // MARK: - Context menu AI actions per FEAT-058
+
+    /// Whether AI actions should appear in the right-click context menu.
+    public var showAIContextMenuActions: Bool
+    /// Called when Improve Writing is selected from the context menu.
+    public var onContextMenuImprove: (() -> Void)?
+    /// Called when Summarize is selected from the context menu.
+    public var onContextMenuSummarize: (() -> Void)?
+
     public init(
         text: SwiftUI.Binding<String>,
         editorState: EditorState,
@@ -76,7 +85,10 @@ public struct TextViewBridge: UIViewRepresentable {
         onToggleSourceView: (() -> Void)? = nil,
         onOpenFile: (() -> Void)? = nil,
         onNewFile: (() -> Void)? = nil,
-        onCloseFile: (() -> Void)? = nil
+        onCloseFile: (() -> Void)? = nil,
+        showAIContextMenuActions: Bool = false,
+        onContextMenuImprove: (() -> Void)? = nil,
+        onContextMenuSummarize: (() -> Void)? = nil
     ) {
         self._text = text
         self.editorState = editorState
@@ -95,6 +107,9 @@ public struct TextViewBridge: UIViewRepresentable {
         self.onOpenFile = onOpenFile
         self.onNewFile = onNewFile
         self.onCloseFile = onCloseFile
+        self.showAIContextMenuActions = showAIContextMenuActions
+        self.onContextMenuImprove = onContextMenuImprove
+        self.onContextMenuSummarize = onContextMenuSummarize
     }
 
     public func makeUIView(context: Context) -> EMTextView {
@@ -176,6 +191,11 @@ public struct TextViewBridge: UIViewRepresentable {
         textView.onOpenFile = onOpenFile
         textView.onNewFile = onNewFile
         textView.onCloseFile = onCloseFile
+
+        // Wire context menu AI actions per FEAT-058
+        context.coordinator.showAIContextMenuActions = showAIContextMenuActions
+        context.coordinator.onContextMenuImprove = onContextMenuImprove
+        context.coordinator.onContextMenuSummarize = onContextMenuSummarize
 
         // Apply initial layout metrics per FEAT-010
         if let config = renderConfig {
@@ -311,6 +331,15 @@ public struct TextViewBridge: NSViewRepresentable {
     /// Called when Cmd+W is pressed (close file).
     public var onCloseFile: (() -> Void)?
 
+    // MARK: - Context menu AI actions per FEAT-058
+
+    /// Whether AI actions should appear in the right-click context menu.
+    public var showAIContextMenuActions: Bool
+    /// Called when Improve Writing is selected from the context menu.
+    public var onContextMenuImprove: (() -> Void)?
+    /// Called when Summarize is selected from the context menu.
+    public var onContextMenuSummarize: (() -> Void)?
+
     public init(
         text: SwiftUI.Binding<String>,
         editorState: EditorState,
@@ -328,7 +357,10 @@ public struct TextViewBridge: NSViewRepresentable {
         onToggleSourceView: (() -> Void)? = nil,
         onOpenFile: (() -> Void)? = nil,
         onNewFile: (() -> Void)? = nil,
-        onCloseFile: (() -> Void)? = nil
+        onCloseFile: (() -> Void)? = nil,
+        showAIContextMenuActions: Bool = false,
+        onContextMenuImprove: (() -> Void)? = nil,
+        onContextMenuSummarize: (() -> Void)? = nil
     ) {
         self._text = text
         self.editorState = editorState
@@ -347,6 +379,9 @@ public struct TextViewBridge: NSViewRepresentable {
         self.onOpenFile = onOpenFile
         self.onNewFile = onNewFile
         self.onCloseFile = onCloseFile
+        self.showAIContextMenuActions = showAIContextMenuActions
+        self.onContextMenuImprove = onContextMenuImprove
+        self.onContextMenuSummarize = onContextMenuSummarize
     }
 
     public func makeNSView(context: Context) -> NSScrollView {
@@ -434,6 +469,11 @@ public struct TextViewBridge: NSViewRepresentable {
         textView.onOpenFile = onOpenFile
         textView.onNewFile = onNewFile
         textView.onCloseFile = onCloseFile
+
+        // Wire context menu AI actions per FEAT-058
+        textView.showAIContextMenuActions = showAIContextMenuActions
+        textView.onContextMenuImprove = onContextMenuImprove
+        textView.onContextMenuSummarize = onContextMenuSummarize
 
         // Apply initial layout metrics per FEAT-010
         if let config = renderConfig {

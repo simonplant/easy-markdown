@@ -396,6 +396,55 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         }
     }
 
+    // MARK: - Context Menu per FEAT-058
+
+    /// Whether AI actions should appear in the edit/context menu per FEAT-058.
+    var showAIContextMenuActions: Bool = false
+
+    /// Handler for AI Improve from context menu per FEAT-058.
+    var onContextMenuImprove: (() -> Void)?
+
+    /// Handler for AI Summarize from context menu per FEAT-058.
+    var onContextMenuSummarize: (() -> Void)?
+
+    /// Builds the edit menu with AI actions injected per FEAT-058 AC-3.
+    /// Called on right-click (trackpad), long-press, or keyboard (Cmd+A → right-click).
+    /// System-provided Cut, Copy, Paste, Look Up are in suggestedActions.
+    public func textView(
+        _ textView: UITextView,
+        editMenuForTextIn range: NSRange,
+        suggestedActions: [UIMenuElement]
+    ) -> UIMenu? {
+        var actions = suggestedActions
+
+        // Add AI actions when text is selected per FEAT-058 AC-3
+        if range.length > 0 && showAIContextMenuActions {
+            let improveAction = UIAction(
+                title: NSLocalizedString("Improve Writing", comment: "Context menu AI action"),
+                image: UIImage(systemName: "wand.and.stars")
+            ) { [weak self] _ in
+                self?.onContextMenuImprove?()
+            }
+
+            let summarizeAction = UIAction(
+                title: NSLocalizedString("Summarize", comment: "Context menu AI action"),
+                image: UIImage(systemName: "text.badge.minus")
+            ) { [weak self] _ in
+                self?.onContextMenuSummarize?()
+            }
+
+            let aiMenu = UIMenu(
+                title: NSLocalizedString("AI", comment: "AI context menu section"),
+                image: UIImage(systemName: "sparkles"),
+                children: [improveAction, summarizeAction]
+            )
+
+            actions.append(aiMenu)
+        }
+
+        return UIMenu(children: actions)
+    }
+
     // MARK: - UIScrollViewDelegate
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
