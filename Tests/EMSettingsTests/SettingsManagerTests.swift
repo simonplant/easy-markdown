@@ -33,6 +33,7 @@ struct SettingsManagerTests {
         #expect(m.isGhostTextEnabled == true)
         #expect(m.modelDownloadState == .notDownloaded)
         #expect(m.hasSeenModelDownloadPrompt == false)
+        #expect(m.isPDFExportWatermarkEnabled == true)
     }
 
     // MARK: - Persistence
@@ -125,6 +126,13 @@ struct SettingsManagerTests {
         #expect(d.bool(forKey: "em_hasSeenModelDownloadPrompt") == true)
     }
 
+    @Test("PDF export watermark toggle persists")
+    func pdfExportWatermarkPersists() {
+        let (m, d) = makeManager()
+        m.isPDFExportWatermarkEnabled = false
+        #expect(d.bool(forKey: "em_pdfExportWatermark") == false)
+    }
+
     // MARK: - Restoration
 
     @Test("Settings restore from UserDefaults on init")
@@ -148,6 +156,7 @@ struct SettingsManagerTests {
         defaults.set(false, forKey: "em_ghostText")
         defaults.set("downloaded", forKey: "em_modelDownloadState")
         defaults.set(true, forKey: "em_hasSeenModelDownloadPrompt")
+        defaults.set(false, forKey: "em_pdfExportWatermark")
 
         let m = SettingsManager(defaults: defaults)
 
@@ -166,5 +175,6 @@ struct SettingsManagerTests {
         #expect(m.isGhostTextEnabled == false)
         #expect(m.modelDownloadState == .downloaded)
         #expect(m.hasSeenModelDownloadPrompt == true)
+        #expect(m.isPDFExportWatermarkEnabled == false)
     }
 }

@@ -176,6 +176,14 @@ public final class SettingsManager {
         aiImproveCount + aiSummarizeCount + aiContinueAcceptCount + doctorFixAcceptCount
     }
 
+    // MARK: - Export per FEAT-061
+
+    /// Whether exported PDFs include a "Made with easy-markdown" footer watermark.
+    /// Enabled by default for PDF export per [A-056].
+    public var isPDFExportWatermarkEnabled: Bool {
+        didSet { defaults.set(isPDFExportWatermarkEnabled, forKey: Keys.pdfExportWatermark) }
+    }
+
     // MARK: - State Restoration per [A-061]
 
     /// Security-scoped bookmark data for the last open file.
@@ -245,6 +253,9 @@ public final class SettingsManager {
         self.daysActiveCount = defaults.integer(forKey: Keys.daysActiveCount)
         self.lastActiveDateString = defaults.string(forKey: Keys.lastActiveDateString)
 
+        // Export
+        self.isPDFExportWatermarkEnabled = defaults.object(forKey: Keys.pdfExportWatermark) as? Bool ?? true
+
         // Review prompt
         self.hasPromptedForReview = defaults.object(forKey: Keys.hasPromptedForReview) as? Bool ?? false
 
@@ -278,6 +289,7 @@ public final class SettingsManager {
         static let documentsOpenedCount = "em_counter_documentsOpened"
         static let daysActiveCount = "em_counter_daysActive"
         static let lastActiveDateString = "em_counter_lastActiveDate"
+        static let pdfExportWatermark = "em_pdfExportWatermark"
         static let hasPromptedForReview = "em_hasPromptedForReview"
         static let lastOpenFileBookmark = "em_lastOpenFileBookmark"
         static let lastCursorPosition = "em_lastCursorPosition"

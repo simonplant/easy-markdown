@@ -6,6 +6,7 @@ import SwiftUI
 struct EditorToolbar: ToolbarContent {
     let isSourceView: Bool
     let onToggleSource: () -> Void
+    let onExportPDF: () -> Void
     let onSettings: () -> Void
 
     var body: some ToolbarContent {
@@ -16,6 +17,16 @@ struct EditorToolbar: ToolbarContent {
             .keyboardShortcut("p", modifiers: [.command, .shift])
             .accessibilityLabel(isSourceView ? "Switch to rich text view" : "Switch to source view")
             .accessibilityHint("Toggles between formatted and raw markdown views")
+            #if os(iOS)
+            .hoverEffect(.highlight)
+            #endif
+
+            Button(action: onExportPDF) {
+                Image(systemName: "arrow.up.doc")
+            }
+            .keyboardShortcut("e", modifiers: [.command, .shift])
+            .accessibilityLabel("Export PDF")
+            .accessibilityHint("Export the document as a PDF file")
             #if os(iOS)
             .hoverEffect(.highlight)
             #endif

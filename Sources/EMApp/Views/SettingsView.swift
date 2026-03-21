@@ -29,6 +29,7 @@ struct SettingsView: View {
             appearanceSection(settings: $settings)
             editorSection(settings: $settings)
             aiSection(settings: $settings)
+            exportSection(settings: $settings)
             aboutSection
         }
     }
@@ -120,6 +121,15 @@ struct SettingsView: View {
         Section("AI") {
             Toggle("Ghost Text", isOn: settings.isGhostTextEnabled)
                 .accessibilityHint("Show inline AI completions while typing")
+        }
+    }
+
+    // MARK: - Export
+
+    private func exportSection(settings: Bindable<SettingsManager>) -> some View {
+        Section("Export") {
+            Toggle("PDF Watermark", isOn: settings.isPDFExportWatermarkEnabled)
+                .accessibilityHint("Include a Made with easy-markdown watermark in exported PDFs")
         }
     }
 
