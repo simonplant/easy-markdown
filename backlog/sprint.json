@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774067452",
   "startedAt": "2026-03-20T21:30:52-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "SPIKE-001",
     "title": "SPIKE: TextKit 2 Keystroke Latency Validation",
@@ -17,6 +17,10 @@
       "Architecture decision [A-004] updated based on findings"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T21:30:52-07:00"
-  }
+    "startedAt": "2026-03-20T21:30:52-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-20T21:35:30-07:00"
+  },
+  "completedAt": "2026-03-20T21:35:30-07:00",
+  "attempts": 1
 }
