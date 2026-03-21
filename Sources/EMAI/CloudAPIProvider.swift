@@ -58,11 +58,18 @@ public final class CloudAPIProvider: AIProvider, Sendable {
                         return
                     }
 
+                    // Get signed transaction JWS for server-side validation
+                    guard let receiptJWS = await subscriptionStatus.subscriptionReceiptJWS else {
+                        continuation.finish(throwing: EMError.ai(.subscriptionRequired))
+                        return
+                    }
+
                     // Build SSE request
                     var request = URLRequest(url: relayURL)
                     request.httpMethod = "POST"
                     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
                     request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
+                    request.setValue("Bearer \(receiptJWS)", forHTTPHeaderField: "Authorization")
                     request.timeoutInterval = Self.requestTimeoutSeconds
 
                     // Only send selected text per [D-AI-8] — no retention
@@ -75,8 +82,18 @@ public final class CloudAPIProvider: AIProvider, Sendable {
 
                     let (asyncBytes, response) = try await URLSession.shared.bytes(for: request)
 
-                    guard let httpResponse = response as? HTTPURLResponse,
-                          (200...299).contains(httpResponse.statusCode) else {
+                    guard let httpResponse = response as? HTTPURLResponse else {
+                        continuation.finish(throwing: EMError.ai(.cloudUnavailable))
+                        return
+                    }
+
+                    switch httpResponse.statusCode {
+                    case 200...299:
+                        break
+                    case 401:
+                        continuation.finish(throwing: EMError.ai(.subscriptionExpired))
+                        return
+                    default:
                         continuation.finish(throwing: EMError.ai(.cloudUnavailable))
                         return
                     }
@@ -103,6 +120,9 @@ public final class CloudAPIProvider: AIProvider, Sendable {
                     logger.error("Cloud inference failed: \(error.localizedDescription)")
                     if (error as? URLError)?.code == .timedOut {
                         continuation.finish(throwing: EMError.ai(.inferenceTimeout))
+                    } else if (error as? URLError)?.code == .notConnectedToInternet
+                                || (error as? URLError)?.code == .networkConnectionLost {
+                        continuation.finish(throwing: EMError.ai(.cloudUnavailable))
                     } else {
                         continuation.finish(throwing: EMError.ai(.cloudUnavailable))
                     }

@@ -1,13 +1,11 @@
 import Foundation
 import StoreKit
+import os
 import EMCore
 
 /// Manages Pro AI subscriptions via StoreKit 2 per [A-012] and [D-BIZ-7].
 /// Conforms to `SubscriptionStatusProviding` (defined in EMCore) so EMAI can
 /// check subscription status without depending on EMCloud per [A-057].
-///
-/// Full subscription management (purchase, cancel, upgrade) ships with FEAT-046.
-/// This implementation covers status checking and caching needed by the purchase system.
 @MainActor
 @Observable
 public final class SubscriptionManager: SubscriptionStatusProviding {
@@ -19,17 +17,29 @@ public final class SubscriptionManager: SubscriptionStatusProviding {
         didSet { _cachedExpirationDate = expirationDate }
     }
 
+    /// The available subscription products fetched from the App Store.
+    public private(set) var monthlyProduct: Product?
+    public private(set) var annualProduct: Product?
+
+    /// Whether a purchase operation is in progress.
+    public private(set) var isPurchasing: Bool = false
+
     /// Cached copy for the synchronous protocol requirement.
     /// Updated whenever expirationDate changes on the main actor.
     private nonisolated(unsafe) var _cachedExpirationDate: Date?
 
+    /// Cached JWS for server-side validation. Updated alongside subscription state.
+    private nonisolated(unsafe) var _cachedReceiptJWS: String?
+
     private var transactionListenerTask: Task<Void, Never>?
+    private let logger = Logger(subsystem: "com.easymarkdown.emcloud", category: "subscription")
 
     public init() {
         transactionListenerTask = Task { [weak self] in
             await self?.listenForTransactions()
         }
         Task {
+            await loadProducts()
             await refreshSubscriptionState()
         }
     }
@@ -50,6 +60,70 @@ public final class SubscriptionManager: SubscriptionStatusProviding {
         _cachedExpirationDate
     }
 
+    public nonisolated var subscriptionReceiptJWS: String? {
+        get async {
+            _cachedReceiptJWS
+        }
+    }
+
+    // MARK: - Purchase
+
+    /// Purchases a Pro AI subscription.
+    /// - Parameter plan: The subscription plan to purchase.
+    /// - Returns: The verified transaction on success.
+    @discardableResult
+    public func purchaseSubscription(plan: SubscriptionPlan) async throws -> Transaction {
+        let product: Product?
+        switch plan {
+        case .monthly: product = monthlyProduct
+        case .annual: product = annualProduct
+        }
+
+        guard let product else {
+            throw EMError.purchase(.productNotFound)
+        }
+
+        isPurchasing = true
+        defer { isPurchasing = false }
+
+        let result: Product.PurchaseResult
+        do {
+            result = try await product.purchase()
+        } catch {
+            throw EMError.purchase(.purchaseFailed(underlying: error))
+        }
+
+        switch result {
+        case .success(let verification):
+            let transaction = try verifiedTransaction(from: verification)
+            await transaction.finish()
+            await refreshSubscriptionState()
+            return transaction
+
+        case .userCancelled:
+            throw EMError.purchase(.userCancelled)
+
+        case .pending:
+            throw EMError.purchase(.purchasePending)
+
+        @unknown default:
+            throw EMError.purchase(.purchaseFailed(underlying: nil))
+        }
+    }
+
+    /// Restores subscription purchases for reinstall or device switch.
+    public func restoreSubscriptions() async throws {
+        isPurchasing = true
+        defer { isPurchasing = false }
+
+        do {
+            try await AppStore.sync()
+        } catch {
+            throw EMError.purchase(.restoreFailed(underlying: error))
+        }
+        await refreshSubscriptionState()
+    }
+
     // MARK: - State
 
     /// Refreshes subscription state by checking current entitlements.
@@ -60,18 +134,42 @@ public final class SubscriptionManager: SubscriptionStatusProviding {
         ]
 
         for await result in Transaction.currentEntitlements {
-            guard let transaction = try? result.payloadValue else { continue }
+            guard case .verified(let transaction) = result else { continue }
             if subscriptionIDs.contains(transaction.productID) {
                 isProActive = true
                 expirationDate = transaction.expirationDate
+                _cachedReceiptJWS = result.jwsRepresentation
                 return
             }
         }
         isProActive = false
         expirationDate = nil
+        _cachedReceiptJWS = nil
     }
 
     // MARK: - Private
+
+    /// Loads subscription products from the App Store.
+    private func loadProducts() async {
+        do {
+            let products = try await Product.products(for: [
+                ProductID.proAIMonthly,
+                ProductID.proAIAnnual,
+            ])
+            for product in products {
+                switch product.id {
+                case ProductID.proAIMonthly:
+                    monthlyProduct = product
+                case ProductID.proAIAnnual:
+                    annualProduct = product
+                default:
+                    break
+                }
+            }
+        } catch {
+            logger.error("Failed to load subscription products: \(error.localizedDescription)")
+        }
+    }
 
     /// Listens for subscription transaction updates.
     private func listenForTransactions() async {
@@ -80,4 +178,24 @@ public final class SubscriptionManager: SubscriptionStatusProviding {
             await refreshSubscriptionState()
         }
     }
+
+    /// Extracts a verified transaction, throwing on verification failure.
+    private func verifiedTransaction(
+        from result: VerificationResult<Transaction>
+    ) throws -> Transaction {
+        switch result {
+        case .verified(let transaction):
+            return transaction
+        case .unverified(_, let error):
+            throw EMError.purchase(.receiptValidationFailed(underlying: error))
+        }
+    }
+}
+
+/// Pro AI subscription plans per [D-BIZ-7].
+public enum SubscriptionPlan: Sendable {
+    /// $3.99/month
+    case monthly
+    /// $29.99/year
+    case annual
 }

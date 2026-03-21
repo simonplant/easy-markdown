@@ -7,13 +7,16 @@ import Foundation
 struct MockSubscriptionStatus: SubscriptionStatusProviding {
     var isProSubscriptionActive: Bool { isActive }
     var subscriptionExpirationDate: Date? { expiration }
+    var subscriptionReceiptJWS: String? { receiptJWS }
 
     let isActive: Bool
     let expiration: Date?
+    let receiptJWS: String?
 
-    init(isActive: Bool = false, expiration: Date? = nil) {
+    init(isActive: Bool = false, expiration: Date? = nil, receiptJWS: String? = nil) {
         self.isActive = isActive
         self.expiration = expiration
+        self.receiptJWS = receiptJWS
     }
 }
 

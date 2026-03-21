@@ -6,11 +6,17 @@ import Foundation
 @Suite("CloudAPIProvider")
 struct CloudAPIProviderTests {
 
-    private func makeProvider(isProActive: Bool = false) -> CloudAPIProvider {
+    private func makeProvider(
+        isProActive: Bool = false,
+        receiptJWS: String? = nil
+    ) -> CloudAPIProvider {
         CloudAPIProvider(
             relayURL: URL(string: "https://api.easymarkdown.app/v1/generate")!,
             networkMonitor: NetworkMonitor(),
-            subscriptionStatus: MockSubscriptionStatus(isActive: isProActive)
+            subscriptionStatus: MockSubscriptionStatus(
+                isActive: isProActive,
+                receiptJWS: receiptJWS
+            )
         )
     }
 
@@ -47,5 +53,69 @@ struct CloudAPIProviderTests {
     @Test("requestTimeoutSeconds is 10")
     func timeout() {
         #expect(CloudAPIProvider.requestTimeoutSeconds == 10)
+    }
+
+    @Test("generate throws subscriptionRequired when not subscribed")
+    func generateWithoutSubscription() async {
+        let provider = makeProvider(isProActive: false)
+        let prompt = AIPrompt(
+            action: .improve,
+            selectedText: "Hello world",
+            systemPrompt: "Improve this text."
+        )
+        let context = AIContext(
+            deviceCapability: .fullAI,
+            isOffline: false,
+            subscriptionStatus: MockSubscriptionStatus(isActive: false)
+        )
+
+        var thrownError: Error?
+        let stream = provider.generate(prompt: prompt, context: context)
+        do {
+            for try await _ in stream {
+                Issue.record("Expected stream to throw, not yield tokens")
+            }
+        } catch {
+            thrownError = error
+        }
+
+        #expect(thrownError is EMError)
+        if let emError = thrownError as? EMError, case .ai(.subscriptionRequired) = emError {
+            // Expected
+        } else {
+            Issue.record("Expected EMError.ai(.subscriptionRequired), got \(String(describing: thrownError))")
+        }
+    }
+
+    @Test("generate throws subscriptionRequired when no receipt JWS available")
+    func generateWithoutReceipt() async {
+        let provider = makeProvider(isProActive: true, receiptJWS: nil)
+        let prompt = AIPrompt(
+            action: .improve,
+            selectedText: "Hello world",
+            systemPrompt: "Improve this text."
+        )
+        let context = AIContext(
+            deviceCapability: .fullAI,
+            isOffline: false,
+            subscriptionStatus: MockSubscriptionStatus(isActive: true)
+        )
+
+        var thrownError: Error?
+        let stream = provider.generate(prompt: prompt, context: context)
+        do {
+            for try await _ in stream {
+                Issue.record("Expected stream to throw, not yield tokens")
+            }
+        } catch {
+            thrownError = error
+        }
+
+        #expect(thrownError is EMError)
+        if let emError = thrownError as? EMError, case .ai(.subscriptionRequired) = emError {
+            // Expected — no JWS means can't authenticate
+        } else {
+            Issue.record("Expected EMError.ai(.subscriptionRequired), got \(String(describing: thrownError))")
+        }
     }
 }
