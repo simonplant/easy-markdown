@@ -487,7 +487,10 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": true
+      "readyForSprint": true,
+      "lastFailReason": "Validator agent rejected implementation",
+      "lastFailAt": "2026-03-21T00:35:45-07:00",
+      "failCount": 1
     },
     {
       "id": "FEAT-023",
@@ -506,7 +509,10 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": true
+      "readyForSprint": true,
+      "lastFailReason": "Validator agent rejected implementation",
+      "lastFailAt": "2026-03-21T00:50:43-07:00",
+      "failCount": 1
     },
     {
       "id": "FEAT-024",
@@ -525,7 +531,10 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": true
+      "readyForSprint": true,
+      "lastFailReason": "Validator agent rejected implementation",
+      "lastFailAt": "2026-03-21T01:06:02-07:00",
+      "failCount": 1
     },
     {
       "id": "FEAT-025",
@@ -542,7 +551,10 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": true
+      "readyForSprint": true,
+      "lastFailReason": "Validator agent rejected implementation",
+      "lastFailAt": "2026-03-21T01:15:45-07:00",
+      "failCount": 1
     },
     {
       "id": "FEAT-026",
@@ -944,9 +956,10 @@
         "Server logs contain zero user content (prompts, responses, or file data)",
         "Subscription status is cached client-side so the app doesn't block on network for every AI action"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-21T01:26:43-07:00"
     },
     {
       "id": "FEAT-047",
