@@ -97,8 +97,12 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
     /// Set by TextViewBridge when a ghost text coordinator is provided.
     weak var ghostTextCoordinator: GhostTextCoordinator?
 
-    /// Whether this is the first render (triggers immediate doctor evaluation).
+    /// Whether this is the first render (triggers immediate doctor evaluation
+    /// and file-open animation per FEAT-014 AC-11).
     private var isFirstRender = true
+
+    /// Render transition animator per FEAT-014 and [A-020].
+    private let renderAnimator = RenderTransitionAnimator()
 
     /// Signpost for toggle latency measurement per FEAT-050.
     private let toggleSignpost = OSSignpost(
@@ -464,15 +468,18 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         return true
     }
 
-    // MARK: - View Mode Toggle per FEAT-050
+    // MARK: - View Mode Toggle per FEAT-050 and FEAT-014
 
-    /// Performs a view mode toggle with cursor mapping per [A-021].
+    /// Performs an animated view mode toggle with cursor mapping per [A-021] and FEAT-014.
     /// Called from TextViewBridge when `isSourceView` changes.
+    /// Animates The Render transition using snapshot-based Core Animation per [A-020].
     func handleViewModeToggle(for textView: EMTextView, toSourceView: Bool) {
         toggleSignpost.begin("toggle")
-        defer { toggleSignpost.end("toggle") }
 
-        guard let config = renderConfig else { return }
+        guard let config = renderConfig else {
+            toggleSignpost.end("toggle")
+            return
+        }
 
         let sourceText = textView.text ?? ""
 
@@ -497,28 +504,87 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
             )
         }
 
-        // Apply new rendering with mapped cursor
-        applyRendering(
-            to: textView,
-            ast: parseResult.ast,
-            sourceText: sourceText,
-            config: config,
-            restoringSelection: mappedSelection
+        // Extract syntax markers for The Render animation per FEAT-014
+        let markers = RenderElementExtractor.extract(
+            from: parseResult.ast,
+            sourceText: sourceText
         )
 
-        // Run Document Doctor after toggle
-        doctorCoordinator.scheduleEvaluation(text: sourceText, ast: parseResult.ast)
+        let direction: TransitionDirection = toSourceView ? .richToSource : .sourceToRich
+
+        // Perform animated transition per [A-020]
+        renderAnimator.performTransition(
+            textView: textView,
+            markers: markers,
+            applyRendering: { [self] in
+                applyRendering(
+                    to: textView,
+                    ast: parseResult.ast,
+                    sourceText: sourceText,
+                    config: config,
+                    restoringSelection: mappedSelection
+                )
+            },
+            direction: direction
+        ) { [weak self] in
+            self?.toggleSignpost.end("toggle")
+            self?.doctorCoordinator.scheduleEvaluation(
+                text: sourceText, ast: parseResult.ast
+            )
+        }
     }
 
     // MARK: - Rendering per FEAT-003
 
     /// Requests an immediate parse and render. Called on initial load and view mode toggle.
+    /// On first render in rich mode, plays The Render file-open animation per FEAT-014 AC-11.
     func requestRender(for textView: EMTextView) {
         guard let config = renderConfig else { return }
 
         let sourceText = textView.text ?? ""
         let parseResult = parser.parse(sourceText)
         currentAST = parseResult.ast
+
+        // File-open animation: first render in rich mode plays source→rich transition per FEAT-014 AC-11
+        if isFirstRender && !config.isSourceView && !sourceText.isEmpty {
+            isFirstRender = false
+
+            // Apply source rendering first to establish the "before" state
+            let sourceConfig = RenderConfiguration(
+                typeScale: config.typeScale,
+                colors: config.colors,
+                isSourceView: true,
+                colorVariant: config.colorVariant,
+                layoutMetrics: config.layoutMetrics,
+                documentURL: config.documentURL
+            )
+            applyRendering(
+                to: textView, ast: parseResult.ast,
+                sourceText: sourceText, config: sourceConfig
+            )
+            textView.layoutIfNeeded()
+
+            // Extract markers and animate to rich rendering
+            let markers = RenderElementExtractor.extract(
+                from: parseResult.ast, sourceText: sourceText
+            )
+            renderAnimator.performTransition(
+                textView: textView,
+                markers: markers,
+                applyRendering: { [self] in
+                    applyRendering(
+                        to: textView, ast: parseResult.ast,
+                        sourceText: sourceText, config: config
+                    )
+                },
+                direction: .sourceToRich
+            ) { [weak self] in
+                self?.doctorCoordinator.evaluateImmediately(
+                    text: sourceText, ast: parseResult.ast
+                )
+            }
+            return
+        }
 
         applyRendering(to: textView, ast: parseResult.ast, sourceText: sourceText, config: config)
 
@@ -762,8 +828,12 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
     /// Set by TextViewBridge when a ghost text coordinator is provided.
     weak var ghostTextCoordinator: GhostTextCoordinator?
 
-    /// Whether this is the first render (triggers immediate doctor evaluation).
+    /// Whether this is the first render (triggers immediate doctor evaluation
+    /// and file-open animation per FEAT-014 AC-11).
     private var isFirstRender = true
+
+    /// Render transition animator per FEAT-014 and [A-020].
+    private let renderAnimator = RenderTransitionAnimator()
 
     /// Signpost for toggle latency measurement per FEAT-050.
     private let toggleSignpost = OSSignpost(
@@ -1091,23 +1161,23 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         return true
     }
 
-    // MARK: - View Mode Toggle per FEAT-050
+    // MARK: - View Mode Toggle per FEAT-050 and FEAT-014
 
-    /// Performs a view mode toggle with cursor mapping per [A-021].
+    /// Performs an animated view mode toggle with cursor mapping per [A-021] and FEAT-014.
     /// Called from TextViewBridge when `isSourceView` changes.
     func handleViewModeToggle(for textView: EMTextView, toSourceView: Bool) {
         toggleSignpost.begin("toggle")
-        defer { toggleSignpost.end("toggle") }
 
-        guard let config = renderConfig else { return }
+        guard let config = renderConfig else {
+            toggleSignpost.end("toggle")
+            return
+        }
 
         let sourceText = textView.string
 
-        // Re-parse to get fresh AST for cursor mapping
         let parseResult = parser.parse(sourceText)
         currentAST = parseResult.ast
 
-        // Map cursor position between views per [A-021]
         let currentSelection = textView.selectedRange()
         let mappedSelection: NSRange
         if toSourceView {
@@ -1124,22 +1194,39 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
             )
         }
 
-        // Apply new rendering with mapped cursor
-        applyRendering(
-            to: textView,
-            ast: parseResult.ast,
-            sourceText: sourceText,
-            config: config,
-            restoringSelection: mappedSelection
+        // Extract syntax markers for The Render animation per FEAT-014
+        let markers = RenderElementExtractor.extract(
+            from: parseResult.ast,
+            sourceText: sourceText
         )
 
-        // Run Document Doctor after toggle
-        doctorCoordinator.scheduleEvaluation(text: sourceText, ast: parseResult.ast)
+        let direction: TransitionDirection = toSourceView ? .richToSource : .sourceToRich
+
+        renderAnimator.performTransition(
+            textView: textView,
+            markers: markers,
+            applyRendering: { [self] in
+                applyRendering(
+                    to: textView,
+                    ast: parseResult.ast,
+                    sourceText: sourceText,
+                    config: config,
+                    restoringSelection: mappedSelection
+                )
+            },
+            direction: direction
+        ) { [weak self] in
+            self?.toggleSignpost.end("toggle")
+            self?.doctorCoordinator.scheduleEvaluation(
+                text: sourceText, ast: parseResult.ast
+            )
+        }
     }
 
     // MARK: - Rendering per FEAT-003
 
     /// Requests an immediate parse and render.
+    /// On first render in rich mode, plays file-open animation per FEAT-014 AC-11.
     func requestRender(for textView: EMTextView) {
         guard let config = renderConfig else { return }
 
@@ -1147,9 +1234,49 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         let parseResult = parser.parse(sourceText)
         currentAST = parseResult.ast
 
+        // File-open animation per FEAT-014 AC-11
+        if isFirstRender && !config.isSourceView && !sourceText.isEmpty {
+            isFirstRender = false
+
+            let sourceConfig = RenderConfiguration(
+                typeScale: config.typeScale,
+                colors: config.colors,
+                isSourceView: true,
+                colorVariant: config.colorVariant,
+                layoutMetrics: config.layoutMetrics,
+                documentURL: config.documentURL
+            )
+            applyRendering(
+                to: textView, ast: parseResult.ast,
+                sourceText: sourceText, config: sourceConfig
+            )
+            textView.layoutManager?.ensureLayout(forCharacterRange: NSRange(
+                location: 0, length: (sourceText as NSString).length
+            ))
+
+            let markers = RenderElementExtractor.extract(
+                from: parseResult.ast, sourceText: sourceText
+            )
+            renderAnimator.performTransition(
+                textView: textView,
+                markers: markers,
+                applyRendering: { [self] in
+                    applyRendering(
+                        to: textView, ast: parseResult.ast,
+                        sourceText: sourceText, config: config
+                    )
+                },
+                direction: .sourceToRich
+            ) { [weak self] in
+                self?.doctorCoordinator.evaluateImmediately(
+                    text: sourceText, ast: parseResult.ast
+                )
+            }
+            return
+        }
+
         applyRendering(to: textView, ast: parseResult.ast, sourceText: sourceText, config: config)
 
-        // Run Document Doctor after parse per FEAT-005
         if isFirstRender {
             isFirstRender = false
             doctorCoordinator.evaluateImmediately(text: sourceText, ast: parseResult.ast)
