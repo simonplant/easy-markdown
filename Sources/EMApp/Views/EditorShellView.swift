@@ -36,6 +36,8 @@ struct EditorShellView: View {
     @State private var improveService: ImproveWritingService?
     @State private var summarizeCoordinator: SummarizeCoordinator?
     @State private var summarizeService: SummarizeService?
+    @State private var ghostTextCoordinator: GhostTextCoordinator?
+    @State private var ghostTextService: GhostTextService?
     @State private var showingOpenFilePicker = false
     @State private var showingNewFilePicker = false
     @State private var isProSubscriber = false
@@ -83,6 +85,7 @@ struct EditorShellView: View {
                 },
                 onLinkTap: { url in handleLinkTap(url) },
                 improveCoordinator: improveCoordinator,
+                ghostTextCoordinator: ghostTextCoordinator,
                 isAutoFormatHeadingSpacing: settings.isAutoFormatHeadingSpacing,
                 isAutoFormatBlankLineSeparation: settings.isAutoFormatBlankLineSeparation,
                 isAutoFormatTrailingWhitespaceTrim: settings.trailingWhitespaceBehavior == .strip,
@@ -249,6 +252,7 @@ struct EditorShellView: View {
             // Cancel any active AI sessions on file close
             improveCoordinator?.cancel()
             summarizeCoordinator?.cancel()
+            ghostTextCoordinator?.cancel()
             // Clear doctor state on file close per FEAT-005 AC-3
             editorState.clearDiagnostics()
             // Save, then release per-scene file coordination resources per [A-028].
@@ -260,6 +264,12 @@ struct EditorShellView: View {
                 await saveManager?.saveNow()
                 saveManager?.stop()
                 openCoordinator.closeCurrentFile()
+            }
+        }
+        .onChange(of: settings.isGhostTextEnabled) { _, newValue in
+            ghostTextCoordinator?.isEnabled = newValue
+            if !newValue {
+                ghostTextCoordinator?.cancel()
             }
         }
         .onChange(of: autoSaveManager?.savedWhileInBackground) { _, newValue in
@@ -463,6 +473,9 @@ struct EditorShellView: View {
         // FEAT-055: Summarize
         summarizeCoordinator = SummarizeCoordinator(editorState: editorState)
         summarizeService = SummarizeService(providerManager: aiProviderManager)
+
+        // FEAT-056: Ghost Text (Continue Writing)
+        setupGhostText()
     }
 
     /// Starts the AI improve flow per FEAT-011 AC-1.
@@ -566,6 +579,30 @@ struct EditorShellView: View {
             isFullDocument: isFullDocument
         )
         coordinator.startSummarize(updateStream: stream)
+    }
+
+    // MARK: - AI Ghost Text per FEAT-056
+
+    /// Creates and wires the ghost text coordinator and service per FEAT-056.
+    /// Connects the coordinator's `onRequestGhostText` closure to the EMAI service,
+    /// maintaining module isolation per [A-015].
+    private func setupGhostText() {
+        guard aiProviderManager.shouldShowAIUI else { return }
+
+        let service = GhostTextService(providerManager: aiProviderManager)
+        ghostTextService = service
+
+        let coordinator = GhostTextCoordinator(editorState: editorState)
+        coordinator.isEnabled = settings.isGhostTextEnabled
+
+        // Wire the coordinator to request ghost text from EMAI when the pause timer fires.
+        // This closure bridges EMEditor → EMAI without direct import per [A-015].
+        coordinator.onRequestGhostText = { [weak service] precedingText in
+            guard let service else { return nil }
+            return service.startGenerating(precedingText: precedingText)
+        }
+
+        ghostTextCoordinator = coordinator
     }
 
     /// Inserts text at the current cursor position per FEAT-055 AC-2.

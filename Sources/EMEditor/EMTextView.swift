@@ -64,6 +64,10 @@ public final class EMTextView: UITextView {
     /// Handler for close file (Cmd+W).
     public var onCloseFile: (() -> Void)?
 
+    /// Handler for Tab key when ghost text is active per FEAT-056.
+    /// Returns true if ghost text was accepted (Tab consumed), false otherwise.
+    public var onGhostTextAccept: (() -> Bool)?
+
     /// Current layout metrics for device-aware spacing per FEAT-010.
     public var layoutMetrics: LayoutMetrics = .current {
         didSet { applyLayoutMetrics() }
@@ -476,6 +480,10 @@ public final class EMTextView: NSTextView {
     public var onNewFile: (() -> Void)?
     /// Handler for close file (Cmd+W).
     public var onCloseFile: (() -> Void)?
+
+    /// Handler for Tab key when ghost text is active per FEAT-056.
+    /// Returns true if ghost text was accepted (Tab consumed), false otherwise.
+    public var onGhostTextAccept: (() -> Bool)?
 
     /// Current layout metrics for device-aware spacing per FEAT-010.
     public var layoutMetrics: LayoutMetrics = .current {

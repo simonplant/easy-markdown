@@ -93,6 +93,10 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
     /// Document Doctor coordinator per FEAT-005.
     lazy var doctorCoordinator = DoctorCoordinator(editorState: editorState)
 
+    /// Ghost text coordinator per FEAT-056.
+    /// Set by TextViewBridge when a ghost text coordinator is provided.
+    weak var ghostTextCoordinator: GhostTextCoordinator?
+
     /// Whether this is the first render (triggers immediate doctor evaluation).
     private var isFirstRender = true
 
@@ -123,6 +127,10 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         let newText = textView.text ?? ""
         text.wrappedValue = newText
         onTextChange?(newText)
+
+        // Notify ghost text coordinator of text change per FEAT-056.
+        // This both dismisses active ghost text (AC-3) and resets the pause timer (AC-1).
+        ghostTextCoordinator?.textDidChange()
 
         // Schedule debounced re-parse and render per [A-017]
         if let emTextView = textView as? EMTextView {
@@ -176,6 +184,16 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
     ) -> Bool {
         // Start keystroke performance signpost per [A-037].
         signpost.begin("keystroke")
+
+        // Ghost text Tab accept per FEAT-056 AC-2.
+        // Intercept Tab before formatting engine when ghost text is active.
+        if text == "\t",
+           let coordinator = ghostTextCoordinator,
+           coordinator.phase == .ready || coordinator.phase == .streaming {
+            coordinator.accept()
+            signpost.end("keystroke")
+            return false
+        }
 
         // CJK IME: if the text view has marked text (composing),
         // let the input system handle it without interference per AC-3.
@@ -572,6 +590,31 @@ extension TextViewCoordinator: ImproveWritingTextViewDelegate {
     }
 }
 
+// MARK: - GhostTextViewDelegate (iOS)
+
+extension TextViewCoordinator: GhostTextViewDelegate {
+
+    public func isCursorInsideCodeBlock() -> Bool {
+        guard let ast = currentAST else { return false }
+        let text = currentText()
+        let cursorLocation = currentSelectedRange().location
+
+        // Convert UTF-16 offset to line:column SourcePosition
+        let nsString = text as NSString
+        guard cursorLocation <= nsString.length else { return false }
+        let prefix = nsString.substring(to: cursorLocation)
+        let lines = prefix.components(separatedBy: "\n")
+        let line = lines.count
+        let column = (lines.last?.utf8.count ?? 0) + 1
+
+        let position = SourcePosition(line: line, column: column)
+        guard let node = ast.node(at: position) else { return false }
+
+        if case .codeBlock = node.type { return true }
+        return false
+    }
+}
+
 // MARK: - Value binding helper
 
 /// Lightweight get/set binding for coordinator use.
@@ -666,6 +709,10 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
     /// Document Doctor coordinator per FEAT-005.
     lazy var doctorCoordinator = DoctorCoordinator(editorState: editorState)
 
+    /// Ghost text coordinator per FEAT-056.
+    /// Set by TextViewBridge when a ghost text coordinator is provided.
+    weak var ghostTextCoordinator: GhostTextCoordinator?
+
     /// Whether this is the first render (triggers immediate doctor evaluation).
     private var isFirstRender = true
 
@@ -695,6 +742,16 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
     ) -> Bool {
         // Start keystroke performance signpost per [A-037].
         signpost.begin("keystroke")
+
+        // Ghost text Tab accept per FEAT-056 AC-2.
+        // Intercept Tab before formatting engine when ghost text is active.
+        if replacementString == "\t",
+           let coordinator = ghostTextCoordinator,
+           coordinator.phase == .ready || coordinator.phase == .streaming {
+            coordinator.accept()
+            signpost.end("keystroke")
+            return false
+        }
 
         // CJK IME: if the text view has marked text (composing),
         // let the input system handle it without interference per AC-3.
@@ -903,6 +960,10 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         let newText = textView.string
         text.wrappedValue = newText
         onTextChange?(newText)
+
+        // Notify ghost text coordinator of text change per FEAT-056.
+        // This both dismisses active ghost text (AC-3) and resets the pause timer (AC-1).
+        ghostTextCoordinator?.textDidChange()
 
         // Schedule debounced re-parse and render per [A-017]
         scheduleRender(for: textView)
@@ -1149,6 +1210,31 @@ extension TextViewCoordinator: ImproveWritingTextViewDelegate {
     public func requestRerender() {
         guard let textView = managedTextView else { return }
         requestRender(for: textView)
+    }
+}
+
+// MARK: - GhostTextViewDelegate (macOS)
+
+extension TextViewCoordinator: GhostTextViewDelegate {
+
+    public func isCursorInsideCodeBlock() -> Bool {
+        guard let ast = currentAST else { return false }
+        let text = currentText()
+        let cursorLocation = currentSelectedRange().location
+
+        // Convert UTF-16 offset to line:column SourcePosition
+        let nsString = text as NSString
+        guard cursorLocation <= nsString.length else { return false }
+        let prefix = nsString.substring(to: cursorLocation)
+        let lines = prefix.components(separatedBy: "\n")
+        let line = lines.count
+        let column = (lines.last?.utf8.count ?? 0) + 1
+
+        let position = SourcePosition(line: line, column: column)
+        guard let node = ast.node(at: position) else { return false }
+
+        if case .codeBlock = node.type { return true }
+        return false
     }
 }
 

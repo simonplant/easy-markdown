@@ -34,6 +34,8 @@ public struct TextViewBridge: UIViewRepresentable {
     public var onLinkTap: ((URL) -> Void)?
     /// Optional improve writing coordinator to wire as text view delegate per FEAT-011.
     public var improveCoordinator: ImproveWritingCoordinator?
+    /// Optional ghost text coordinator for AI continue writing per FEAT-056.
+    public var ghostTextCoordinator: GhostTextCoordinator?
 
     // MARK: - Formatting settings per FEAT-053 AC-6
 
@@ -66,6 +68,7 @@ public struct TextViewBridge: UIViewRepresentable {
         onTextChange: ((String) -> Void)? = nil,
         onLinkTap: ((URL) -> Void)? = nil,
         improveCoordinator: ImproveWritingCoordinator? = nil,
+        ghostTextCoordinator: GhostTextCoordinator? = nil,
         isAutoFormatHeadingSpacing: Bool = true,
         isAutoFormatBlankLineSeparation: Bool = true,
         isAutoFormatTrailingWhitespaceTrim: Bool = true,
@@ -83,6 +86,7 @@ public struct TextViewBridge: UIViewRepresentable {
         self.onTextChange = onTextChange
         self.onLinkTap = onLinkTap
         self.improveCoordinator = improveCoordinator
+        self.ghostTextCoordinator = ghostTextCoordinator
         self.isAutoFormatHeadingSpacing = isAutoFormatHeadingSpacing
         self.isAutoFormatBlankLineSeparation = isAutoFormatBlankLineSeparation
         self.isAutoFormatTrailingWhitespaceTrim = isAutoFormatTrailingWhitespaceTrim
@@ -114,6 +118,12 @@ public struct TextViewBridge: UIViewRepresentable {
         // Wire improve writing coordinator per FEAT-011
         if let improveCoordinator {
             improveCoordinator.textViewDelegate = context.coordinator
+        }
+
+        // Wire ghost text coordinator per FEAT-056
+        if let ghostTextCoordinator {
+            ghostTextCoordinator.textViewDelegate = context.coordinator
+            context.coordinator.ghostTextCoordinator = ghostTextCoordinator
         }
 
         // Wire Shift-Tab handler for list outdent per FEAT-004
@@ -194,6 +204,12 @@ public struct TextViewBridge: UIViewRepresentable {
             improveCoordinator.textViewDelegate = coordinator
         }
 
+        // Ensure ghost text coordinator stays wired per FEAT-056
+        if let ghostTextCoordinator, ghostTextCoordinator.textViewDelegate == nil {
+            ghostTextCoordinator.textViewDelegate = coordinator
+            coordinator.ghostTextCoordinator = ghostTextCoordinator
+        }
+
         // Track whether we need to re-render
         let textChanged = coordinator.updateTextView(textView, with: text)
         let previousVariant = coordinator.renderConfig?.colorVariant
@@ -270,6 +286,8 @@ public struct TextViewBridge: NSViewRepresentable {
     public var onLinkTap: ((URL) -> Void)?
     /// Optional improve writing coordinator to wire as text view delegate per FEAT-011.
     public var improveCoordinator: ImproveWritingCoordinator?
+    /// Optional ghost text coordinator for AI continue writing per FEAT-056.
+    public var ghostTextCoordinator: GhostTextCoordinator?
 
     // MARK: - Formatting settings per FEAT-053 AC-6
 
@@ -302,6 +320,7 @@ public struct TextViewBridge: NSViewRepresentable {
         onTextChange: ((String) -> Void)? = nil,
         onLinkTap: ((URL) -> Void)? = nil,
         improveCoordinator: ImproveWritingCoordinator? = nil,
+        ghostTextCoordinator: GhostTextCoordinator? = nil,
         isAutoFormatHeadingSpacing: Bool = true,
         isAutoFormatBlankLineSeparation: Bool = true,
         isAutoFormatTrailingWhitespaceTrim: Bool = true,
@@ -319,6 +338,7 @@ public struct TextViewBridge: NSViewRepresentable {
         self.onTextChange = onTextChange
         self.onLinkTap = onLinkTap
         self.improveCoordinator = improveCoordinator
+        self.ghostTextCoordinator = ghostTextCoordinator
         self.isAutoFormatHeadingSpacing = isAutoFormatHeadingSpacing
         self.isAutoFormatBlankLineSeparation = isAutoFormatBlankLineSeparation
         self.isAutoFormatTrailingWhitespaceTrim = isAutoFormatTrailingWhitespaceTrim
@@ -356,6 +376,12 @@ public struct TextViewBridge: NSViewRepresentable {
         // Wire improve writing coordinator per FEAT-011
         if let improveCoordinator {
             improveCoordinator.textViewDelegate = context.coordinator
+        }
+
+        // Wire ghost text coordinator per FEAT-056
+        if let ghostTextCoordinator {
+            ghostTextCoordinator.textViewDelegate = context.coordinator
+            context.coordinator.ghostTextCoordinator = ghostTextCoordinator
         }
 
         // Wire Shift-Tab handler for list outdent per FEAT-004
@@ -439,6 +465,12 @@ public struct TextViewBridge: NSViewRepresentable {
         coordinator.managedTextView = textView
         if let improveCoordinator, improveCoordinator.textViewDelegate == nil {
             improveCoordinator.textViewDelegate = coordinator
+        }
+
+        // Ensure ghost text coordinator stays wired per FEAT-056
+        if let ghostTextCoordinator, ghostTextCoordinator.textViewDelegate == nil {
+            ghostTextCoordinator.textViewDelegate = coordinator
+            coordinator.ghostTextCoordinator = ghostTextCoordinator
         }
 
         let textChanged = coordinator.updateTextView(textView, with: text)
