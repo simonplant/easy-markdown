@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774073409",
   "startedAt": "2026-03-20T23:10:09-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-016",
     "title": "F-011: Quick Open",
@@ -15,6 +15,10 @@
       "Recents entry for deleted/inaccessible file is excluded from results"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T23:10:09-07:00"
-  }
+    "startedAt": "2026-03-20T23:10:09-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-20T23:18:17-07:00"
+  },
+  "completedAt": "2026-03-20T23:18:17-07:00",
+  "attempts": 1
 }

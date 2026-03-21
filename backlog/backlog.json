@@ -359,9 +359,10 @@
         "Empty state (no recent files) shows a helpful message, not a blank screen",
         "Recents entry for deleted/inaccessible file is excluded from results"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-20T23:18:17-07:00"
     },
     {
       "id": "FEAT-017",
