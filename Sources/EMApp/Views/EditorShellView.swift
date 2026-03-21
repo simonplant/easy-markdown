@@ -43,6 +43,8 @@ struct EditorShellView: View {
     @State private var showingNewFilePicker = false
     @State private var isProSubscriber = false
     @State private var showingProUpgrade = false
+    @State private var showingPDFShareSheet = false
+    @State private var exportedPDFURL: URL?
     /// Find and replace engine per FEAT-017.
     private let findReplaceEngine = FindReplaceEngine()
     @Environment(\.colorScheme) private var colorScheme
@@ -204,6 +206,7 @@ struct EditorShellView: View {
             EditorToolbar(
                 isSourceView: editorState.isSourceView,
                 onToggleSource: toggleSourceView,
+                onExportPDF: { exportPDF() },
                 onSettings: { router.showSettings() }
             )
         }
@@ -224,6 +227,13 @@ struct EditorShellView: View {
                 errorPresenter.present(.unexpected(underlying: error))
             }
         }
+        #if os(iOS)
+        .sheet(isPresented: $showingPDFShareSheet) {
+            if let url = exportedPDFURL {
+                ShareSheetView(activityItems: [url])
+            }
+        }
+        #endif
         #if os(iOS)
         .sheet(isPresented: $showingOpenFilePicker) {
             DocumentPickerView(
@@ -753,6 +763,49 @@ struct EditorShellView: View {
         showingSaveElsewherePanel = true
     }
 
+    // MARK: - PDF Export per FEAT-061
+
+    /// Exports the current document as a PDF with optional watermark.
+    private func exportPDF() {
+        let pdfData = PDFExporter.exportPDF(
+            text: text,
+            includeWatermark: settings.isPDFExportWatermarkEnabled
+        )
+
+        let fileName = fileOpenCoordinator.currentFileURL?
+            .deletingPathExtension().lastPathComponent ?? "Untitled"
+        let tempURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("\(fileName).pdf")
+
+        do {
+            try pdfData.write(to: tempURL)
+            exportedPDFURL = tempURL
+
+            #if os(macOS)
+            // macOS: open NSSavePanel to save the PDF
+            let savePanel = NSSavePanel()
+            savePanel.allowedContentTypes = [.pdf]
+            savePanel.nameFieldStringValue = "\(fileName).pdf"
+            savePanel.begin { response in
+                guard response == .OK, let url = savePanel.url else { return }
+                do {
+                    // Remove existing file if present so copyItem doesn't fail
+                    if FileManager.default.fileExists(atPath: url.path) {
+                        try FileManager.default.removeItem(at: url)
+                    }
+                    try FileManager.default.copyItem(at: tempURL, to: url)
+                } catch {
+                    // Best-effort save — NSSavePanel already confirmed the location
+                }
+            }
+            #else
+            showingPDFShareSheet = true
+            #endif
+        } catch {
+            errorPresenter.present(.unexpected(underlying: error))
+        }
+    }
+
     // MARK: - Find and Replace per FEAT-017
 
     /// Toggles the find bar visibility.
@@ -871,3 +924,16 @@ private struct TextFileDocument: FileDocument {
         return FileWrapper(regularFileWithContents: data)
     }
 }
+
+#if os(iOS)
+/// UIKit share sheet wrapper for presenting `UIActivityViewController` in SwiftUI.
+private struct ShareSheetView: UIViewControllerRepresentable {
+    let activityItems: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+#endif

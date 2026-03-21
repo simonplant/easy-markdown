@@ -1,25 +1,25 @@
 {
-  "sprintId": "sprint-1774081604",
-  "startedAt": "2026-03-21T01:26:44-07:00",
+  "sprintId": "sprint-1774082089",
+  "startedAt": "2026-03-21T01:34:49-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-069",
-    "title": "App Store Review Prompt",
-    "intent": "The review prompt must appear at the right moment — when the user is happy and engaged, never before. One shot, never again.",
-    "description": "Per PRODUCT.md §12. Prompt for App Store review only after: 7 days of active use AND 10+ AI feature uses. Uses SKStoreReviewController. Prompt appears at most once, ever. Timing tracked via on-device aggregate counters (FEAT-060). Never interrupts active editing — shown on return to home screen or after completing an AI action.",
+    "id": "FEAT-061",
+    "title": "Export Watermark (Made with easy-markdown)",
+    "intent": "Every exported PDF is a billboard — a subtle watermark drives organic discovery without being obnoxious.",
+    "description": "Per PRODUCT.md §12. When exporting rendered PDF, include a subtle \"Made with easy-markdown\" watermark in the footer. User can disable in settings. Tasteful, not tacky — small, light gray, bottom margin. Never appears on printed output unless user explicitly enables it.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Review prompt does not appear before 7 days of active use AND 10+ AI uses",
-      "Review prompt appears at most once per user, ever",
-      "Prompt never interrupts active editing",
-      "If user has not used AI features, prompt never appears regardless of time"
+      "Exported PDF includes subtle footer watermark by default",
+      "Watermark can be disabled in settings",
+      "Watermark is unobtrusive — small, light gray, does not interfere with content",
+      "Print output does not include watermark by default"
     ],
     "scope": [],
-    "startedAt": "2026-03-21T01:26:44-07:00",
+    "startedAt": "2026-03-21T01:34:49-07:00",
     "status": "passed",
-    "completedAt": "2026-03-21T01:34:47-07:00"
+    "completedAt": "2026-03-21T01:44:37-07:00"
   },
-  "completedAt": "2026-03-21T01:34:47-07:00",
+  "completedAt": "2026-03-21T01:44:37-07:00",
   "attempts": 1
 }
