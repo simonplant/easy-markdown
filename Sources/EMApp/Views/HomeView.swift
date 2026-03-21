@@ -14,6 +14,7 @@ struct HomeView: View {
     @Environment(FileCreateCoordinator.self) private var fileCreateCoordinator
     @State private var showingFilePicker = false
     @State private var showingSavePicker = false
+    @State private var showingQuickOpen = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -100,6 +101,21 @@ struct HomeView: View {
             )
         }
         #endif
+        // Quick Open palette per FEAT-016 — available from home screen when recents exist
+        .sheet(isPresented: $showingQuickOpen) {
+            QuickOpenView(isPresented: $showingQuickOpen)
+                #if os(iOS)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+                #endif
+        }
+        // Cmd+P keyboard shortcut for Quick Open per FEAT-016
+        .background {
+            Button("") { showingQuickOpen = true }
+                .keyboardShortcut("p", modifiers: .command)
+                .accessibilityHidden(true)
+                .opacity(0)
+        }
     }
 
     private func openFile() {

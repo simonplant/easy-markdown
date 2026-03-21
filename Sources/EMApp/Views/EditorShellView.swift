@@ -40,6 +40,7 @@ struct EditorShellView: View {
     @State private var showingNewFilePicker = false
     @State private var isProSubscriber = false
     @State private var showingProUpgrade = false
+    @State private var showingQuickOpen = false
     @Environment(\.colorScheme) private var colorScheme
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -90,7 +91,8 @@ struct EditorShellView: View {
                 onToggleSourceView: { toggleSourceView() },
                 onOpenFile: { openFileFromEditor() },
                 onNewFile: { newFileFromEditor() },
-                onCloseFile: { closeFile() }
+                onCloseFile: { closeFile() },
+                onQuickOpen: { showingQuickOpen = true }
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .accessibilityLabel("Document editor")
@@ -223,6 +225,15 @@ struct EditorShellView: View {
             )
         }
         #endif
+        // Quick Open palette (FEAT-016) — presented as an overlay sheet so it
+        // appears above the editor content without full-screen takeover.
+        .sheet(isPresented: $showingQuickOpen) {
+            QuickOpenView(isPresented: $showingQuickOpen)
+                #if os(iOS)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+                #endif
+        }
         .alert(
             "Pro AI Feature",
             isPresented: $showingProUpgrade

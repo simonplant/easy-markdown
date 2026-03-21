@@ -56,6 +56,8 @@ public struct TextViewBridge: UIViewRepresentable {
     public var onNewFile: (() -> Void)?
     /// Called when Cmd+W is pressed (close file).
     public var onCloseFile: (() -> Void)?
+    /// Called when Cmd+P is pressed (Quick Open) per FEAT-016.
+    public var onQuickOpen: (() -> Void)?
 
     public init(
         text: SwiftUI.Binding<String>,
@@ -73,7 +75,8 @@ public struct TextViewBridge: UIViewRepresentable {
         onToggleSourceView: (() -> Void)? = nil,
         onOpenFile: (() -> Void)? = nil,
         onNewFile: (() -> Void)? = nil,
-        onCloseFile: (() -> Void)? = nil
+        onCloseFile: (() -> Void)? = nil,
+        onQuickOpen: (() -> Void)? = nil
     ) {
         self._text = text
         self.editorState = editorState
@@ -91,6 +94,7 @@ public struct TextViewBridge: UIViewRepresentable {
         self.onOpenFile = onOpenFile
         self.onNewFile = onNewFile
         self.onCloseFile = onCloseFile
+        self.onQuickOpen = onQuickOpen
     }
 
     public func makeUIView(context: Context) -> EMTextView {
@@ -166,6 +170,7 @@ public struct TextViewBridge: UIViewRepresentable {
         textView.onOpenFile = onOpenFile
         textView.onNewFile = onNewFile
         textView.onCloseFile = onCloseFile
+        textView.onQuickOpen = onQuickOpen
 
         // Apply initial layout metrics per FEAT-010
         if let config = renderConfig {
@@ -292,6 +297,8 @@ public struct TextViewBridge: NSViewRepresentable {
     public var onNewFile: (() -> Void)?
     /// Called when Cmd+W is pressed (close file).
     public var onCloseFile: (() -> Void)?
+    /// Called when Cmd+P is pressed (Quick Open) per FEAT-016.
+    public var onQuickOpen: (() -> Void)?
 
     public init(
         text: SwiftUI.Binding<String>,
@@ -309,7 +316,8 @@ public struct TextViewBridge: NSViewRepresentable {
         onToggleSourceView: (() -> Void)? = nil,
         onOpenFile: (() -> Void)? = nil,
         onNewFile: (() -> Void)? = nil,
-        onCloseFile: (() -> Void)? = nil
+        onCloseFile: (() -> Void)? = nil,
+        onQuickOpen: (() -> Void)? = nil
     ) {
         self._text = text
         self.editorState = editorState
@@ -327,6 +335,7 @@ public struct TextViewBridge: NSViewRepresentable {
         self.onOpenFile = onOpenFile
         self.onNewFile = onNewFile
         self.onCloseFile = onCloseFile
+        self.onQuickOpen = onQuickOpen
     }
 
     public func makeNSView(context: Context) -> NSScrollView {
@@ -408,6 +417,7 @@ public struct TextViewBridge: NSViewRepresentable {
         textView.onOpenFile = onOpenFile
         textView.onNewFile = onNewFile
         textView.onCloseFile = onCloseFile
+        textView.onQuickOpen = onQuickOpen
 
         // Apply initial layout metrics per FEAT-010
         if let config = renderConfig {

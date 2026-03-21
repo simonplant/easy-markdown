@@ -63,6 +63,8 @@ public final class EMTextView: UITextView {
     public var onNewFile: (() -> Void)?
     /// Handler for close file (Cmd+W).
     public var onCloseFile: (() -> Void)?
+    /// Handler for Quick Open (Cmd+P) per FEAT-016.
+    public var onQuickOpen: (() -> Void)?
 
     /// Current layout metrics for device-aware spacing per FEAT-010.
     public var layoutMetrics: LayoutMetrics = .current {
@@ -312,6 +314,11 @@ public final class EMTextView: UITextView {
         closeFile.discoverabilityTitle = NSLocalizedString("Close File", comment: "Keyboard shortcut")
         commands.append(closeFile)
 
+        // Quick Open per FEAT-016
+        let quickOpen = UIKeyCommand(input: "P", modifierFlags: .command, action: #selector(handleQuickOpen))
+        quickOpen.discoverabilityTitle = NSLocalizedString("Quick Open", comment: "Keyboard shortcut")
+        commands.append(quickOpen)
+
         return commands
     }
 
@@ -328,6 +335,7 @@ public final class EMTextView: UITextView {
     @objc private func handleOpenFile() { onOpenFile?() }
     @objc private func handleNewFile() { onNewFile?() }
     @objc private func handleCloseFile() { onCloseFile?() }
+    @objc private func handleQuickOpen() { onQuickOpen?() }
 
     // MARK: - Theme
 
@@ -476,6 +484,8 @@ public final class EMTextView: NSTextView {
     public var onNewFile: (() -> Void)?
     /// Handler for close file (Cmd+W).
     public var onCloseFile: (() -> Void)?
+    /// Handler for Quick Open (Cmd+P) per FEAT-016.
+    public var onQuickOpen: (() -> Void)?
 
     /// Current layout metrics for device-aware spacing per FEAT-010.
     public var layoutMetrics: LayoutMetrics = .current {
@@ -582,6 +592,8 @@ public final class EMTextView: NSTextView {
             onNewFile?(); return true
         case ("w", .command):
             onCloseFile?(); return true
+        case ("p", .command):
+            onQuickOpen?(); return true
         default:
             return super.performKeyEquivalent(with: event)
         }
