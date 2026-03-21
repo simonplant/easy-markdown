@@ -1,27 +1,20 @@
 {
-  "sprintId": "sprint-1774073215",
-  "startedAt": "2026-03-20T23:06:55-07:00",
-  "status": "completed",
+  "sprintId": "sprint-1774073409",
+  "startedAt": "2026-03-20T23:10:09-07:00",
+  "status": "in_progress",
   "item": {
-    "id": "SPIKE-008",
-    "title": "SPIKE: Apple Platform AI — WWDC 2026 Evaluation",
-    "intent": "Evaluate Apple platform AI APIs after WWDC 2026 and prototype ApplePlatformAIProvider if APIs are available",
-    "description": "Scoped to the WWDC 2026 evaluation window (June 2026). After WWDC, review all new Apple developer documentation for system-level AI APIs (on-device LLM, text generation, writing assistance APIs). If relevant APIs are announced: prototype the ApplePlatformAIProvider implementation against the AIProvider protocol, measure performance, and assess whether it replaces or supplements LocalModelProvider. If no relevant APIs: document findings and close the spike. Updates architecture decisions [A-007] and [A-029].",
+    "id": "FEAT-016",
+    "title": "F-011: Quick Open",
+    "intent": "Power users need instant file switching — fuzzy find across recent files must be faster than the system file picker",
+    "description": "Cmd+P or swipe gesture to invoke. Searches recent files and bookmarked directories. Fuzzy matching on filename and path. Results ranked by recency and match quality. Results within 200ms of typing 3 characters.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "WWDC 2026 sessions and documentation reviewed for on-device AI APIs",
-      "Finding documented: APIs available (with prototype) or not available (with rationale)",
-      "If APIs available: prototype ApplePlatformAIProvider with performance measurements",
-      "Written finding committed to docs/spikes/SPIKE-008.md",
-      "Architecture decisions [A-007] and [A-029] updated based on findings",
-      "Spike closed with clear resolution (adopt, defer, or not applicable)"
+      "User presses Cmd+P, types 3 characters, correct file appears in top 3 results within 200ms",
+      "Empty state (no recent files) shows a helpful message, not a blank screen",
+      "Recents entry for deleted/inaccessible file is excluded from results"
     ],
     "scope": [],
-    "startedAt": "2026-03-20T23:06:55-07:00",
-    "status": "passed",
-    "completedAt": "2026-03-20T23:10:08-07:00"
-  },
-  "completedAt": "2026-03-20T23:10:08-07:00",
-  "attempts": 1
+    "startedAt": "2026-03-20T23:10:09-07:00"
+  }
 }

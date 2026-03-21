@@ -17,6 +17,8 @@ public struct RootView: View {
     @Environment(AIProviderManager.self) private var aiProviderManager
     @State private var hasAttemptedRestore = false
     @State private var firstRunCoordinator: FirstRunCoordinator?
+    @State private var showQuickOpen = false
+    @State private var quickOpenViewModel: QuickOpenViewModel?
 
     public init() {}
 
@@ -65,6 +67,39 @@ public struct RootView: View {
         }
         .animation(.easeInOut(duration: 0.25), value: errorPresenter.currentBanner?.id)
         .animation(.easeInOut(duration: 0.25), value: firstRunCoordinator?.showModelDownloadBanner)
+        // Quick Open overlay per F-011
+        .overlay {
+            if showQuickOpen, let vm = quickOpenViewModel {
+                ZStack {
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                        .onTapGesture { showQuickOpen = false }
+                        .accessibilityHidden(true)
+
+                    VStack {
+                        QuickOpenView(viewModel: vm) {
+                            showQuickOpen = false
+                        }
+                        .padding(.top, 60)
+                        Spacer()
+                    }
+
+                    // Escape key dismissal
+                    Button("") { showQuickOpen = false }
+                        .keyboardShortcut(.escape, modifiers: [])
+                        .hidden()
+                }
+                .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: showQuickOpen)
+        .background {
+            Button("Quick Open") {
+                presentQuickOpen()
+            }
+            .keyboardShortcut("p", modifiers: .command)
+            .hidden()
+        }
         .errorAlert()
         .environment(router)
         // Per-scene state advertisement via NSUserActivity per [A-034] and [A-061].
@@ -93,6 +128,17 @@ public struct RootView: View {
             firstRunCoordinator = coordinator
             await coordinator.evaluateFirstRunPrompt()
         }
+    }
+
+    // MARK: - Quick Open per F-011
+
+    /// Presents the Quick Open overlay, creating the view model if needed.
+    private func presentQuickOpen() {
+        if quickOpenViewModel == nil {
+            quickOpenViewModel = QuickOpenViewModel(recentsManager: recentsManager)
+        }
+        quickOpenViewModel?.reset()
+        showQuickOpen = true
     }
 
     // MARK: - State Restoration per [A-061]
