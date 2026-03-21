@@ -41,13 +41,15 @@ public enum AIAction: Sendable {
     case intentFromVoice(transcript: String)
 }
 
-/// Tone adjustment styles for AI writing assistance.
-public enum ToneStyle: String, Sendable {
+/// Tone adjustment styles for AI writing assistance per FEAT-023.
+/// Preset styles cover the most common tone shifts; `custom` allows freeform instruction.
+public enum ToneStyle: Sendable, Equatable {
     case formal
     case casual
     case academic
     case concise
     case friendly
+    case custom(String)
 }
 
 /// Input to the AI provider.

@@ -11,6 +11,8 @@ struct StatusBar: View {
     let stats: DocumentStats
     let selectionWordCount: Int?
     let diagnosticCount: Int
+    /// Target word count for writing goal per FEAT-022. Zero means no goal.
+    let writingGoalWordCount: Int
 
     @State private var isExpanded = false
 
@@ -38,6 +40,9 @@ struct StatusBar: View {
                 HStack(spacing: 12) {
                     Text(wordCountLabel)
                     Text(readingTimeLabel)
+                    if let grade = stats.fleschKincaidGradeLevel {
+                        Text("Grade \(readabilityLabel(grade: grade))")
+                    }
                 }
                 .contentShape(Rectangle())
             }
@@ -52,6 +57,10 @@ struct StatusBar: View {
 
             Spacer()
 
+            if writingGoalWordCount > 0 {
+                writingGoalIndicator
+            }
+
             if diagnosticCount > 0 {
                 HStack(spacing: 4) {
                     Image(systemName: "stethoscope")
@@ -64,6 +73,37 @@ struct StatusBar: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 6)
+    }
+
+    // MARK: - Writing Goal per FEAT-022
+
+    private var writingGoalIndicator: some View {
+        let progress = min(Double(stats.wordCount) / Double(writingGoalWordCount), 1.0)
+        let isComplete = stats.wordCount >= writingGoalWordCount
+
+        return HStack(spacing: 6) {
+            ProgressView(value: progress)
+                .tint(isComplete ? .green : .accentColor)
+                .frame(width: 60)
+            Text("\(stats.wordCount)/\(writingGoalWordCount)")
+                .font(.caption2)
+                .foregroundStyle(isComplete ? .green : .secondary)
+            if isComplete {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.caption2)
+                    .foregroundStyle(.green)
+            }
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(writingGoalAccessibilityLabel)
+    }
+
+    private var writingGoalAccessibilityLabel: String {
+        let remaining = writingGoalWordCount - stats.wordCount
+        if remaining <= 0 {
+            return "Writing goal reached: \(stats.wordCount) of \(writingGoalWordCount) words"
+        }
+        return "Writing goal: \(stats.wordCount) of \(writingGoalWordCount) words, \(remaining) remaining"
     }
 
     // MARK: - Expanded Row
@@ -149,6 +189,10 @@ struct StatusBar: View {
         }
 
         parts.append(readingTimeLabel)
+
+        if let grade = stats.fleschKincaidGradeLevel {
+            parts.append("Grade level \(readabilityLabel(grade: grade))")
+        }
 
         return parts.joined(separator: ", ")
     }

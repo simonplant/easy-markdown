@@ -74,6 +74,19 @@ public final class SettingsManager {
         didSet { defaults.set(trailingWhitespaceBehavior.rawValue, forKey: Keys.trailingWhitespace) }
     }
 
+    // MARK: - Extended Doctor per FEAT-022
+
+    /// Whether prose suggestions (long sentences, passive voice, repeated words) are enabled.
+    /// Opt-in per FEAT-022 — disabled by default.
+    public var isProseSuggestionsEnabled: Bool {
+        didSet { defaults.set(isProseSuggestionsEnabled, forKey: Keys.proseSuggestions) }
+    }
+
+    /// Target word count for the writing goal. Zero means no goal is set.
+    public var writingGoalWordCount: Int {
+        didSet { defaults.set(writingGoalWordCount, forKey: Keys.writingGoalWordCount) }
+    }
+
     // MARK: - AI
 
     /// Whether AI ghost text (inline completions) is shown.
@@ -237,6 +250,8 @@ public final class SettingsManager {
         self.trailingWhitespaceBehavior = TrailingWhitespaceBehavior(
             rawValue: defaults.string(forKey: Keys.trailingWhitespace) ?? ""
         ) ?? .strip
+        self.isProseSuggestionsEnabled = defaults.object(forKey: Keys.proseSuggestions) as? Bool ?? false
+        self.writingGoalWordCount = defaults.object(forKey: Keys.writingGoalWordCount) as? Int ?? 0
         self.isGhostTextEnabled = defaults.object(forKey: Keys.ghostText) as? Bool ?? true
 
         self.modelDownloadState = ModelDownloadState(
@@ -279,6 +294,8 @@ public final class SettingsManager {
         static let autoFormatBlankLineSeparation = "em_autoFormatBlankLineSeparation"
         static let autoFormatEnsureTrailingNewline = "em_autoFormatEnsureTrailingNewline"
         static let trailingWhitespace = "em_trailingWhitespace"
+        static let proseSuggestions = "em_proseSuggestions"
+        static let writingGoalWordCount = "em_writingGoalWordCount"
         static let ghostText = "em_ghostText"
         static let modelDownloadState = "em_modelDownloadState"
         static let hasSeenModelDownloadPrompt = "em_hasSeenModelDownloadPrompt"

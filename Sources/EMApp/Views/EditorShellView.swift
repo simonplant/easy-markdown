@@ -37,6 +37,11 @@ struct EditorShellView: View {
     @State private var improveService: ImproveWritingService?
     @State private var summarizeCoordinator: SummarizeCoordinator?
     @State private var summarizeService: SummarizeService?
+    @State private var toneCoordinator: ToneAdjustmentCoordinator?
+    @State private var toneService: ToneAdjustmentService?
+    @State private var showingTonePicker = false
+    @State private var showingCustomToneInput = false
+    @State private var customToneInstruction = ""
     @State private var ghostTextCoordinator: GhostTextCoordinator?
     @State private var ghostTextService: GhostTextService?
     @State private var showingOpenFilePicker = false
@@ -91,10 +96,12 @@ struct EditorShellView: View {
                 },
                 onLinkTap: { url in handleLinkTap(url) },
                 improveCoordinator: improveCoordinator,
+                toneCoordinator: toneCoordinator,
                 ghostTextCoordinator: ghostTextCoordinator,
                 isAutoFormatHeadingSpacing: settings.isAutoFormatHeadingSpacing,
                 isAutoFormatBlankLineSeparation: settings.isAutoFormatBlankLineSeparation,
                 isAutoFormatTrailingWhitespaceTrim: settings.trailingWhitespaceBehavior == .strip,
+                isProseSuggestionsEnabled: settings.isProseSuggestionsEnabled,
                 onAIAssist: { editorState.focusAISection = true },
                 onToggleSourceView: { toggleSourceView() },
                 onOpenFile: { openFileFromEditor() },
@@ -179,7 +186,8 @@ struct EditorShellView: View {
             StatusBar(
                 stats: editorState.documentStats,
                 selectionWordCount: editorState.selectionWordCount,
-                diagnosticCount: editorState.diagnostics.count
+                diagnosticCount: editorState.diagnostics.count,
+                writingGoalWordCount: editorState.writingGoalWordCount
             )
         }
         .overlay(alignment: .top) {
@@ -198,6 +206,7 @@ struct EditorShellView: View {
         }
         .animation(.easeInOut(duration: 0.2), value: editorState.selectedRange.length > 0)
         .animation(.easeInOut(duration: 0.2), value: improveCoordinator?.diffState.phase)
+        .animation(.easeInOut(duration: 0.2), value: toneCoordinator?.diffState.phase)
         .animation(.easeInOut(duration: 0.25), value: conflictManager?.conflictState)
         .navigationTitle(navigationTitle)
         #if os(iOS)
@@ -273,11 +282,39 @@ struct EditorShellView: View {
         } message: {
             Text("Translate and Tone adjustment are Pro AI features powered by cloud models. Subscribe to unlock them.")
         }
+        .confirmationDialog(
+            "Adjust Tone",
+            isPresented: $showingTonePicker,
+            titleVisibility: .visible
+        ) {
+            Button("More Formal") { startToneAdjustment(toneStyle: .formal) }
+            Button("More Casual") { startToneAdjustment(toneStyle: .casual) }
+            Button("More Technical") { startToneAdjustment(toneStyle: .academic) }
+            Button("Simpler") { startToneAdjustment(toneStyle: .concise) }
+            Button("Friendlier") { startToneAdjustment(toneStyle: .friendly) }
+            Button("Custom...") { showingCustomToneInput = true }
+            Button("Cancel", role: .cancel) {}
+        }
+        .alert("Custom Tone", isPresented: $showingCustomToneInput) {
+            TextField("e.g. more persuasive", text: $customToneInstruction)
+            Button("Apply") {
+                let instruction = customToneInstruction.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !instruction.isEmpty else { return }
+                startToneAdjustment(toneStyle: .custom(instruction))
+                customToneInstruction = ""
+            }
+            Button("Cancel", role: .cancel) {
+                customToneInstruction = ""
+            }
+        } message: {
+            Text("Describe the tone you want:")
+        }
         .onAppear {
             loadFileContent()
             startConflictMonitoring()
             startAutoSave()
             setupImproveWriting()
+            editorState.writingGoalWordCount = settings.writingGoalWordCount
         }
         .task {
             // Check Pro subscription status for floating bar badge per FEAT-054 AC-3.
@@ -287,6 +324,7 @@ struct EditorShellView: View {
             conflictManager?.stopMonitoring()
             // Cancel any active AI sessions on file close
             improveCoordinator?.cancel()
+            toneCoordinator?.cancel()
             summarizeCoordinator?.cancel()
             ghostTextCoordinator?.cancel()
             // Clear doctor state on file close per FEAT-005 AC-3
@@ -307,6 +345,9 @@ struct EditorShellView: View {
             if !newValue {
                 ghostTextCoordinator?.cancel()
             }
+        }
+        .onChange(of: settings.writingGoalWordCount) { _, newValue in
+            editorState.writingGoalWordCount = newValue
         }
         .onChange(of: editorState.findReplaceState.searchQuery) { _, _ in
             updateFindMatches()
@@ -547,6 +588,10 @@ struct EditorShellView: View {
         summarizeCoordinator = SummarizeCoordinator(editorState: editorState)
         summarizeService = SummarizeService(providerManager: aiProviderManager)
 
+        // FEAT-023: Tone Adjustment (Pro AI)
+        toneCoordinator = ToneAdjustmentCoordinator(editorState: editorState)
+        toneService = ToneAdjustmentService(providerManager: aiProviderManager)
+
         // FEAT-056: Ghost Text (Continue Writing)
         setupGhostText()
     }
@@ -561,6 +606,9 @@ struct EditorShellView: View {
         guard selectedRange.length > 0,
               let swiftRange = Range(selectedRange, in: text) else { return }
 
+        // Cancel any active tone adjustment diff before starting improve
+        toneCoordinator?.cancel()
+
         let selectedText = String(text[swiftRange])
         let stream = service.startImproving(selectedText: selectedText)
         coordinator.startImprove(updateStream: stream)
@@ -574,7 +622,22 @@ struct EditorShellView: View {
         if let coordinator = improveCoordinator, coordinator.diffState.isActive {
             return true
         }
+        if let coordinator = toneCoordinator, coordinator.diffState.isActive {
+            return true
+        }
         return editorState.selectedRange.length > 0
+    }
+
+    /// The active diff phase from whichever AI coordinator is currently running.
+    /// Only one diff can be active at a time.
+    private var activeDiffPhase: InlineDiffPhase {
+        if let tone = toneCoordinator, tone.diffState.isActive {
+            return tone.diffState.phase
+        }
+        if let improve = improveCoordinator, improve.diffState.isActive {
+            return improve.diffState.phase
+        }
+        return .inactive
     }
 
     /// Whether to use compact layout (icon-only) for the floating bar.
@@ -589,20 +652,17 @@ struct EditorShellView: View {
     /// Floating action bar overlay positioned above the text selection.
     @ViewBuilder
     private var floatingActionBarOverlay: some View {
-        if shouldShowFloatingBar, let coordinator = improveCoordinator {
+        if shouldShowFloatingBar {
             FloatingActionBar(
-                diffPhase: coordinator.diffState.phase,
+                diffPhase: activeDiffPhase,
                 actions: FloatingActionBarActions(
                     onImprove: { startImprove() },
                     onSummarize: { startSummarize() },
                     onTranslate: { /* Pro action — wired in future FEAT-024 */ },
-                    onTone: { /* Pro action — wired in future FEAT-023 */ },
+                    onTone: { showingTonePicker = true },
                     onProUpgrade: { showingProUpgrade = true },
-                    onAccept: {
-                        coordinator.accept()
-                        reviewPromptCoordinator.requestReviewIfEligible()
-                    },
-                    onDismiss: { coordinator.dismiss() },
+                    onAccept: { acceptActiveDiff() },
+                    onDismiss: { dismissActiveDiff() },
                     onBold: { editorState.performBold?() },
                     onItalic: { editorState.performItalic?() },
                     onLink: { editorState.performLink?() }
@@ -619,6 +679,25 @@ struct EditorShellView: View {
             .transition(.scale.combined(with: .opacity))
             .offset(y: floatingBarYOffset)
             .padding(.top, 8)
+        }
+    }
+
+    /// Accepts the active diff — dispatches to the correct coordinator.
+    private func acceptActiveDiff() {
+        if let tone = toneCoordinator, tone.diffState.isActive {
+            tone.accept()
+        } else if let improve = improveCoordinator, improve.diffState.isActive {
+            improve.accept()
+        }
+        reviewPromptCoordinator.requestReviewIfEligible()
+    }
+
+    /// Dismisses the active diff — dispatches to the correct coordinator.
+    private func dismissActiveDiff() {
+        if let tone = toneCoordinator, tone.diffState.isActive {
+            tone.dismiss()
+        } else if let improve = improveCoordinator, improve.diffState.isActive {
+            improve.dismiss()
         }
     }
 
@@ -655,6 +734,30 @@ struct EditorShellView: View {
             isFullDocument: isFullDocument
         )
         coordinator.startSummarize(updateStream: stream)
+    }
+
+    // MARK: - AI Tone Adjustment per FEAT-023
+
+    /// Starts the AI tone adjustment flow per FEAT-023 AC-1.
+    /// User selects text, picks a tone → AI streams tone-adjusted version with inline diff.
+    private func startToneAdjustment(toneStyle: ToneStyle) {
+        guard let coordinator = toneCoordinator,
+              let service = toneService else { return }
+
+        let selectedRange = editorState.selectedRange
+        guard selectedRange.length > 0,
+              let swiftRange = Range(selectedRange, in: text) else { return }
+
+        let selectedText = String(text[swiftRange])
+
+        // Cancel any active improve diff before starting tone adjustment
+        improveCoordinator?.cancel()
+
+        let stream = service.startAdjusting(
+            selectedText: selectedText,
+            toneStyle: toneStyle
+        )
+        coordinator.startToneAdjustment(updateStream: stream)
     }
 
     // MARK: - AI Ghost Text per FEAT-056

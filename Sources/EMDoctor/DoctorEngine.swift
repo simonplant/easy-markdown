@@ -13,12 +13,35 @@ public struct DoctorEngine: Sendable {
 
     /// Creates a doctor engine with the default MVP rule set.
     public init() {
-        self.rules = [
+        self.rules = Self.structuralRules
+    }
+
+    /// Creates a doctor engine with structural rules plus prose suggestion rules per FEAT-022.
+    public init(includingProseSuggestions: Bool) {
+        if includingProseSuggestions {
+            self.rules = Self.structuralRules + Self.proseRules
+        } else {
+            self.rules = Self.structuralRules
+        }
+    }
+
+    /// The default structural rules (MVP).
+    private static var structuralRules: [any DoctorRule] {
+        [
             HeadingHierarchyRule(),
             DuplicateHeadingRule(),
             BrokenRelativeLinkRule(),
             TrailingWhitespaceRule(),
             MissingBlankLineRule(),
+        ]
+    }
+
+    /// Prose suggestion rules per FEAT-022 (opt-in).
+    private static var proseRules: [any DoctorRule] {
+        [
+            LongSentenceRule(),
+            PassiveVoiceRule(),
+            RepeatedWordRule(),
         ]
     }
 

@@ -34,6 +34,8 @@ public struct TextViewBridge: UIViewRepresentable {
     public var onLinkTap: ((URL) -> Void)?
     /// Optional improve writing coordinator to wire as text view delegate per FEAT-011.
     public var improveCoordinator: ImproveWritingCoordinator?
+    /// Optional tone adjustment coordinator per FEAT-023.
+    public var toneCoordinator: ToneAdjustmentCoordinator?
     /// Optional ghost text coordinator for AI continue writing per FEAT-056.
     public var ghostTextCoordinator: GhostTextCoordinator?
 
@@ -45,6 +47,9 @@ public struct TextViewBridge: UIViewRepresentable {
     public var isAutoFormatBlankLineSeparation: Bool
     /// Whether trailing whitespace trimming on Enter is enabled.
     public var isAutoFormatTrailingWhitespaceTrim: Bool
+
+    /// Whether prose suggestion doctor rules are enabled per FEAT-022.
+    public var isProseSuggestionsEnabled: Bool
 
     // MARK: - App-level keyboard shortcut handlers per FEAT-009
 
@@ -79,10 +84,12 @@ public struct TextViewBridge: UIViewRepresentable {
         onTextChange: ((String) -> Void)? = nil,
         onLinkTap: ((URL) -> Void)? = nil,
         improveCoordinator: ImproveWritingCoordinator? = nil,
+        toneCoordinator: ToneAdjustmentCoordinator? = nil,
         ghostTextCoordinator: GhostTextCoordinator? = nil,
         isAutoFormatHeadingSpacing: Bool = true,
         isAutoFormatBlankLineSeparation: Bool = true,
         isAutoFormatTrailingWhitespaceTrim: Bool = true,
+        isProseSuggestionsEnabled: Bool = false,
         onAIAssist: (() -> Void)? = nil,
         onToggleSourceView: (() -> Void)? = nil,
         onOpenFile: (() -> Void)? = nil,
@@ -101,10 +108,12 @@ public struct TextViewBridge: UIViewRepresentable {
         self.onTextChange = onTextChange
         self.onLinkTap = onLinkTap
         self.improveCoordinator = improveCoordinator
+        self.toneCoordinator = toneCoordinator
         self.ghostTextCoordinator = ghostTextCoordinator
         self.isAutoFormatHeadingSpacing = isAutoFormatHeadingSpacing
         self.isAutoFormatBlankLineSeparation = isAutoFormatBlankLineSeparation
         self.isAutoFormatTrailingWhitespaceTrim = isAutoFormatTrailingWhitespaceTrim
+        self.isProseSuggestionsEnabled = isProseSuggestionsEnabled
         self.onAIAssist = onAIAssist
         self.onToggleSourceView = onToggleSourceView
         self.onOpenFile = onOpenFile
@@ -137,6 +146,11 @@ public struct TextViewBridge: UIViewRepresentable {
         // Wire improve writing coordinator per FEAT-011
         if let improveCoordinator {
             improveCoordinator.textViewDelegate = context.coordinator
+        }
+
+        // Wire tone adjustment coordinator per FEAT-023
+        if let toneCoordinator {
+            toneCoordinator.textViewDelegate = context.coordinator
         }
 
         // Wire ghost text coordinator per FEAT-056
@@ -241,6 +255,11 @@ public struct TextViewBridge: UIViewRepresentable {
             improveCoordinator.textViewDelegate = coordinator
         }
 
+        // Ensure tone adjustment coordinator stays wired per FEAT-023
+        if let toneCoordinator, toneCoordinator.textViewDelegate == nil {
+            toneCoordinator.textViewDelegate = coordinator
+        }
+
         // Ensure ghost text coordinator stays wired per FEAT-056
         if let ghostTextCoordinator, ghostTextCoordinator.textViewDelegate == nil {
             ghostTextCoordinator.textViewDelegate = coordinator
@@ -277,6 +296,9 @@ public struct TextViewBridge: UIViewRepresentable {
             isBlankLineSeparationEnabled: isAutoFormatBlankLineSeparation,
             isTrailingWhitespaceTrimEnabled: isAutoFormatTrailingWhitespaceTrim
         )
+
+        // Update prose suggestions setting per FEAT-022
+        coordinator.doctorCoordinator.proseSuggestionsEnabled = isProseSuggestionsEnabled
 
         // Apply theme background color per FEAT-007
         if let colors = renderConfig?.colors {
@@ -323,6 +345,8 @@ public struct TextViewBridge: NSViewRepresentable {
     public var onLinkTap: ((URL) -> Void)?
     /// Optional improve writing coordinator to wire as text view delegate per FEAT-011.
     public var improveCoordinator: ImproveWritingCoordinator?
+    /// Optional tone adjustment coordinator per FEAT-023.
+    public var toneCoordinator: ToneAdjustmentCoordinator?
     /// Optional ghost text coordinator for AI continue writing per FEAT-056.
     public var ghostTextCoordinator: GhostTextCoordinator?
 
@@ -334,6 +358,9 @@ public struct TextViewBridge: NSViewRepresentable {
     public var isAutoFormatBlankLineSeparation: Bool
     /// Whether trailing whitespace trimming on Enter is enabled.
     public var isAutoFormatTrailingWhitespaceTrim: Bool
+
+    /// Whether prose suggestion doctor rules are enabled per FEAT-022.
+    public var isProseSuggestionsEnabled: Bool
 
     // MARK: - App-level keyboard shortcut handlers per FEAT-009
 
@@ -368,10 +395,12 @@ public struct TextViewBridge: NSViewRepresentable {
         onTextChange: ((String) -> Void)? = nil,
         onLinkTap: ((URL) -> Void)? = nil,
         improveCoordinator: ImproveWritingCoordinator? = nil,
+        toneCoordinator: ToneAdjustmentCoordinator? = nil,
         ghostTextCoordinator: GhostTextCoordinator? = nil,
         isAutoFormatHeadingSpacing: Bool = true,
         isAutoFormatBlankLineSeparation: Bool = true,
         isAutoFormatTrailingWhitespaceTrim: Bool = true,
+        isProseSuggestionsEnabled: Bool = false,
         onAIAssist: (() -> Void)? = nil,
         onToggleSourceView: (() -> Void)? = nil,
         onOpenFile: (() -> Void)? = nil,
@@ -390,10 +419,12 @@ public struct TextViewBridge: NSViewRepresentable {
         self.onTextChange = onTextChange
         self.onLinkTap = onLinkTap
         self.improveCoordinator = improveCoordinator
+        self.toneCoordinator = toneCoordinator
         self.ghostTextCoordinator = ghostTextCoordinator
         self.isAutoFormatHeadingSpacing = isAutoFormatHeadingSpacing
         self.isAutoFormatBlankLineSeparation = isAutoFormatBlankLineSeparation
         self.isAutoFormatTrailingWhitespaceTrim = isAutoFormatTrailingWhitespaceTrim
+        self.isProseSuggestionsEnabled = isProseSuggestionsEnabled
         self.onAIAssist = onAIAssist
         self.onToggleSourceView = onToggleSourceView
         self.onOpenFile = onOpenFile
@@ -432,6 +463,11 @@ public struct TextViewBridge: NSViewRepresentable {
         // Wire improve writing coordinator per FEAT-011
         if let improveCoordinator {
             improveCoordinator.textViewDelegate = context.coordinator
+        }
+
+        // Wire tone adjustment coordinator per FEAT-023
+        if let toneCoordinator {
+            toneCoordinator.textViewDelegate = context.coordinator
         }
 
         // Wire ghost text coordinator per FEAT-056
@@ -541,6 +577,11 @@ public struct TextViewBridge: NSViewRepresentable {
             improveCoordinator.textViewDelegate = coordinator
         }
 
+        // Ensure tone adjustment coordinator stays wired per FEAT-023
+        if let toneCoordinator, toneCoordinator.textViewDelegate == nil {
+            toneCoordinator.textViewDelegate = coordinator
+        }
+
         // Ensure ghost text coordinator stays wired per FEAT-056
         if let ghostTextCoordinator, ghostTextCoordinator.textViewDelegate == nil {
             ghostTextCoordinator.textViewDelegate = coordinator
@@ -569,6 +610,9 @@ public struct TextViewBridge: NSViewRepresentable {
             isBlankLineSeparationEnabled: isAutoFormatBlankLineSeparation,
             isTrailingWhitespaceTrimEnabled: isAutoFormatTrailingWhitespaceTrim
         )
+
+        // Update prose suggestions setting per FEAT-022
+        coordinator.doctorCoordinator.proseSuggestionsEnabled = isProseSuggestionsEnabled
 
         // Apply theme background color per FEAT-007
         if let colors = renderConfig?.colors {
