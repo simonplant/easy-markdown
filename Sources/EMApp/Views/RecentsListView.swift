@@ -1,4 +1,5 @@
 import SwiftUI
+import EMCore
 
 /// Displays the list of recently opened files per [D-UX-2].
 ///
@@ -9,6 +10,7 @@ struct RecentsListView: View {
     @Environment(AppRouter.self) private var router
     @Environment(RecentsManager.self) private var recentsManager
     @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
+    @Environment(ErrorPresenter.self) private var errorPresenter
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -37,7 +39,9 @@ struct RecentsListView: View {
 
     private func openRecent(_ item: RecentItem) {
         guard let url = recentsManager.resolveRecentItem(item) else {
-            // Entry was stale and has been removed — no crash, no stale entry
+            // Entry was stale and has been removed — show actionable guidance
+            let staleError = EMError.file(.bookmarkStale(url: URL(fileURLWithPath: item.urlPath)))
+            errorPresenter.present(staleError)
             return
         }
 

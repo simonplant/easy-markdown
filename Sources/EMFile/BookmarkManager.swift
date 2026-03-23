@@ -60,10 +60,16 @@ public final class BookmarkManager: Sendable {
                 bookmarkDataIsStale: &isStale
             )
             if isStale {
-                // Attempt to refresh the bookmark
-                _ = try? saveBookmark(for: url)
+                // Attempt to refresh the bookmark; if refresh fails, surface the stale condition
+                do {
+                    _ = try saveBookmark(for: url)
+                } catch {
+                    throw EMError.file(.bookmarkStale(url: url))
+                }
             }
             return url
+        } catch let error as EMError {
+            throw error
         } catch {
             throw EMError.file(.bookmarkStale(url: URL(fileURLWithPath: "unknown")))
         }

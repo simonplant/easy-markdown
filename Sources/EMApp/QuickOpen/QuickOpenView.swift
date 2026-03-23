@@ -1,4 +1,5 @@
 import SwiftUI
+import EMCore
 
 /// Quick Open overlay for fuzzy file search per F-011.
 ///
@@ -9,6 +10,7 @@ struct QuickOpenView: View {
     @Environment(AppRouter.self) private var router
     @Environment(RecentsManager.self) private var recentsManager
     @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
+    @Environment(ErrorPresenter.self) private var errorPresenter
     @Bindable var viewModel: QuickOpenViewModel
     let onDismiss: () -> Void
 
@@ -137,7 +139,10 @@ struct QuickOpenView: View {
 
     private func openResult(_ result: QuickOpenResult) {
         guard let url = recentsManager.resolveRecentItem(result.recentItem) else {
-            // Stale entry removed by resolveRecentItem — AC-3
+            // Stale entry removed by resolveRecentItem — show actionable guidance
+            let staleError = EMError.file(.bookmarkStale(url: URL(fileURLWithPath: result.recentItem.urlPath)))
+            errorPresenter.present(staleError)
+            onDismiss()
             return
         }
 
