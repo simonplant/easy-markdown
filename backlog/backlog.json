@@ -651,8 +651,8 @@
       "passes": false,
       "readyForSprint": true,
       "lastFailReason": "Validator agent rejected implementation",
-      "lastFailAt": "2026-03-21T08:19:47-07:00",
-      "failCount": 2
+      "lastFailAt": "2026-03-23T16:02:52-07:00",
+      "failCount": 3
     },
     {
       "id": "FEAT-031",
@@ -1283,8 +1283,8 @@
       "passes": false,
       "readyForSprint": true,
       "lastFailReason": "Validator agent rejected implementation",
-      "lastFailAt": "2026-03-21T10:08:44-07:00",
-      "failCount": 1,
+      "lastFailAt": "2026-03-23T16:08:55-07:00",
+      "failCount": 2,
       "groomedAt": "2026-03-23",
       "groomingNotes": "Elevated to must: FEAT-063 (receipt validation) is shipped, meaning the subscription backend is live but users have no way to purchase. All Pro AI features are built and working but unmonetized. The purchase screen is now the critical gap blocking revenue — it belongs in the same tier as the infra that depends on it."
     },
@@ -1325,7 +1325,10 @@
       "passes": false,
       "readyForSprint": true,
       "groomedAt": "2026-03-23",
-      "groomingNotes": "Add XCTest performance benchmark target in Package.swift. Measure all 5 perf targets (cold launch <1s, keystroke-render <16ms, scroll 120fps, AI first token <500ms, memory <100MB) using XCTClockMetric and XCTMemoryMetric. Store baseline JSON files for drift detection. Fail CI build when any threshold is breached. Run on iPhone 15 sim for latency targets, iPad Pro sim for FPS."
+      "groomingNotes": "Add XCTest performance benchmark target in Package.swift. Measure all 5 perf targets (cold launch <1s, keystroke-render <16ms, scroll 120fps, AI first token <500ms, memory <100MB) using XCTClockMetric and XCTMemoryMetric. Store baseline JSON files for drift detection. Fail CI build when any threshold is breached. Run on iPhone 15 sim for latency targets, iPad Pro sim for FPS.",
+      "lastFailReason": "Validator agent rejected implementation",
+      "lastFailAt": "2026-03-23T16:20:49-07:00",
+      "failCount": 1
     },
     {
       "id": "FEAT-065",
@@ -1691,9 +1694,10 @@
         "Instruments Allocations confirms no leaked TextViewCoordinator after 20 rapid toggles",
         "Render transition animation still works correctly after the change"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-23T16:23:20-07:00"
     },
     {
       "id": "FEAT-074",
