@@ -16,4 +16,12 @@ public enum HapticFeedback {
         generator.impactOccurred()
     }
 }
+#else
+
+/// No-op implementation for platforms without UIKit (macOS).
+public enum HapticFeedback {
+    public static func trigger(_ style: HapticStyle) {
+        // No haptic hardware on macOS — intentional no-op.
+    }
+}
 #endif
