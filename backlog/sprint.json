@@ -1,25 +1,25 @@
 {
-  "sprintId": "sprint-1774308049",
-  "startedAt": "2026-03-23T16:20:49-07:00",
+  "sprintId": "sprint-1774308201",
+  "startedAt": "2026-03-23T16:23:21-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-073",
-    "title": "DEBT: Fix retain cycle in render transition animation closures",
-    "intent": "Animation closures must never prevent deallocation — a leaked coordinator means leaked memory on every view toggle",
-    "description": "TextViewCoordinator passes applyRendering closures to RenderTransitionAnimator with strong [self] capture. These closures are stored in CATransaction completion blocks. If the view is dismissed mid-animation, the coordinator is retained until the animation finishes. On rapid view toggles, multiple coordinators accumulate in memory. Fix: change [self] to [weak self] with guard at 4 locations in TextViewCoordinator.swift.",
+    "id": "FEAT-078",
+    "title": "DEBT: Replace nonisolated(unsafe) cache in SubscriptionManager with thread-safe pattern",
+    "intent": "nonisolated(unsafe) bypasses the compiler's concurrency checking — Swift 6 strict mode will reject this, and the pattern can silently race",
+    "description": "SubscriptionManager uses nonisolated(unsafe) for _cachedExpirationDate and _cachedReceiptJWS, updated on MainActor but read nonisolated. Replace with OSAllocatedUnfairLock<(Date?, String?)> for atomic read/write, or restructure so all access goes through the MainActor. Ensure the subscriptionReceiptJWS async property documents that it returns cached data, not a live fetch.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "All applyRendering closures in TextViewCoordinator use [weak self] capture",
-      "Rapid source/rich view toggling does not accumulate coordinator instances in memory",
-      "Instruments Allocations confirms no leaked TextViewCoordinator after 20 rapid toggles",
-      "Render transition animation still works correctly after the change"
+      "No nonisolated(unsafe) properties remain in SubscriptionManager",
+      "Cache reads and writes are atomic via OSAllocatedUnfairLock or actor isolation",
+      "Compiles cleanly under Swift 6 strict concurrency checking",
+      "subscriptionReceiptJWS behavior is unchanged but naming/docs clarify it returns cached data"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T16:20:49-07:00",
+    "startedAt": "2026-03-23T16:23:21-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T16:23:20-07:00"
+    "completedAt": "2026-03-23T16:26:44-07:00"
   },
-  "completedAt": "2026-03-23T16:23:20-07:00",
+  "completedAt": "2026-03-23T16:26:44-07:00",
   "attempts": 1
 }
