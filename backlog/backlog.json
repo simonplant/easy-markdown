@@ -1897,9 +1897,10 @@
         "Rendering output is identical before and after the change",
         "Performance improvement measurable on 10K-line document (fewer CPU cycles per render)"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-23T16:47:24-07:00"
     }
   ],
   "_dependsOn_docs": "Items may include an optional 'dependsOn' array of item ID strings (e.g. \"dependsOn\": [\"FEAT-001\"]). Auto-pick skips items whose dependencies are not yet done."
