@@ -1,25 +1,25 @@
 {
-  "sprintId": "sprint-1774308551",
-  "startedAt": "2026-03-23T16:29:11-07:00",
+  "sprintId": "sprint-1774308980",
+  "startedAt": "2026-03-23T16:36:20-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-080",
-    "title": "DEBT: Remove force-unwraps in AIProviderManager and ModelStorageManager",
-    "intent": "Force-unwrap on URL literals and directory lookups can crash the app on init — production code must never assume runtime values are non-nil",
-    "description": "AIProviderManager.init() uses URL(string:)! for modelDownloadURL and cloudRelayURL. ModelStorageManager uses .first! on FileManager directory lookup. Replace with validated constants or proper nil handling with descriptive errors. Per architecture rule [A-048], no force-unwrap outside tests.",
+    "id": "FEAT-081",
+    "title": "DEBT: Add deinit cleanup to AutoSaveManager",
+    "intent": "NotificationCenter observers that outlive their owner cause phantom callbacks — AutoSaveManager must guarantee cleanup on deallocation",
+    "description": "AutoSaveManager stores NotificationCenter observers as (any NSObjectProtocol)? and removes them in removeLifecycleObservers(). If stop() is never called before deallocation, the observers leak. Add deinit { stop() } to guarantee cleanup. Verify that the debounce task is also cancelled in deinit.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "No force-unwrap (!) remains in AIProviderManager or ModelStorageManager production code",
-      "URL constants are validated at compile time or fail gracefully with EMError",
-      "Directory lookup uses guard-let with a descriptive error",
-      "App still initializes correctly on all supported devices"
+      "AutoSaveManager has a deinit that calls stop()",
+      "NotificationCenter observers are always removed on deallocation",
+      "Pending debounce task is cancelled on deallocation",
+      "No phantom auto-save callbacks fire after manager is deallocated"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T16:29:11-07:00",
+    "startedAt": "2026-03-23T16:36:20-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T16:36:19-07:00"
+    "completedAt": "2026-03-23T16:39:06-07:00"
   },
-  "completedAt": "2026-03-23T16:36:19-07:00",
+  "completedAt": "2026-03-23T16:39:06-07:00",
   "attempts": 1
 }

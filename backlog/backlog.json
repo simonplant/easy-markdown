@@ -1859,9 +1859,10 @@
         "Pending debounce task is cancelled on deallocation",
         "No phantom auto-save callbacks fire after manager is deallocated"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-23T16:39:06-07:00"
     },
     {
       "id": "FEAT-082",
