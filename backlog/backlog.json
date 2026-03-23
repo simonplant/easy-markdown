@@ -1268,7 +1268,7 @@
       "title": "Pro AI Subscription Screen and Purchase Flow",
       "intent": "The subscription screen must be honest, clear, and never pushy — it sells Pro AI on its merits, not through dark patterns.",
       "description": "Per D-STORE-1, D-BIZ-5, D-BIZ-7, and Journey 6. Subscription screen shown when non-subscriber taps a Pro AI action. Shows: price ($3.99/mo or $29.99/yr), what is included, what happens on cancellation, that the app and local AI keep working without it. Annual plan prominently presented (saves ~37%). Uses StoreKit 2 for purchase flow. No separate account creation. Links to terms of service. No persistent upgrade banners, no nag screens, no feature-shaped holes.",
-      "priority": "should",
+      "priority": "must",
       "category": "Business",
       "steps": [],
       "acceptanceCriteria": [
@@ -1284,7 +1284,9 @@
       "readyForSprint": true,
       "lastFailReason": "Validator agent rejected implementation",
       "lastFailAt": "2026-03-21T10:08:44-07:00",
-      "failCount": 1
+      "failCount": 1,
+      "groomedAt": "2026-03-23",
+      "groomingNotes": "Elevated to must: FEAT-063 (receipt validation) is shipped, meaning the subscription backend is live but users have no way to purchase. All Pro AI features are built and working but unmonetized. The purchase screen is now the critical gap blocking revenue — it belongs in the same tier as the infra that depends on it."
     },
     {
       "id": "FEAT-063",
@@ -1321,7 +1323,9 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": false
+      "readyForSprint": true,
+      "groomedAt": "2026-03-23",
+      "groomingNotes": "Add XCTest performance benchmark target in Package.swift. Measure all 5 perf targets (cold launch <1s, keystroke-render <16ms, scroll 120fps, AI first token <500ms, memory <100MB) using XCTClockMetric and XCTMemoryMetric. Store baseline JSON files for drift detection. Fail CI build when any threshold is breached. Run on iPhone 15 sim for latency targets, iPad Pro sim for FPS."
     },
     {
       "id": "FEAT-065",
@@ -1359,7 +1363,9 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": false
+      "readyForSprint": false,
+      "groomedAt": "2026-03-23",
+      "groomingNotes": "BLOCKED: Depends on FEAT-030 (Mermaid Diagram Rendering) which is not yet done. Once FEAT-030 ships: add tap gesture on rendered WKWebView diagram to surface contextual AI action bar. Pass Mermaid source + user description to AI pipeline (FEAT-041). Render AI-rewritten Mermaid alongside inline diff. Accept replaces source in document; undo reverts."
     },
     {
       "id": "FEAT-067",
@@ -1399,7 +1405,9 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": false
+      "readyForSprint": true,
+      "groomedAt": "2026-03-23",
+      "groomingNotes": "Uses iOS Speech framework (SFSpeechRecognizer, SFSpeechAudioBufferRecognitionRequest) for on-device transcription (iOS 17+, no network). MicButton in toolbar triggers SFSpeechRecognizer session, streams partial results to overlay. On release: transcription routed to existing AI pipeline (FEAT-041) with context (selection or current paragraph). Result shown via same inline diff preview as FEAT-054. Cmd+Shift+J shortcut via UIKeyCommand. All edits require explicit accept — never modifies without confirmation."
     },
     {
       "id": "SPIKE-001",
@@ -1613,7 +1621,9 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": false
+      "readyForSprint": true,
+      "groomedAt": "2026-03-23",
+      "groomingNotes": "Adds 'Open from GitHub' option on home screen. On tap: check for stored GitHub token (FEAT-072). If authenticated, show repo browser (FEAT-072). On file select: clone repo to app container (Documents/GitRepos/{owner}/{repo}) via EMGit (libgit2 bindings from SPIKE-009), or git pull if already cloned. Open selected .md file via EMFile — identical to local file open. Cache manifest: store clone path + last-accessed date. Offer cleanup for repos >30 days stale in Settings."
     },
     {
       "id": "FEAT-071",
@@ -1638,7 +1648,9 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": false
+      "readyForSprint": false,
+      "groomedAt": "2026-03-23",
+      "groomingNotes": "BLOCKED: Depends on FEAT-070 (GitHub Clone and Open) which is not yet done. Once FEAT-070 ships: hook into EMFile save path to detect files inside Documents/GitRepos/. On save: EMGit.commit('Update filename.md') then push. Pull-with-rebase before push. Toolbar indicator (unpushed badge) via published var on EMGitStatus. Conflict surfaces via existing FEAT-045 flow."
     },
     {
       "id": "FEAT-072",
@@ -1661,7 +1673,224 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": false
+      "readyForSprint": true,
+      "groomedAt": "2026-03-23",
+      "groomingNotes": "GitHub OAuth device flow: call /login/device/code endpoint, poll /login/oauth/access_token. Store token in Keychain (not UserDefaults). Repo browser view lists user repos (REST: /user/repos + /user/orgs/{org}/repos) with search/filter, last-updated sort. Cache repo list on disk for offline browsing. Sign-out in Settings clears Keychain entry and offers to delete local clones. Token expiry triggers re-auth automatically. Implement EMGitHubAuth module in EMCore."
+    },
+    {
+      "id": "FEAT-073",
+      "title": "DEBT: Fix retain cycle in render transition animation closures",
+      "intent": "Animation closures must never prevent deallocation — a leaked coordinator means leaked memory on every view toggle",
+      "description": "TextViewCoordinator passes applyRendering closures to RenderTransitionAnimator with strong [self] capture. These closures are stored in CATransaction completion blocks. If the view is dismissed mid-animation, the coordinator is retained until the animation finishes. On rapid view toggles, multiple coordinators accumulate in memory. Fix: change [self] to [weak self] with guard at 4 locations in TextViewCoordinator.swift.",
+      "priority": "must",
+      "category": "Debt",
+      "steps": [],
+      "acceptanceCriteria": [
+        "All applyRendering closures in TextViewCoordinator use [weak self] capture",
+        "Rapid source/rich view toggling does not accumulate coordinator instances in memory",
+        "Instruments Allocations confirms no leaked TextViewCoordinator after 20 rapid toggles",
+        "Render transition animation still works correctly after the change"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
+    },
+    {
+      "id": "FEAT-074",
+      "title": "DEBT: Decompose EditorShellView into focused coordinators",
+      "intent": "A view with 23 @State properties is untestable and unmaintainable — each concern must own its own state",
+      "description": "EditorShellView currently owns text editing state, 4 AI coordinators + 4 AI services, export state, conflict management, and subscription checks. Extract into: (1) AICoordinator that owns improve/summarize/tone/ghost coordinators and services, (2) ExportCoordinator that owns PDF and markdown share state, (3) move FileConflictManager into FileOpenCoordinator. EditorShellView should only own editor content and compose these coordinators.",
+      "priority": "should",
+      "category": "Debt",
+      "steps": [],
+      "acceptanceCriteria": [
+        "EditorShellView has fewer than 10 @State properties",
+        "AICoordinator owns all AI-related state and coordinators",
+        "ExportCoordinator owns PDF and markdown share sheet state",
+        "FileConflictManager is owned by FileOpenCoordinator, not the view",
+        "All existing editor functionality works identically after decomposition",
+        "Each extracted coordinator is independently testable"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true,
+      "groomedAt": "2026-03-23",
+      "groomingNotes": "Downgraded from must to should: pure internal refactoring with zero direct user impact. A 23-@State view is a maintainability hazard, but it does not affect any user-facing behavior today. Should be done before the next major editor feature, not ahead of revenue-critical or crash-risk items."
+    },
+    {
+      "id": "FEAT-075",
+      "title": "DEBT: Split TextViewCoordinator into focused responsibility files",
+      "intent": "A 1,666-line coordinator is a maintenance hazard — adding any feature risks side effects across unrelated concerns",
+      "description": "TextViewCoordinator handles UITextViewDelegate/NSTextViewDelegate, formatting engine orchestration, rendering pipeline (parse/debounce/apply), find/replace highlighting, interactive elements (checkboxes, links), cursor mapping, doctor coordination, ghost text coordination, and performance instrumentation. Extract orthogonal concerns into: TextViewKeyCommandHandler (keyboard shortcuts), TextViewRenderingCoordinator (parse/render/debounce logic), FindReplaceCoordinator (find/replace highlighting). Keep core delegate work in a slimmed TextViewCoordinator.",
+      "priority": "should",
+      "category": "Debt",
+      "steps": [],
+      "acceptanceCriteria": [
+        "TextViewCoordinator is under 500 lines",
+        "TextViewRenderingCoordinator owns the parse/debounce/render pipeline",
+        "FindReplaceCoordinator owns find/replace match highlighting",
+        "TextViewKeyCommandHandler owns keyboard shortcut dispatch",
+        "All existing editor behavior works identically after the split",
+        "No new public API surface — internal decomposition only"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true,
+      "dependsOn": [
+        "FEAT-073"
+      ],
+      "groomedAt": "2026-03-23",
+      "groomingNotes": "Downgraded from must to should: 1,666-line coordinator is a maintenance risk but causes no current user-facing bugs. Correct priority is should — schedule before adding significant new editor features that would touch this file."
+    },
+    {
+      "id": "FEAT-076",
+      "title": "DEBT: Decompose EditorState into focused state objects",
+      "intent": "EditorState is accumulating unrelated responsibilities — selection, find/replace, formatting, diagnostics, and undo should not share a single observable object",
+      "description": "EditorState currently holds selection state (selectedRange, selectionWordCount, selectionRect), view mode (isSourceView), statistics (documentStats), find/replace (findReplaceState, applyFindHighlights), formatting shortcuts (performBold, performItalic, performLink), floating action bar focus (focusAISection), diagnostics (diagnostics, dismissedDiagnosticKeys), and undo manager. Extract into focused state structs: SelectionState, FormattingActions, DiagnosticsState. Compose them in EditorState so each concern is independently testable.",
+      "priority": "should",
+      "category": "Debt",
+      "steps": [],
+      "acceptanceCriteria": [
+        "EditorState composes focused state objects rather than owning all properties directly",
+        "SelectionState, FormattingActions, and DiagnosticsState are independently testable",
+        "No behavioral change to editor functionality",
+        "Each sub-state is @Observable for SwiftUI reactivity"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true,
+      "dependsOn": [
+        "FEAT-075"
+      ],
+      "groomedAt": "2026-03-23",
+      "groomingNotes": "Downgraded from must to should: EditorState decomposition is internal architecture with no current user impact. Priority should; time it before adding more state-dependent features."
+    },
+    {
+      "id": "FEAT-077",
+      "title": "DEBT: Replace four identical AI update enums with a single generic",
+      "intent": "Four line-for-line identical enums is copy-paste debt that will diverge — one generic type eliminates the duplication and makes future changes atomic",
+      "description": "ImproveWritingUpdate, SummarizeUpdate, ToneAdjustmentUpdate, and GhostTextUpdate in EMCore are structurally identical (token, completed, failed). Replace with a single generic: AIUpdate<Action: Sendable> with the same three cases. Use phantom types (ImproveWritingAction, SummarizeAction, ToneAdjustmentAction, GhostTextAction) for compile-time type safety at call sites. Update all consumers in EMAI and EMApp.",
+      "priority": "should",
+      "category": "Debt",
+      "steps": [],
+      "acceptanceCriteria": [
+        "Only one AIUpdate<Action> enum exists in EMCore",
+        "Four phantom action types provide compile-time type safety",
+        "All AI streaming consumers in EMAI and EMApp compile and work correctly",
+        "No behavioral change to AI features"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true,
+      "groomedAt": "2026-03-23",
+      "groomingNotes": "Downgraded from must to should: duplicate AI enums are copy-paste debt but cause no runtime errors or user-visible defects. Correct priority is should."
+    },
+    {
+      "id": "FEAT-078",
+      "title": "DEBT: Replace nonisolated(unsafe) cache in SubscriptionManager with thread-safe pattern",
+      "intent": "nonisolated(unsafe) bypasses the compiler's concurrency checking — Swift 6 strict mode will reject this, and the pattern can silently race",
+      "description": "SubscriptionManager uses nonisolated(unsafe) for _cachedExpirationDate and _cachedReceiptJWS, updated on MainActor but read nonisolated. Replace with OSAllocatedUnfairLock<(Date?, String?)> for atomic read/write, or restructure so all access goes through the MainActor. Ensure the subscriptionReceiptJWS async property documents that it returns cached data, not a live fetch.",
+      "priority": "must",
+      "category": "Debt",
+      "steps": [],
+      "acceptanceCriteria": [
+        "No nonisolated(unsafe) properties remain in SubscriptionManager",
+        "Cache reads and writes are atomic via OSAllocatedUnfairLock or actor isolation",
+        "Compiles cleanly under Swift 6 strict concurrency checking",
+        "subscriptionReceiptJWS behavior is unchanged but naming/docs clarify it returns cached data"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
+    },
+    {
+      "id": "FEAT-079",
+      "title": "DEBT: Move HapticFeedback to EMApp or add macOS no-op path",
+      "intent": "EMCore must compile identically on all platforms — an iOS-only type with no macOS fallback breaks the platform-agnostic contract",
+      "description": "HapticFeedback in EMCore is wrapped in #if canImport(UIKit) with no macOS implementation. The trigger() method is invisible on macOS, which means any EMCore consumer calling it won't compile on macOS. Either move HapticFeedback to EMApp (platform-specific module) or add a no-op macOS implementation so the public API is consistent across platforms.",
+      "priority": "must",
+      "category": "Debt",
+      "steps": [],
+      "acceptanceCriteria": [
+        "HapticFeedback.trigger() compiles and runs on both iOS and macOS",
+        "macOS implementation is a no-op (no crash, no error)",
+        "No behavioral change on iOS"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
+    },
+    {
+      "id": "FEAT-080",
+      "title": "DEBT: Remove force-unwraps in AIProviderManager and ModelStorageManager",
+      "intent": "Force-unwrap on URL literals and directory lookups can crash the app on init — production code must never assume runtime values are non-nil",
+      "description": "AIProviderManager.init() uses URL(string:)! for modelDownloadURL and cloudRelayURL. ModelStorageManager uses .first! on FileManager directory lookup. Replace with validated constants or proper nil handling with descriptive errors. Per architecture rule [A-048], no force-unwrap outside tests.",
+      "priority": "must",
+      "category": "Debt",
+      "steps": [],
+      "acceptanceCriteria": [
+        "No force-unwrap (!) remains in AIProviderManager or ModelStorageManager production code",
+        "URL constants are validated at compile time or fail gracefully with EMError",
+        "Directory lookup uses guard-let with a descriptive error",
+        "App still initializes correctly on all supported devices"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
+    },
+    {
+      "id": "FEAT-081",
+      "title": "DEBT: Add deinit cleanup to AutoSaveManager",
+      "intent": "NotificationCenter observers that outlive their owner cause phantom callbacks — AutoSaveManager must guarantee cleanup on deallocation",
+      "description": "AutoSaveManager stores NotificationCenter observers as (any NSObjectProtocol)? and removes them in removeLifecycleObservers(). If stop() is never called before deallocation, the observers leak. Add deinit { stop() } to guarantee cleanup. Verify that the debounce task is also cancelled in deinit.",
+      "priority": "must",
+      "category": "Debt",
+      "steps": [],
+      "acceptanceCriteria": [
+        "AutoSaveManager has a deinit that calls stop()",
+        "NotificationCenter observers are always removed on deallocation",
+        "Pending debounce task is cancelled on deallocation",
+        "No phantom auto-save callbacks fire after manager is deallocated"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
+    },
+    {
+      "id": "FEAT-082",
+      "title": "DEBT: Surface stale bookmark errors instead of silently swallowing",
+      "intent": "A silently swallowed bookmark error masks real permission problems — the user sees a generic failure instead of actionable guidance",
+      "description": "BookmarkManager.resolveBookmark() catches stale bookmark errors with try? and silently continues. If the bookmark is truly stale (file moved or permissions revoked), the caller gets a URL that may fail on access with no indication of why. Surface the stale condition as a specific error or warning so the UI can prompt the user to re-pick the file.",
+      "priority": "must",
+      "category": "Debt",
+      "steps": [],
+      "acceptanceCriteria": [
+        "Stale bookmark detection returns a specific .bookmarkStale error or warning",
+        "UI shows actionable guidance when a bookmark is stale (e.g., 're-open this file to restore access')",
+        "Non-stale bookmark resolution is unchanged",
+        "Recents list gracefully handles stale entries without crashing"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
+    },
+    {
+      "id": "FEAT-083",
+      "title": "DEBT: Cache line offsets in MarkdownRenderer",
+      "intent": "Recomputing line offsets on every render wastes CPU on large documents — cache and invalidate only when text changes",
+      "description": "MarkdownRenderer.computeLineOffsets() iterates the full document string on every render() call to build a line-to-UTF16-offset map. For large documents (10K+ lines), this adds measurable overhead even though the text hasn't changed. Cache the line offset array and invalidate only when the source text changes (compare text length or version counter).",
+      "priority": "must",
+      "category": "Debt",
+      "steps": [],
+      "acceptanceCriteria": [
+        "Line offsets are cached and reused across render calls when text is unchanged",
+        "Cache invalidates correctly when text changes",
+        "Rendering output is identical before and after the change",
+        "Performance improvement measurable on 10K-line document (fewer CPU cycles per render)"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true
     }
   ],
   "_dependsOn_docs": "Items may include an optional 'dependsOn' array of item ID strings (e.g. \"dependsOn\": [\"FEAT-001\"]). Auto-pick skips items whose dependencies are not yet done."
