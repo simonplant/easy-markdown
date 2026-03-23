@@ -87,6 +87,33 @@ extension NSAttributedString.Key {
     static let spellCheckLanguage = NSAttributedString.Key("NSLanguage")
 }
 
+// MARK: - Line Offset Cache
+
+/// Caches UTF-16 line offsets to avoid recomputation when the source text is unchanged.
+/// Reference type so the owning `MarkdownRenderer` struct can mutate the cache
+/// without requiring a mutating method (same pattern as `ImageLoader`).
+private final class LineOffsetCache {
+    private var text: String?
+    private var textUTF16Count: Int = -1
+    private var offsets: [Int]?
+
+    func cachedOffsets(for text: String, utf16Count: Int) -> [Int]? {
+        guard utf16Count == textUTF16Count,
+              let offsets,
+              let cachedText = self.text,
+              text == cachedText else {
+            return nil
+        }
+        return offsets
+    }
+
+    func store(_ offsets: [Int], for text: String, utf16Count: Int) {
+        self.text = text
+        self.textUTF16Count = utf16Count
+        self.offsets = offsets
+    }
+}
+
 // MARK: - Markdown Renderer
 
 /// Renders a markdown AST as styled `NSAttributedString` attributes per [A-018].
@@ -106,6 +133,9 @@ public struct MarkdownRenderer {
 
     /// Image loader for inline image rendering per [A-053] and FEAT-048.
     public let imageLoader = ImageLoader()
+
+    /// Cached line offsets to avoid recomputation on unchanged text per FEAT-083.
+    private let lineOffsetCache = LineOffsetCache()
 
     public init() {}
 
@@ -165,9 +195,14 @@ public struct MarkdownRenderer {
         )
     }
 
-    /// Pre-computes UTF-16 offsets for each line start for fast range conversion.
+    /// Returns UTF-16 offsets for each line start, using a cache to avoid
+    /// recomputation when the source text is unchanged per FEAT-083.
     /// Index i holds the UTF-16 offset of the start of line (i+1) in 1-based terms.
     private func computeLineOffsets(in text: String) -> [Int] {
+        let utf16Count = text.utf16.count
+        if let cached = lineOffsetCache.cachedOffsets(for: text, utf16Count: utf16Count) {
+            return cached
+        }
         var offsets: [Int] = [0] // Line 1 starts at offset 0
         var utf16Offset = 0
         for char in text {
@@ -177,6 +212,7 @@ public struct MarkdownRenderer {
                 offsets.append(utf16Offset)
             }
         }
+        lineOffsetCache.store(offsets, for: text, utf16Count: utf16Count)
         return offsets
     }
 
