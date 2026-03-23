@@ -578,7 +578,8 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         renderAnimator.performTransition(
             textView: textView,
             markers: markers,
-            applyRendering: { [self] in
+            applyRendering: { [weak self] in
+                guard let self else { return }
                 applyRendering(
                     to: textView,
                     ast: parseResult.ast,
@@ -633,7 +634,8 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
             renderAnimator.performTransition(
                 textView: textView,
                 markers: markers,
-                applyRendering: { [self] in
+                applyRendering: { [weak self] in
+                    guard let self else { return }
                     applyRendering(
                         to: textView, ast: parseResult.ast,
                         sourceText: sourceText, config: config
@@ -1337,7 +1339,8 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         renderAnimator.performTransition(
             textView: textView,
             markers: markers,
-            applyRendering: { [self] in
+            applyRendering: { [weak self] in
+                guard let self else { return }
                 applyRendering(
                     to: textView,
                     ast: parseResult.ast,
@@ -1392,7 +1395,8 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
             renderAnimator.performTransition(
                 textView: textView,
                 markers: markers,
-                applyRendering: { [self] in
+                applyRendering: { [weak self] in
+                    guard let self else { return }
                     applyRendering(
                         to: textView, ast: parseResult.ast,
                         sourceText: sourceText, config: config
