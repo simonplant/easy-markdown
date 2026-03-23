@@ -1,25 +1,24 @@
 {
-  "sprintId": "sprint-1774308201",
-  "startedAt": "2026-03-23T16:23:21-07:00",
+  "sprintId": "sprint-1774308405",
+  "startedAt": "2026-03-23T16:26:45-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-078",
-    "title": "DEBT: Replace nonisolated(unsafe) cache in SubscriptionManager with thread-safe pattern",
-    "intent": "nonisolated(unsafe) bypasses the compiler's concurrency checking — Swift 6 strict mode will reject this, and the pattern can silently race",
-    "description": "SubscriptionManager uses nonisolated(unsafe) for _cachedExpirationDate and _cachedReceiptJWS, updated on MainActor but read nonisolated. Replace with OSAllocatedUnfairLock<(Date?, String?)> for atomic read/write, or restructure so all access goes through the MainActor. Ensure the subscriptionReceiptJWS async property documents that it returns cached data, not a live fetch.",
+    "id": "FEAT-079",
+    "title": "DEBT: Move HapticFeedback to EMApp or add macOS no-op path",
+    "intent": "EMCore must compile identically on all platforms — an iOS-only type with no macOS fallback breaks the platform-agnostic contract",
+    "description": "HapticFeedback in EMCore is wrapped in #if canImport(UIKit) with no macOS implementation. The trigger() method is invisible on macOS, which means any EMCore consumer calling it won't compile on macOS. Either move HapticFeedback to EMApp (platform-specific module) or add a no-op macOS implementation so the public API is consistent across platforms.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "No nonisolated(unsafe) properties remain in SubscriptionManager",
-      "Cache reads and writes are atomic via OSAllocatedUnfairLock or actor isolation",
-      "Compiles cleanly under Swift 6 strict concurrency checking",
-      "subscriptionReceiptJWS behavior is unchanged but naming/docs clarify it returns cached data"
+      "HapticFeedback.trigger() compiles and runs on both iOS and macOS",
+      "macOS implementation is a no-op (no crash, no error)",
+      "No behavioral change on iOS"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T16:23:21-07:00",
+    "startedAt": "2026-03-23T16:26:45-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T16:26:44-07:00"
+    "completedAt": "2026-03-23T16:29:09-07:00"
   },
-  "completedAt": "2026-03-23T16:26:44-07:00",
+  "completedAt": "2026-03-23T16:29:09-07:00",
   "attempts": 1
 }

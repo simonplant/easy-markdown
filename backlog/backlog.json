@@ -1821,9 +1821,10 @@
         "macOS implementation is a no-op (no crash, no error)",
         "No behavioral change on iOS"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-23T16:29:09-07:00"
     },
     {
       "id": "FEAT-080",
