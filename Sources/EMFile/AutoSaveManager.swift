@@ -93,6 +93,10 @@ public final class AutoSaveManager {
         observeAppLifecycle()
     }
 
+    deinit {
+        stop()
+    }
+
     // MARK: - Public API
 
     /// Notifies the manager that content has changed, starting the debounce timer.
