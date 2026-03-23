@@ -59,3 +59,4 @@
 {"date":"2026-03-23","sprintId":"sprint-1774308405","itemId":"FEAT-079","status":"complete","attempts":1,"filesChanged":1,"linesAdded":8,"linesRemoved":0,"duration":144,"priority":"must","category":"Debt"}
 {"date":"2026-03-23","sprintId":"sprint-1774308551","itemId":"FEAT-080","status":"complete","attempts":1,"filesChanged":2,"linesAdded":4,"linesRemoved":4,"duration":428,"priority":"must","category":"Debt"}
 {"date":"2026-03-23","sprintId":"sprint-1774308980","itemId":"FEAT-081","status":"complete","attempts":1,"filesChanged":1,"linesAdded":4,"linesRemoved":0,"duration":166,"priority":"must","category":"Debt"}
+{"date":"2026-03-23","sprintId":"sprint-1774309147","itemId":"FEAT-082","status":"complete","attempts":1,"filesChanged":4,"linesAdded":1,"linesRemoved":6,"duration":285,"priority":"must","category":"Debt"}
