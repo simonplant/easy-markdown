@@ -1,24 +1,25 @@
 {
-  "sprintId": "sprint-1774308405",
-  "startedAt": "2026-03-23T16:26:45-07:00",
+  "sprintId": "sprint-1774308551",
+  "startedAt": "2026-03-23T16:29:11-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-079",
-    "title": "DEBT: Move HapticFeedback to EMApp or add macOS no-op path",
-    "intent": "EMCore must compile identically on all platforms — an iOS-only type with no macOS fallback breaks the platform-agnostic contract",
-    "description": "HapticFeedback in EMCore is wrapped in #if canImport(UIKit) with no macOS implementation. The trigger() method is invisible on macOS, which means any EMCore consumer calling it won't compile on macOS. Either move HapticFeedback to EMApp (platform-specific module) or add a no-op macOS implementation so the public API is consistent across platforms.",
+    "id": "FEAT-080",
+    "title": "DEBT: Remove force-unwraps in AIProviderManager and ModelStorageManager",
+    "intent": "Force-unwrap on URL literals and directory lookups can crash the app on init — production code must never assume runtime values are non-nil",
+    "description": "AIProviderManager.init() uses URL(string:)! for modelDownloadURL and cloudRelayURL. ModelStorageManager uses .first! on FileManager directory lookup. Replace with validated constants or proper nil handling with descriptive errors. Per architecture rule [A-048], no force-unwrap outside tests.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "HapticFeedback.trigger() compiles and runs on both iOS and macOS",
-      "macOS implementation is a no-op (no crash, no error)",
-      "No behavioral change on iOS"
+      "No force-unwrap (!) remains in AIProviderManager or ModelStorageManager production code",
+      "URL constants are validated at compile time or fail gracefully with EMError",
+      "Directory lookup uses guard-let with a descriptive error",
+      "App still initializes correctly on all supported devices"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T16:26:45-07:00",
+    "startedAt": "2026-03-23T16:29:11-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T16:29:09-07:00"
+    "completedAt": "2026-03-23T16:36:19-07:00"
   },
-  "completedAt": "2026-03-23T16:29:09-07:00",
+  "completedAt": "2026-03-23T16:36:19-07:00",
   "attempts": 1
 }
