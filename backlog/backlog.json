@@ -1803,9 +1803,10 @@
         "Compiles cleanly under Swift 6 strict concurrency checking",
         "subscriptionReceiptJWS behavior is unchanged but naming/docs clarify it returns cached data"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-23T16:26:44-07:00"
     },
     {
       "id": "FEAT-079",

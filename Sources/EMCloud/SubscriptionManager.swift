@@ -14,7 +14,7 @@ public final class SubscriptionManager: SubscriptionStatusProviding {
 
     /// When the current subscription period expires, if applicable.
     public private(set) var expirationDate: Date? {
-        didSet { _cachedExpirationDate = expirationDate }
+        didSet { _cache.withLock { $0.expirationDate = expirationDate } }
     }
 
     /// The available subscription products fetched from the App Store.
@@ -24,12 +24,11 @@ public final class SubscriptionManager: SubscriptionStatusProviding {
     /// Whether a purchase operation is in progress.
     public private(set) var isPurchasing: Bool = false
 
-    /// Cached copy for the synchronous protocol requirement.
-    /// Updated whenever expirationDate changes on the main actor.
-    private nonisolated(unsafe) var _cachedExpirationDate: Date?
-
-    /// Cached JWS for server-side validation. Updated alongside subscription state.
-    private nonisolated(unsafe) var _cachedReceiptJWS: String?
+    /// Thread-safe cache for synchronous protocol requirements.
+    /// Stores (expirationDate, receiptJWS) behind a lock for atomic nonisolated reads.
+    private let _cache = OSAllocatedUnfairLock<(expirationDate: Date?, receiptJWS: String?)>(
+        initialState: (nil, nil)
+    )
 
     private var transactionListenerTask: Task<Void, Never>?
     private let logger = Logger(subsystem: "com.easymarkdown.emcloud", category: "subscription")
@@ -57,12 +56,14 @@ public final class SubscriptionManager: SubscriptionStatusProviding {
     }
 
     public nonisolated var subscriptionExpirationDate: Date? {
-        _cachedExpirationDate
+        _cache.withLock { $0.expirationDate }
     }
 
+    /// Returns the cached JWS receipt for server-side validation.
+    /// Note: This returns locally cached data, not a live fetch from StoreKit.
     public nonisolated var subscriptionReceiptJWS: String? {
         get async {
-            _cachedReceiptJWS
+            _cache.withLock { $0.receiptJWS }
         }
     }
 
@@ -138,13 +139,13 @@ public final class SubscriptionManager: SubscriptionStatusProviding {
             if subscriptionIDs.contains(transaction.productID) {
                 isProActive = true
                 expirationDate = transaction.expirationDate
-                _cachedReceiptJWS = result.jwsRepresentation
+                _cache.withLock { $0.receiptJWS = result.jwsRepresentation }
                 return
             }
         }
         isProActive = false
         expirationDate = nil
-        _cachedReceiptJWS = nil
+        _cache.withLock { $0.receiptJWS = nil }
     }
 
     // MARK: - Private
