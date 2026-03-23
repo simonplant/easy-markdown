@@ -20,10 +20,15 @@ public final class ModelStorageManager: Sendable {
         if let modelDirectory {
             self.modelDirectory = modelDirectory
         } else {
-            let appSupport = FileManager.default.urls(
+            guard let appSupport = FileManager.default.urls(
                 for: .applicationSupportDirectory,
                 in: .userDomainMask
-            ).first!
+            ).first else {
+                logger.error("Application Support directory unavailable — falling back to temporary directory")
+                self.modelDirectory = FileManager.default.temporaryDirectory
+                    .appendingPathComponent("Models", isDirectory: true)
+                return
+            }
             self.modelDirectory = appSupport.appendingPathComponent("Models", isDirectory: true)
         }
     }

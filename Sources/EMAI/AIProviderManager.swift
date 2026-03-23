@@ -3,6 +3,21 @@ import Observation
 import os
 import EMCore
 
+/// Validated URL constants — guard-let satisfies [A-048] (no force-unwrap).
+private let defaultModelDownloadURL: URL = {
+    guard let url = URL(string: "https://models.easymarkdown.app/v1/model.mlpackage") else {
+        preconditionFailure("Invalid hardcoded model download URL")
+    }
+    return url
+}()
+
+private let defaultCloudRelayURL: URL = {
+    guard let url = URL(string: "https://api.easymarkdown.app/v1/generate") else {
+        preconditionFailure("Invalid hardcoded cloud relay URL")
+    }
+    return url
+}()
+
 /// Manages AI provider selection and lifecycle per [A-030].
 /// Composition root for all AI functionality. Created by EMApp and injected via environment.
 @MainActor
@@ -38,8 +53,8 @@ public final class AIProviderManager {
     ///   - modelDirectory: Override for model storage directory (for testing).
     public init(
         subscriptionStatus: any SubscriptionStatusProviding,
-        modelDownloadURL: URL = URL(string: "https://models.easymarkdown.app/v1/model.mlpackage")!,
-        cloudRelayURL: URL = URL(string: "https://api.easymarkdown.app/v1/generate")!,
+        modelDownloadURL: URL = defaultModelDownloadURL,
+        cloudRelayURL: URL = defaultCloudRelayURL,
         modelDirectory: URL? = nil
     ) {
         self.subscriptionStatus = subscriptionStatus
