@@ -1,25 +1,25 @@
 {
-  "sprintId": "sprint-1774308980",
-  "startedAt": "2026-03-23T16:36:20-07:00",
+  "sprintId": "sprint-1774309147",
+  "startedAt": "2026-03-23T16:39:07-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-081",
-    "title": "DEBT: Add deinit cleanup to AutoSaveManager",
-    "intent": "NotificationCenter observers that outlive their owner cause phantom callbacks — AutoSaveManager must guarantee cleanup on deallocation",
-    "description": "AutoSaveManager stores NotificationCenter observers as (any NSObjectProtocol)? and removes them in removeLifecycleObservers(). If stop() is never called before deallocation, the observers leak. Add deinit { stop() } to guarantee cleanup. Verify that the debounce task is also cancelled in deinit.",
+    "id": "FEAT-082",
+    "title": "DEBT: Surface stale bookmark errors instead of silently swallowing",
+    "intent": "A silently swallowed bookmark error masks real permission problems — the user sees a generic failure instead of actionable guidance",
+    "description": "BookmarkManager.resolveBookmark() catches stale bookmark errors with try? and silently continues. If the bookmark is truly stale (file moved or permissions revoked), the caller gets a URL that may fail on access with no indication of why. Surface the stale condition as a specific error or warning so the UI can prompt the user to re-pick the file.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "AutoSaveManager has a deinit that calls stop()",
-      "NotificationCenter observers are always removed on deallocation",
-      "Pending debounce task is cancelled on deallocation",
-      "No phantom auto-save callbacks fire after manager is deallocated"
+      "Stale bookmark detection returns a specific .bookmarkStale error or warning",
+      "UI shows actionable guidance when a bookmark is stale (e.g., 're-open this file to restore access')",
+      "Non-stale bookmark resolution is unchanged",
+      "Recents list gracefully handles stale entries without crashing"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T16:36:20-07:00",
+    "startedAt": "2026-03-23T16:39:07-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T16:39:06-07:00"
+    "completedAt": "2026-03-23T16:43:52-07:00"
   },
-  "completedAt": "2026-03-23T16:39:06-07:00",
+  "completedAt": "2026-03-23T16:43:52-07:00",
   "attempts": 1
 }

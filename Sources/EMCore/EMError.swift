@@ -39,7 +39,7 @@ public enum EMError: LocalizedError {
             case .saveFailed: return "Couldn't save. Your changes are still in memory — try again."
             case .tooLarge: return "This file is too large to open."
             case .externallyDeleted: return "This file was deleted while you were editing."
-            case .bookmarkStale: return "Can't reopen this file. Try opening it from the file picker."
+            case .bookmarkStale: return "This file's access has expired. Re-open it from the file picker to restore access."
             }
         }
     }
@@ -131,7 +131,7 @@ public enum EMError: LocalizedError {
             case .tooLarge:
                 return .informational
             case .bookmarkStale:
-                return .informational
+                return .recoverable
             }
 
         case .ai(let aiError):
