@@ -1840,9 +1840,10 @@
         "Directory lookup uses guard-let with a descriptive error",
         "App still initializes correctly on all supported devices"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-23T16:36:19-07:00"
     },
     {
       "id": "FEAT-081",
