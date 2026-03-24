@@ -4,6 +4,7 @@ import EMFile
 import EMSettings
 import EMAI
 import EMCloud
+import EMGit
 #if os(macOS)
 import AppKit
 #endif
@@ -49,6 +50,9 @@ public final class AppShell {
     /// AI provider manager — shared singleton per [A-059].
     /// Gates AI UI visibility via `shouldShowAIUI` per AC-6.
     private let aiProviderManager: AIProviderManager
+
+    /// GitHub OAuth manager — shared singleton for auth state per [A-064].
+    private let gitHubOAuthManager: GitHubOAuthManager
 
     // MARK: - Shared file services (used by per-scene coordinators)
 
@@ -97,6 +101,12 @@ public final class AppShell {
             subscriptionStatus: subscriptionManager
         )
 
+        // GitHub OAuth per [A-064].
+        // Client ID is a placeholder — replaced with real OAuth App ID before release.
+        self.gitHubOAuthManager = GitHubOAuthManager(
+            clientID: "Ov23li_placeholder_client_id"
+        )
+
         #if os(macOS)
         // Register macOS Services menu provider per FEAT-021.
         servicesProvider.registerServices()
@@ -133,7 +143,8 @@ public final class AppShell {
             fileOpenCoordinator: fileOpenCoordinator,
             fileCreateCoordinator: fileCreateCoordinator,
             aiProviderManager: aiProviderManager,
-            reviewPromptCoordinator: reviewPromptCoordinator
+            reviewPromptCoordinator: reviewPromptCoordinator,
+            gitHubOAuthManager: gitHubOAuthManager
         )
     }
 
@@ -197,6 +208,7 @@ struct AppRootWrapper: View {
     @State var fileCreateCoordinator: FileCreateCoordinator
     @State var aiProviderManager: AIProviderManager
     @State var reviewPromptCoordinator: ReviewPromptCoordinator
+    @State var gitHubOAuthManager: GitHubOAuthManager
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -210,6 +222,7 @@ struct AppRootWrapper: View {
             .environment(fileCreateCoordinator)
             .environment(aiProviderManager)
             .environment(reviewPromptCoordinator)
+            .environment(gitHubOAuthManager)
             .preferredColorScheme(colorScheme)
             .animation(themeTransition, value: colorScheme)
     }

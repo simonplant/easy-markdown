@@ -49,6 +49,17 @@ struct HomeView: View {
                     #if os(iOS)
                     .hoverEffect(.highlight)
                     #endif
+
+                    Button(action: openFromGitHub) {
+                        Label("Open from GitHub", systemImage: "arrow.triangle.branch")
+                            .frame(maxWidth: 240)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                    .accessibilityHint("Browse and open files from your GitHub repositories")
+                    #if os(iOS)
+                    .hoverEffect(.highlight)
+                    #endif
                 }
 
                 Spacer()
@@ -104,6 +115,10 @@ struct HomeView: View {
             )
         }
         #endif
+    }
+
+    private func openFromGitHub() {
+        router.showGitHubRepoBrowser()
     }
 
     private func openFile() {

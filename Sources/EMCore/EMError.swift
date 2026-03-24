@@ -8,6 +8,7 @@ public enum EMError: LocalizedError {
     case ai(AIError)
     case parse(ParseError)
     case purchase(PurchaseError)
+    case git(GitError)
     case unexpected(underlying: Error)
 
     public var errorDescription: String? {
@@ -16,6 +17,7 @@ public enum EMError: LocalizedError {
         case .ai(let error): return error.errorDescription
         case .parse(let error): return error.errorDescription
         case .purchase(let error): return error.errorDescription
+        case .git(let error): return error.errorDescription
         case .unexpected: return "Something unexpected happened. Your work is safe."
         }
     }
@@ -111,6 +113,37 @@ public enum EMError: LocalizedError {
         }
     }
 
+    // MARK: - Git Errors
+
+    public enum GitError: LocalizedError {
+        case authenticationFailed
+        case authenticationExpired
+        case deviceFlowTimeout
+        case deviceFlowDenied
+        case networkUnavailable
+        case keychainAccessFailed(underlying: Error)
+        case repoListFailed(underlying: Error)
+
+        public var errorDescription: String? {
+            switch self {
+            case .authenticationFailed:
+                return "GitHub sign-in failed. Please try again."
+            case .authenticationExpired:
+                return "Your GitHub session has expired. Please sign in again."
+            case .deviceFlowTimeout:
+                return "Sign-in timed out. Please try again."
+            case .deviceFlowDenied:
+                return "Access was denied. Please try again and approve the request."
+            case .networkUnavailable:
+                return "Can't reach GitHub. Check your connection and try again."
+            case .keychainAccessFailed:
+                return "Couldn't access saved credentials."
+            case .repoListFailed:
+                return "Couldn't load your repositories. Check your connection."
+            }
+        }
+    }
+
     // MARK: - Error Severity Classification
 
     /// The severity of this error, determining how it is presented to the user.
@@ -155,6 +188,18 @@ public enum EMError: LocalizedError {
                 return .recoverable
             case .productNotFound, .receiptValidationFailed:
                 return .recoverable
+            }
+
+        case .git(let gitError):
+            switch gitError {
+            case .authenticationExpired:
+                return .recoverable
+            case .authenticationFailed, .deviceFlowTimeout, .deviceFlowDenied:
+                return .recoverable
+            case .networkUnavailable, .repoListFailed:
+                return .recoverable
+            case .keychainAccessFailed:
+                return .informational
             }
 
         case .parse:
