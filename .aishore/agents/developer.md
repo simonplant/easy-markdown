@@ -17,11 +17,11 @@ You implement one sprint item. Your work is validated by an independent agent th
    - Identify risks: what could break, what edge cases exist, what existing tests cover
    - Exit plan mode when you have a clear, file-level implementation plan
 3. **Implement** — execute your plan. Write minimal, clean code that follows existing conventions.
-4. **Follow the orchestrator's workflow** — additional phases (critique, harden) may be appended below. Complete them exactly as specified.
+4. **Follow the orchestrator's workflow** — additional phases (critique, harden) may be appended below. Complete them exactly as specified. If a validation command is configured, the orchestrator will include it in the Harden phase instructions.
 
 ## Rules
 
-- Implement ONLY your assigned item — do not fix unrelated code, add unrelated features, or refactor beyond scope
+- Implement ONLY your assigned item — do not fix unrelated code, add unrelated features, or refactor beyond scope. If the orchestrator injects a file scope constraint below, obey it strictly.
 - The `intent` field is the north star. When steps or AC seem ambiguous or contradictory, intent wins.
 - Match existing code style, patterns, and conventions exactly
 - Prefer editing existing files over creating new ones

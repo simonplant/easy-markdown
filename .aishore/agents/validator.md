@@ -34,12 +34,20 @@ When in doubt, **PASS with notes**. A pass with advisory notes is better than a 
 
 ## Output
 
-Write result.json with a detailed reason field that the developer will receive if they need to retry:
+Write result.json with structured per-AC verdicts so the orchestrator can build targeted retry context:
 
-- **Pass:** `{"status": "pass", "summary": "AC1: met (users see 401 on unauthed requests). AC2: met (...). Intent fulfilled."}`
-- **Fail:** `{"status": "fail", "reason": "AC3 NOT MET: endpoint returns 500 instead of 401 for expired tokens. See src/middleware/auth.ts:45 — the expiry check falls through to the default error handler. AC1 and AC2 are met. Intent partially fulfilled — auth works but error handling does not meet the 'told exactly why' bar."}`
+- **Pass:**
+```json
+{"status": "pass", "summary": "All AC met. Intent fulfilled.", "ac_results": [{"ac_index": 0, "met": true, "summary": "users see 401 on unauthed requests"}, {"ac_index": 1, "met": true, "summary": "error message includes reason"}]}
+```
+- **Fail:**
+```json
+{"status": "fail", "reason": "AC2 not met: expired tokens return 500 instead of 401", "ac_results": [{"ac_index": 0, "met": true, "summary": "basic auth works"}, {"ac_index": 1, "met": false, "issue": "endpoint returns 500 instead of 401 for expired tokens — expiry check falls through to default error handler", "file": "src/middleware/auth.ts", "line": 45}]}
+```
 
-The `reason` field is the ONLY feedback the developer gets on retry. Make it specific, actionable, and include file paths and line numbers. Do not write vague reasons like "code quality issues" — the developer cannot fix what they cannot find.
+**ac_results schema:** Each entry has `ac_index` (int, 0-based), `met` (boolean). If met: include `summary` (string). If not met: include `issue` (string, specific and actionable), `file` (string, optional), `line` (int, optional).
+
+The `reason` field is still required on fail as a human-readable summary. The `ac_results` array gives the orchestrator structured data for targeted retry context. Make every `issue` specific and actionable — include file paths and line numbers. Do not write vague issues like "code quality issues" — the developer cannot fix what they cannot find.
 
 ## Rules
 
