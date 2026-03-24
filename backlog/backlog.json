@@ -1413,11 +1413,12 @@
         "VoiceOver users can distinguish between VoiceOver navigation and voice editing commands",
         "Chained voice commands (speak, accept, speak again) work fluidly without re-activating"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "groomedAt": "2026-03-23",
-      "groomingNotes": "Uses iOS Speech framework (SFSpeechRecognizer, SFSpeechAudioBufferRecognitionRequest) for on-device transcription (iOS 17+, no network). MicButton in toolbar triggers SFSpeechRecognizer session, streams partial results to overlay. On release: transcription routed to existing AI pipeline (FEAT-041) with context (selection or current paragraph). Result shown via same inline diff preview as FEAT-054. Cmd+Shift+J shortcut via UIKeyCommand. All edits require explicit accept — never modifies without confirmation."
+      "groomingNotes": "Uses iOS Speech framework (SFSpeechRecognizer, SFSpeechAudioBufferRecognitionRequest) for on-device transcription (iOS 17+, no network). MicButton in toolbar triggers SFSpeechRecognizer session, streams partial results to overlay. On release: transcription routed to existing AI pipeline (FEAT-041) with context (selection or current paragraph). Result shown via same inline diff preview as FEAT-054. Cmd+Shift+J shortcut via UIKeyCommand. All edits require explicit accept — never modifies without confirmation.",
+      "completedAt": "2026-03-23T22:13:01-07:00"
     },
     {
       "id": "SPIKE-001",
