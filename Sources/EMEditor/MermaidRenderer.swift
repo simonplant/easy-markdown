@@ -91,6 +91,20 @@ public final class MermaidRenderer {
     public private(set) var cacheHitCount: Int = 0
     public private(set) var cacheMissCount: Int = 0
 
+    /// Loads the bundled mermaid.min.js source from Bundle.module.
+    private static let mermaidJSSource: String = {
+        guard let url = Bundle.module.url(forResource: "mermaid.min", withExtension: "js") else {
+            logger.error("mermaid.min.js not found in bundle resources")
+            return ""
+        }
+        do {
+            return try String(contentsOf: url, encoding: .utf8)
+        } catch {
+            logger.error("Failed to read mermaid.min.js: \(error.localizedDescription)")
+            return ""
+        }
+    }()
+
     /// The HTML template with mermaid.js for rendering diagrams.
     private static let htmlTemplate: String = {
         """
@@ -104,7 +118,7 @@ public final class MermaidRenderer {
             #container { display: inline-block; }
             .mermaid svg { max-width: 100%; }
         </style>
-        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+        <script>\(mermaidJSSource)</script>
         </head>
         <body>
         <div id="container">
