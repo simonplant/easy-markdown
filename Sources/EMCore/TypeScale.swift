@@ -128,6 +128,43 @@ extension TypeScale {
         #endif
     }()
 
+    /// Creates a TypeScale for a given font choice and base size per FEAT-019.
+    ///
+    /// Font choices: "Source Serif" (bundled serif), "System", "Monospaced", "Rounded".
+    /// The base size applies to body text; headings scale proportionally.
+    /// Code always uses JetBrains Mono regardless of font choice.
+    public static func make(fontChoice: String, baseSize: CGFloat) -> TypeScale {
+        FontRegistration.registerFonts()
+
+        #if canImport(UIKit)
+        return TypeScale(
+            heading1: resolvedFont(fontChoice: fontChoice, weight: .bold, size: baseSize * 1.647, style: .title1, isDisplay: true),
+            heading2: resolvedFont(fontChoice: fontChoice, weight: .bold, size: baseSize * 1.412, style: .title2, isDisplay: true),
+            heading3: resolvedFont(fontChoice: fontChoice, weight: .semibold, size: baseSize * 1.176, style: .title3, isDisplay: true),
+            heading4: resolvedFont(fontChoice: fontChoice, weight: .semibold, size: baseSize, style: .headline, isDisplay: false),
+            heading5: resolvedFont(fontChoice: fontChoice, weight: .semibold, size: baseSize * 0.882, style: .subheadline, isDisplay: false),
+            heading6: resolvedFont(fontChoice: fontChoice, weight: .regular, size: baseSize * 0.765, style: .footnote, isDisplay: false),
+            body: resolvedFont(fontChoice: fontChoice, weight: .regular, size: baseSize, style: .body, isDisplay: false),
+            code: scaledCustomFont(FontRegistration.FontName.monoRegular, size: baseSize * 0.882, style: .body),
+            caption: UIFont.preferredFont(forTextStyle: .caption1),
+            ui: UIFont.preferredFont(forTextStyle: .footnote)
+        )
+        #elseif canImport(AppKit)
+        return TypeScale(
+            heading1: resolvedFontMac(fontChoice: fontChoice, weight: .bold, size: baseSize * 1.647, isDisplay: true),
+            heading2: resolvedFontMac(fontChoice: fontChoice, weight: .bold, size: baseSize * 1.412, isDisplay: true),
+            heading3: resolvedFontMac(fontChoice: fontChoice, weight: .semibold, size: baseSize * 1.176, isDisplay: true),
+            heading4: resolvedFontMac(fontChoice: fontChoice, weight: .semibold, size: baseSize, isDisplay: false),
+            heading5: resolvedFontMac(fontChoice: fontChoice, weight: .semibold, size: baseSize * 0.882, isDisplay: false),
+            heading6: resolvedFontMac(fontChoice: fontChoice, weight: .regular, size: baseSize * 0.765, isDisplay: false),
+            body: resolvedFontMac(fontChoice: fontChoice, weight: .regular, size: baseSize, isDisplay: false),
+            code: FontRegistration.font(named: FontRegistration.FontName.monoRegular, size: baseSize * 0.882),
+            caption: NSFont.preferredFont(forTextStyle: .body),
+            ui: NSFont.preferredFont(forTextStyle: .body)
+        )
+        #endif
+    }
+
     #if canImport(UIKit)
     /// Creates a custom font wrapped with UIFontMetrics for Dynamic Type scaling.
     ///
@@ -135,6 +172,69 @@ extension TypeScale {
     private static func scaledCustomFont(_ name: String, size: CGFloat, style: UIFont.TextStyle) -> UIFont {
         let font = FontRegistration.font(named: name, size: size)
         return UIFontMetrics(forTextStyle: style).scaledFont(for: font)
+    }
+
+    /// Resolves a font for a given choice, weight, and size on iOS.
+    private static func resolvedFont(fontChoice: String, weight: UIFont.Weight, size: CGFloat, style: UIFont.TextStyle, isDisplay: Bool) -> UIFont {
+        let font: UIFont
+        switch fontChoice {
+        case "Source Serif":
+            let name = serifFontName(weight: weight, isDisplay: isDisplay)
+            font = FontRegistration.font(named: name, size: size)
+        case "Monospaced":
+            font = UIFont.monospacedSystemFont(ofSize: size, weight: weight)
+        case "Rounded":
+            let desc = UIFont.systemFont(ofSize: size, weight: weight).fontDescriptor.withDesign(.rounded) ?? UIFont.systemFont(ofSize: size, weight: weight).fontDescriptor
+            font = UIFont(descriptor: desc, size: size)
+        default: // "System"
+            font = UIFont.systemFont(ofSize: size, weight: weight)
+        }
+        return UIFontMetrics(forTextStyle: style).scaledFont(for: font)
+    }
+    #endif
+
+    #if canImport(AppKit)
+    /// Resolves a font for a given choice, weight, and size on macOS.
+    private static func resolvedFontMac(fontChoice: String, weight: NSFont.Weight, size: CGFloat, isDisplay: Bool) -> NSFont {
+        switch fontChoice {
+        case "Source Serif":
+            let name = serifFontName(weight: weight, isDisplay: isDisplay)
+            return FontRegistration.font(named: name, size: size)
+        case "Monospaced":
+            return NSFont.monospacedSystemFont(ofSize: size, weight: weight)
+        case "Rounded":
+            if let desc = NSFont.systemFont(ofSize: size, weight: weight).fontDescriptor.withDesign(.rounded) {
+                return NSFont(descriptor: desc, size: size) ?? NSFont.systemFont(ofSize: size, weight: weight)
+            }
+            return NSFont.systemFont(ofSize: size, weight: weight)
+        default: // "System"
+            return NSFont.systemFont(ofSize: size, weight: weight)
+        }
+    }
+    #endif
+
+    /// Maps a font weight to the appropriate Source Serif 4 PostScript name.
+    #if canImport(UIKit)
+    private static func serifFontName(weight: UIFont.Weight, isDisplay: Bool) -> String {
+        switch weight {
+        case .bold:
+            return isDisplay ? FontRegistration.FontName.serifDisplayBold : FontRegistration.FontName.serifBold
+        case .semibold:
+            return isDisplay ? FontRegistration.FontName.serifDisplaySemibold : FontRegistration.FontName.serifSemibold
+        default:
+            return FontRegistration.FontName.serifRegular
+        }
+    }
+    #elseif canImport(AppKit)
+    private static func serifFontName(weight: NSFont.Weight, isDisplay: Bool) -> String {
+        switch weight {
+        case .bold:
+            return isDisplay ? FontRegistration.FontName.serifDisplayBold : FontRegistration.FontName.serifBold
+        case .semibold:
+            return isDisplay ? FontRegistration.FontName.serifDisplaySemibold : FontRegistration.FontName.serifSemibold
+        default:
+            return FontRegistration.FontName.serifRegular
+        }
     }
     #endif
 }

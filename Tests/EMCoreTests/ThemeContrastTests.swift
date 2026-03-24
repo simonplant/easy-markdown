@@ -7,52 +7,110 @@ import AppKit
 #endif
 @testable import EMCore
 
-/// Verifies WCAG AA contrast ratios for both theme palettes per FEAT-007 AC-3.
+/// Verifies WCAG AA contrast ratios for all built-in theme palettes per FEAT-007 AC-3 and FEAT-019 AC-3.
 /// WCAG AA requires ≥4.5:1 for normal text and ≥3:1 for large text (≥18pt or ≥14pt bold).
 @Suite("Theme WCAG AA Contrast")
 struct ThemeContrastTests {
 
-    // MARK: - Light palette
+    // MARK: - All Themes parametric tests
 
-    @Test("Light: body text meets WCAG AA (≥4.5:1)")
-    func lightBodyContrast() {
-        let ratio = contrastRatio(.defaultLight.foreground, .defaultLight.background)
-        #expect(ratio >= 4.5, "Body text contrast \(ratio):1 is below WCAG AA 4.5:1")
+    /// All theme light/dark palette pairs to validate.
+    private static let allPalettes: [(name: String, light: ThemeColors, dark: ThemeColors)] = [
+        ("Default", .defaultLight, .defaultDark),
+        ("Sepia", .sepiaLight, .sepiaDark),
+        ("Solarized", .solarizedLight, .solarizedDark),
+        ("Nord", .nordLight, .nordDark),
+        ("Ink", .inkLight, .inkDark),
+    ]
+
+    @Test("All light palettes: body text meets WCAG AA (≥4.5:1)", arguments: allPalettes.map(\.name))
+    func allLightBodyContrast(name: String) {
+        let palette = Self.allPalettes.first { $0.name == name }!
+        let ratio = contrastRatio(palette.light.foreground, palette.light.background)
+        #expect(ratio >= 4.5, "\(name) light body text contrast \(ratio):1 is below WCAG AA 4.5:1")
     }
 
-    @Test("Light: heading text meets WCAG AA (≥3:1 for large text)")
-    func lightHeadingContrast() {
-        let ratio = contrastRatio(.defaultLight.heading, .defaultLight.background)
-        #expect(ratio >= 3.0, "Heading contrast \(ratio):1 is below WCAG AA 3:1 for large text")
+    @Test("All dark palettes: body text meets WCAG AA (≥4.5:1)", arguments: allPalettes.map(\.name))
+    func allDarkBodyContrast(name: String) {
+        let palette = Self.allPalettes.first { $0.name == name }!
+        let ratio = contrastRatio(palette.dark.foreground, palette.dark.background)
+        #expect(ratio >= 4.5, "\(name) dark body text contrast \(ratio):1 is below WCAG AA 4.5:1")
     }
 
-    @Test("Light: link text meets WCAG AA (≥4.5:1)")
-    func lightLinkContrast() {
-        let ratio = contrastRatio(.defaultLight.link, .defaultLight.background)
-        #expect(ratio >= 4.5, "Link contrast \(ratio):1 is below WCAG AA 4.5:1")
+    @Test("All light palettes: heading meets WCAG AA large text (≥3:1)", arguments: allPalettes.map(\.name))
+    func allLightHeadingContrast(name: String) {
+        let palette = Self.allPalettes.first { $0.name == name }!
+        let ratio = contrastRatio(palette.light.heading, palette.light.background)
+        #expect(ratio >= 3.0, "\(name) light heading contrast \(ratio):1 is below WCAG AA 3:1")
     }
 
-    @Test("Light: code text meets WCAG AA on code background (≥4.5:1)")
-    func lightCodeContrast() {
-        let ratio = contrastRatio(.defaultLight.codeForeground, .defaultLight.codeBackground)
-        #expect(ratio >= 4.5, "Code contrast \(ratio):1 is below WCAG AA 4.5:1")
+    @Test("All dark palettes: heading meets WCAG AA large text (≥3:1)", arguments: allPalettes.map(\.name))
+    func allDarkHeadingContrast(name: String) {
+        let palette = Self.allPalettes.first { $0.name == name }!
+        let ratio = contrastRatio(palette.dark.heading, palette.dark.background)
+        #expect(ratio >= 3.0, "\(name) dark heading contrast \(ratio):1 is below WCAG AA 3:1")
     }
 
-    @Test("Light: blockquote text meets WCAG AA (≥4.5:1)")
-    func lightBlockquoteContrast() {
-        let ratio = contrastRatio(.defaultLight.blockquoteForeground, .defaultLight.background)
-        #expect(ratio >= 4.5, "Blockquote contrast \(ratio):1 is below WCAG AA 4.5:1")
+    @Test("All light palettes: link meets WCAG AA (≥4.5:1)", arguments: allPalettes.map(\.name))
+    func allLightLinkContrast(name: String) {
+        let palette = Self.allPalettes.first { $0.name == name }!
+        let ratio = contrastRatio(palette.light.link, palette.light.background)
+        #expect(ratio >= 4.5, "\(name) light link contrast \(ratio):1 is below WCAG AA 4.5:1")
     }
 
-    @Test("Light: list marker meets WCAG AA (≥4.5:1)")
-    func lightListMarkerContrast() {
-        let ratio = contrastRatio(.defaultLight.listMarker, .defaultLight.background)
-        #expect(ratio >= 4.5, "List marker contrast \(ratio):1 is below WCAG AA 4.5:1")
+    @Test("All dark palettes: link meets WCAG AA (≥4.5:1)", arguments: allPalettes.map(\.name))
+    func allDarkLinkContrast(name: String) {
+        let palette = Self.allPalettes.first { $0.name == name }!
+        let ratio = contrastRatio(palette.dark.link, palette.dark.background)
+        #expect(ratio >= 4.5, "\(name) dark link contrast \(ratio):1 is below WCAG AA 4.5:1")
     }
 
-    @Test("Light: syntax colors meet WCAG AA on code background (≥4.5:1)")
-    func lightSyntaxContrast() {
-        let colors = ThemeColors.defaultLight
+    @Test("All light palettes: code text meets WCAG AA (≥4.5:1)", arguments: allPalettes.map(\.name))
+    func allLightCodeContrast(name: String) {
+        let palette = Self.allPalettes.first { $0.name == name }!
+        let ratio = contrastRatio(palette.light.codeForeground, palette.light.codeBackground)
+        #expect(ratio >= 4.5, "\(name) light code contrast \(ratio):1 is below WCAG AA 4.5:1")
+    }
+
+    @Test("All dark palettes: code text meets WCAG AA (≥4.5:1)", arguments: allPalettes.map(\.name))
+    func allDarkCodeContrast(name: String) {
+        let palette = Self.allPalettes.first { $0.name == name }!
+        let ratio = contrastRatio(palette.dark.codeForeground, palette.dark.codeBackground)
+        #expect(ratio >= 4.5, "\(name) dark code contrast \(ratio):1 is below WCAG AA 4.5:1")
+    }
+
+    @Test("All light palettes: blockquote meets WCAG AA (≥4.5:1)", arguments: allPalettes.map(\.name))
+    func allLightBlockquoteContrast(name: String) {
+        let palette = Self.allPalettes.first { $0.name == name }!
+        let ratio = contrastRatio(palette.light.blockquoteForeground, palette.light.background)
+        #expect(ratio >= 4.5, "\(name) light blockquote contrast \(ratio):1 is below WCAG AA 4.5:1")
+    }
+
+    @Test("All dark palettes: blockquote meets WCAG AA (≥4.5:1)", arguments: allPalettes.map(\.name))
+    func allDarkBlockquoteContrast(name: String) {
+        let palette = Self.allPalettes.first { $0.name == name }!
+        let ratio = contrastRatio(palette.dark.blockquoteForeground, palette.dark.background)
+        #expect(ratio >= 4.5, "\(name) dark blockquote contrast \(ratio):1 is below WCAG AA 4.5:1")
+    }
+
+    @Test("All light palettes: list marker meets WCAG AA (≥4.5:1)", arguments: allPalettes.map(\.name))
+    func allLightListMarkerContrast(name: String) {
+        let palette = Self.allPalettes.first { $0.name == name }!
+        let ratio = contrastRatio(palette.light.listMarker, palette.light.background)
+        #expect(ratio >= 4.5, "\(name) light list marker contrast \(ratio):1 is below WCAG AA 4.5:1")
+    }
+
+    @Test("All dark palettes: list marker meets WCAG AA (≥4.5:1)", arguments: allPalettes.map(\.name))
+    func allDarkListMarkerContrast(name: String) {
+        let palette = Self.allPalettes.first { $0.name == name }!
+        let ratio = contrastRatio(palette.dark.listMarker, palette.dark.background)
+        #expect(ratio >= 4.5, "\(name) dark list marker contrast \(ratio):1 is below WCAG AA 4.5:1")
+    }
+
+    @Test("All light palettes: syntax colors meet WCAG AA on code background (≥4.5:1)", arguments: allPalettes.map(\.name))
+    func allLightSyntaxContrast(name: String) {
+        let palette = Self.allPalettes.first { $0.name == name }!
+        let colors = palette.light
         let bg = colors.codeBackground
         let cases: [(String, PlatformColor)] = [
             ("keyword", colors.syntaxKeyword),
@@ -62,53 +120,16 @@ struct ThemeContrastTests {
             ("type", colors.syntaxType),
             ("function", colors.syntaxFunction),
         ]
-        for (name, fg) in cases {
+        for (label, fg) in cases {
             let ratio = contrastRatio(fg, bg)
-            #expect(ratio >= 4.5, "Light syntax.\(name) contrast \(ratio):1 is below WCAG AA 4.5:1")
+            #expect(ratio >= 4.5, "\(name) light syntax.\(label) contrast \(ratio):1 is below WCAG AA 4.5:1")
         }
     }
 
-    // MARK: - Dark palette
-
-    @Test("Dark: body text meets WCAG AA (≥4.5:1)")
-    func darkBodyContrast() {
-        let ratio = contrastRatio(.defaultDark.foreground, .defaultDark.background)
-        #expect(ratio >= 4.5, "Body text contrast \(ratio):1 is below WCAG AA 4.5:1")
-    }
-
-    @Test("Dark: heading text meets WCAG AA (≥3:1 for large text)")
-    func darkHeadingContrast() {
-        let ratio = contrastRatio(.defaultDark.heading, .defaultDark.background)
-        #expect(ratio >= 3.0, "Heading contrast \(ratio):1 is below WCAG AA 3:1 for large text")
-    }
-
-    @Test("Dark: link text meets WCAG AA (≥4.5:1)")
-    func darkLinkContrast() {
-        let ratio = contrastRatio(.defaultDark.link, .defaultDark.background)
-        #expect(ratio >= 4.5, "Link contrast \(ratio):1 is below WCAG AA 4.5:1")
-    }
-
-    @Test("Dark: code text meets WCAG AA on code background (≥4.5:1)")
-    func darkCodeContrast() {
-        let ratio = contrastRatio(.defaultDark.codeForeground, .defaultDark.codeBackground)
-        #expect(ratio >= 4.5, "Code contrast \(ratio):1 is below WCAG AA 4.5:1")
-    }
-
-    @Test("Dark: blockquote text meets WCAG AA (≥4.5:1)")
-    func darkBlockquoteContrast() {
-        let ratio = contrastRatio(.defaultDark.blockquoteForeground, .defaultDark.background)
-        #expect(ratio >= 4.5, "Blockquote contrast \(ratio):1 is below WCAG AA 4.5:1")
-    }
-
-    @Test("Dark: list marker meets WCAG AA (≥4.5:1)")
-    func darkListMarkerContrast() {
-        let ratio = contrastRatio(.defaultDark.listMarker, .defaultDark.background)
-        #expect(ratio >= 4.5, "List marker contrast \(ratio):1 is below WCAG AA 4.5:1")
-    }
-
-    @Test("Dark: syntax colors meet WCAG AA on code background (≥4.5:1)")
-    func darkSyntaxContrast() {
-        let colors = ThemeColors.defaultDark
+    @Test("All dark palettes: syntax colors meet WCAG AA on code background (≥4.5:1)", arguments: allPalettes.map(\.name))
+    func allDarkSyntaxContrast(name: String) {
+        let palette = Self.allPalettes.first { $0.name == name }!
+        let colors = palette.dark
         let bg = colors.codeBackground
         let cases: [(String, PlatformColor)] = [
             ("keyword", colors.syntaxKeyword),
@@ -118,30 +139,44 @@ struct ThemeContrastTests {
             ("type", colors.syntaxType),
             ("function", colors.syntaxFunction),
         ]
-        for (name, fg) in cases {
+        for (label, fg) in cases {
             let ratio = contrastRatio(fg, bg)
-            #expect(ratio >= 4.5, "Dark syntax.\(name) contrast \(ratio):1 is below WCAG AA 4.5:1")
+            #expect(ratio >= 4.5, "\(name) dark syntax.\(label) contrast \(ratio):1 is below WCAG AA 4.5:1")
         }
     }
 
     // MARK: - Theme structure
 
-    @Test("Default theme has distinct light and dark palettes")
-    func distinctPalettes() {
-        let light = ThemeColors.defaultLight
-        let dark = ThemeColors.defaultDark
-        // Backgrounds must be visually different
-        let bgRatio = contrastRatio(light.background, dark.background)
-        #expect(bgRatio > 2.0, "Light and dark backgrounds should differ significantly")
+    @Test("All built-in themes have distinct light and dark palettes")
+    func allDistinctPalettes() {
+        for theme in Theme.allBuiltIn {
+            let bgRatio = contrastRatio(theme.light.background, theme.dark.background)
+            #expect(bgRatio > 2.0, "\(theme.name) light and dark backgrounds should differ significantly")
+        }
+    }
+
+    @Test("Theme.builtIn(id:) returns correct theme or default fallback")
+    func themeBuiltInLookup() {
+        #expect(Theme.builtIn(id: "sepia").id == "sepia")
+        #expect(Theme.builtIn(id: "solarized").id == "solarized")
+        #expect(Theme.builtIn(id: "nord").id == "nord")
+        #expect(Theme.builtIn(id: "ink").id == "ink")
+        #expect(Theme.builtIn(id: "nonexistent").id == "default")
+    }
+
+    @Test("allBuiltIn contains exactly 5 themes")
+    func allBuiltInCount() {
+        #expect(Theme.allBuiltIn.count == 5)
     }
 
     @Test("Theme.colors(isDark:) returns correct variant")
     func themeVariantSelection() {
-        let theme = Theme.default
-        let lightBg = rgbComponents(theme.colors(isDark: false).background)
-        let darkBg = rgbComponents(theme.colors(isDark: true).background)
-        // Light background should be brighter
-        #expect(lightBg.r > darkBg.r, "Light background should have higher red component")
+        for theme in Theme.allBuiltIn {
+            let lightBg = rgbComponents(theme.colors(isDark: false).background)
+            let darkBg = rgbComponents(theme.colors(isDark: true).background)
+            #expect(lightBg.r > darkBg.r || lightBg.g > darkBg.g || lightBg.b > darkBg.b,
+                    "\(theme.name) light background should be brighter than dark")
+        }
     }
 
     // MARK: - WCAG Contrast Ratio Calculation

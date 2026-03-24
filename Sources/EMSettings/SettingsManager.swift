@@ -17,6 +17,11 @@ public final class SettingsManager {
         didSet { defaults.set(preferredColorScheme.rawValue, forKey: Keys.colorScheme) }
     }
 
+    /// Selected theme ID per FEAT-019. Matches a Theme.id from the built-in theme list.
+    public var themeID: String {
+        didSet { defaults.set(themeID, forKey: Keys.themeID) }
+    }
+
     /// Selected font name for the editor body text.
     public var fontName: String {
         didSet { defaults.set(fontName, forKey: Keys.fontName) }
@@ -236,7 +241,8 @@ public final class SettingsManager {
             rawValue: defaults.string(forKey: Keys.colorScheme) ?? ""
         ) ?? .system
 
-        self.fontName = defaults.string(forKey: Keys.fontName) ?? FontName.system
+        self.themeID = defaults.string(forKey: Keys.themeID) ?? "default"
+        self.fontName = defaults.string(forKey: Keys.fontName) ?? FontName.sourceSerif
         self.fontSize = defaults.object(forKey: Keys.fontSize) as? Double ?? 17.0
 
         self.isSpellCheckEnabled = defaults.object(forKey: Keys.spellCheck) as? Bool ?? true
@@ -283,6 +289,7 @@ public final class SettingsManager {
 
     private enum Keys {
         static let colorScheme = "em_colorScheme"
+        static let themeID = "em_themeID"
         static let fontName = "em_fontName"
         static let fontSize = "em_fontSize"
         static let spellCheck = "em_spellCheck"
@@ -340,10 +347,29 @@ public enum ModelDownloadState: String, Sendable, CaseIterable {
     case downloaded
 }
 
-/// Known font name constants.
+/// Known font name constants per FEAT-019.
+/// Curated list — we control quality, not the system font picker.
 public enum FontName {
-    /// The platform system font.
+    /// Source Serif 4 — bundled serif typeface, the default.
+    public static let sourceSerif = "Source Serif"
+    /// The platform system font (San Francisco on Apple platforms).
     public static let system = "System"
     /// A monospaced system font.
     public static let monospaced = "Monospaced"
+    /// A rounded system font variant.
+    public static let rounded = "Rounded"
+
+    /// All available font choices in display order.
+    public static let allChoices: [String] = [sourceSerif, system, monospaced, rounded]
+
+    /// Human-readable display name for a font choice.
+    public static func displayName(_ choice: String) -> String {
+        switch choice {
+        case sourceSerif: return "Source Serif"
+        case system: return "System"
+        case monospaced: return "Monospaced"
+        case rounded: return "Rounded"
+        default: return choice
+        }
+    }
 }
