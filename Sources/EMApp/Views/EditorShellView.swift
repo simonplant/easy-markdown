@@ -11,6 +11,7 @@ import EMFile
 import EMFormatter
 import EMSettings
 import EMAI
+import EMCloud
 
 /// Editor shell: toolbar at top, content area in center, format bar and status bar at bottom.
 /// Uses EMEditor's TextViewBridge for the text editing area (TextKit 2).
@@ -25,6 +26,7 @@ struct EditorShellView: View {
     @Environment(FileOpenCoordinator.self) private var fileOpenCoordinator
     @Environment(FileCreateCoordinator.self) private var fileCreateCoordinator
     @Environment(AIProviderManager.self) private var aiProviderManager
+    @Environment(SubscriptionManager.self) private var subscriptionManager
     @Environment(ReviewPromptCoordinator.self) private var reviewPromptCoordinator
     @State private var editorState = EditorState()
     @State private var text = ""
@@ -319,6 +321,10 @@ struct EditorShellView: View {
         .task {
             // Check Pro subscription status for floating bar badge per FEAT-054 AC-3.
             isProSubscriber = await aiProviderManager.checkProSubscription()
+        }
+        .onChange(of: subscriptionManager.isProActive) { _, isActive in
+            // Update immediately when subscription state changes per FEAT-062 AC-4.
+            isProSubscriber = isActive
         }
         .onDisappear {
             conflictManager?.stopMonitoring()

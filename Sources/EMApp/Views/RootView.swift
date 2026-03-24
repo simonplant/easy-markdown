@@ -44,9 +44,7 @@ public struct RootView: View {
             case .settings:
                 SettingsView()
             case .subscriptionOffer:
-                // Subscription screen — implemented with FEAT-062
-                Text("Pro AI")
-                    .presentationDetents([.medium])
+                SubscriptionOfferView()
             }
         }
         .overlay(alignment: .top) {
