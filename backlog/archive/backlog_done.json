@@ -1018,25 +1018,6 @@
     "completedAt": "2026-03-20T21:23:08-07:00"
   },
   {
-    "id": "FEAT-069",
-    "title": "App Store Review Prompt",
-    "intent": "The review prompt must appear at the right moment — when the user is happy and engaged, never before. One shot, never again.",
-    "description": "Per PRODUCT.md §12. Prompt for App Store review only after: 7 days of active use AND 10+ AI feature uses. Uses SKStoreReviewController. Prompt appears at most once, ever. Timing tracked via on-device aggregate counters (FEAT-060). Never interrupts active editing — shown on return to home screen or after completing an AI action.",
-    "priority": "should",
-    "category": "Growth",
-    "steps": [],
-    "acceptanceCriteria": [
-      "Review prompt does not appear before 7 days of active use AND 10+ AI uses",
-      "Review prompt appears at most once per user, ever",
-      "Prompt never interrupts active editing",
-      "If user has not used AI features, prompt never appears regardless of time"
-    ],
-    "status": "done",
-    "passes": true,
-    "readyForSprint": false,
-    "completedAt": "2026-03-21T01:34:47-07:00"
-  },
-  {
     "id": "FEAT-060",
     "title": "INFRA: On-Device Aggregate Counters",
     "intent": "We must know if our AI features are landing without violating privacy — simple local counters tell us enough to make product decisions.",
@@ -1189,195 +1170,23 @@
     "completedAt": "2026-03-23T22:13:01-07:00"
   },
   {
-    "id": "SPIKE-001",
-    "title": "SPIKE: TextKit 2 Keystroke Latency Validation",
-    "intent": "Validate that TextKit 2 can achieve <16ms keystroke-to-render latency before committing to it as the text engine",
-    "description": "Build a minimal TextKit 2 prototype with NSTextLayoutManager and NSTextContentStorage. Benchmark keystroke-to-render latency with attributed string updates per paragraph on iPhone 15 and iPhone SE (3rd gen). Measure with os_signpost. If TextKit 2 fails the <16ms target, document findings and evaluate TextKit 1 fallback. Blocks FEAT-039 (Text Engine). Updates architecture decision [A-004].",
-    "priority": "must",
-    "category": "Research",
-    "steps": [],
-    "acceptanceCriteria": [
-      "Minimal TextKit 2 prototype runs on iPhone 15 and iPhone SE",
-      "Keystroke-to-render latency measured via os_signpost for 100+ consecutive keystrokes",
-      "Results documented: p50, p95, p99 latency values",
-      "Written finding committed to docs/spikes/SPIKE-001.md",
-      "Architecture decision [A-004] updated based on findings"
-    ],
-    "status": "done",
-    "passes": true,
-    "readyForSprint": false,
-    "completedAt": "2026-03-20T21:35:30-07:00"
-  },
-  {
-    "id": "SPIKE-002",
-    "title": "SPIKE: swift-markdown Round-Trip Fidelity",
-    "intent": "Validate that swift-markdown can parse markdown, allow AST modifications, and re-emit markdown that preserves original formatting",
-    "description": "Build a test harness that parses markdown via swift-markdown, modifies specific AST nodes (e.g. change heading level, update link URL, rewrite paragraph text), and re-emits markdown. Compare output to expected results. Test with 100+ CommonMark spec examples plus custom GFM cases (tables, task lists, strikethrough). Document any formatting loss. Blocks FEAT-038 (Parser). Updates architecture decision [A-003].",
-    "priority": "must",
-    "category": "Research",
-    "steps": [],
-    "acceptanceCriteria": [
-      "Test harness runs parse → modify → re-emit on 100+ spec examples",
-      "Formatting preservation rate documented (target: >95% of cases)",
-      "Known failure cases cataloged with workarounds",
-      "Written finding committed to docs/spikes/SPIKE-002.md",
-      "Architecture decision [A-003] updated based on findings"
-    ],
-    "status": "done",
-    "passes": true,
-    "readyForSprint": false,
-    "completedAt": "2026-03-20T21:45:35-07:00"
-  },
-  {
-    "id": "SPIKE-003",
-    "title": "SPIKE: swift-markdown Incremental Parsing",
-    "intent": "Evaluate whether swift-markdown supports incremental parsing and design the debounce + local-update strategy for large documents",
-    "description": "Evaluate swift-markdown for partial/incremental re-parse capability. Benchmark full re-parse time on a 10,000-line markdown document on iPhone 15. If incremental parse is not feasible, design and validate the debounce strategy: full re-parse on ~300ms editing pause on background thread, with lightweight per-paragraph local attribute updates between parses for <16ms keystroke response. Blocks FEAT-038 (Parser). Updates architecture decisions [A-003] and [A-017].",
-    "priority": "must",
-    "category": "Research",
-    "steps": [],
-    "acceptanceCriteria": [
-      "Full re-parse time for 10,000-line document measured on iPhone 15",
-      "Incremental parse feasibility documented (supported or not)",
-      "If not incremental: debounce + local-update strategy validated with prototype",
-      "Written finding committed to docs/spikes/SPIKE-003.md",
-      "Architecture decisions [A-003] and [A-017] updated based on findings"
-    ],
-    "status": "done",
-    "passes": true,
-    "readyForSprint": false,
-    "lastFailReason": "Validator agent rejected implementation",
-    "lastFailAt": "2026-03-20T21:54:19-07:00",
-    "failCount": 1,
-    "completedAt": "2026-03-21T08:27:00-07:00"
-  },
-  {
-    "id": "SPIKE-004",
-    "title": "SPIKE: The Render Animation Feasibility",
-    "intent": "Validate the snapshot-based Core Animation approach for The Render signature transition at 120fps",
-    "description": "Prototype the snapshot-based Core Animation approach for The Render (source-to-rich text transition). Capture layer snapshots, compute target positions, animate with CASpringAnimation (~400ms, damping 0.8, response 0.4). Measure frame rate on iPad Pro (ProMotion) and iPhone SE. Test with documents of varying sizes (10 lines, 100 lines, 1000 lines). Test Reduced Motion crossfade path. Blocks FEAT-014 (Signature Transition). Updates architecture decision [A-020].",
-    "priority": "must",
-    "category": "Research",
-    "steps": [],
-    "acceptanceCriteria": [
-      "Prototype demonstrates source-to-rich animation with at least heading and bold transitions",
-      "Frame rate measured on iPad Pro (target: 120fps) and iPhone SE (target: 60fps)",
-      "Reduced Motion crossfade (200ms) alternative tested",
-      "Performance with 1000-line document documented",
-      "Written finding committed to docs/spikes/SPIKE-004.md",
-      "Architecture decision [A-020] updated based on findings"
-    ],
-    "status": "done",
-    "passes": true,
-    "readyForSprint": false,
-    "completedAt": "2026-03-20T22:02:27-07:00"
-  },
-  {
-    "id": "SPIKE-005",
-    "title": "SPIKE: Local AI Inference Benchmarks and Device Capability Detection",
-    "intent": "Benchmark MLX Swift vs Core ML for on-device inference, validate device capability detection, and select the local AI framework",
-    "description": "Run inference benchmarks comparing MLX Swift and Core ML on A16 (iPhone 15) and M1 hardware. Test with 1-4GB quantized language models suitable for writing assistance. Measure: first token latency (target <500ms per D-PERF-4), tokens/sec throughput, peak memory usage, and memory-mapped model behavior. Additionally, validate the device capability detection approach (ProcessInfo hardware model → chip family mapping) to correctly identify A16+/M1+ devices. Verify App Store compliance for the model download and inference approach. Blocks FEAT-041 (AI Pipeline). Updates architecture decisions [A-008] and [A-033].",
-    "priority": "must",
-    "category": "Research",
-    "steps": [],
-    "acceptanceCriteria": [
-      "MLX Swift and Core ML benchmarked on A16 and M1 hardware",
-      "First token latency, tokens/sec, and memory measured for each",
-      "Recommended framework selected with rationale",
-      "App Store compliance for model download approach verified",
-      "Device capability detection (A16+/M1+ identification) validated on multiple device models",
-      "Written finding committed to docs/spikes/SPIKE-005.md",
-      "Architecture decisions [A-008] and [A-033] updated based on findings"
-    ],
-    "status": "done",
-    "passes": true,
-    "readyForSprint": false,
-    "completedAt": "2026-03-20T22:34:36-07:00"
-  },
-  {
-    "id": "SPIKE-006",
-    "title": "SPIKE: Mermaid WKWebView Memory Impact",
-    "intent": "Validate the offscreen WKWebView approach for Mermaid rendering and measure memory impact with multiple diagrams",
-    "description": "Prototype Mermaid diagram rendering using mermaid.js in an offscreen WKWebView. Render SVG output, convert to cached UIImage. Measure memory usage with 1, 5, and 10 diagrams in a single document. Test cache invalidation on content change. Test theme switching (light/dark). Evaluate WKWebView lifecycle (create/destroy vs reuse). Blocks FEAT-030 (Mermaid Rendering). Updates architecture decision [A-006].",
-    "priority": "must",
-    "category": "Research",
-    "steps": [],
-    "acceptanceCriteria": [
-      "Prototype renders at least 3 Mermaid diagram types (flowchart, sequence, ER)",
-      "Memory usage measured with 1, 5, and 10 diagrams",
-      "Cache strategy validated (content hash → image)",
-      "Theme switching (light/dark) tested",
-      "Written finding committed to docs/spikes/SPIKE-006.md",
-      "Architecture decision [A-006] updated based on findings"
-    ],
-    "status": "done",
-    "passes": true,
-    "readyForSprint": false,
-    "completedAt": "2026-03-20T22:41:26-07:00"
-  },
-  {
-    "id": "SPIKE-007",
-    "title": "SPIKE: tree-sitter Swift Integration",
-    "intent": "Evaluate swift-tree-sitter package for syntax highlighting of fenced code blocks and measure binary size impact",
-    "description": "Evaluate the swift-tree-sitter (or SwiftTreeSitter) package for integration into the EMEditor package. Build a prototype that highlights 3 languages (Swift, Python, JavaScript). Measure: binary size impact of bundling grammars, parse performance on a 500-line code block, and API ergonomics for incremental updates. Assess build system compatibility with SPM. Blocks FEAT-006 (Syntax Highlighting). Updates architecture decision [A-005].",
-    "priority": "must",
-    "category": "Research",
-    "steps": [],
-    "acceptanceCriteria": [
-      "Prototype highlights Swift, Python, and JavaScript code blocks",
-      "Binary size impact of 3 grammars measured (and extrapolated for 15+)",
-      "Parse performance on 500-line code block measured",
-      "SPM build compatibility verified",
-      "Written finding committed to docs/spikes/SPIKE-007.md",
-      "Architecture decision [A-005] updated based on findings"
-    ],
-    "status": "done",
-    "passes": true,
-    "readyForSprint": false,
-    "completedAt": "2026-03-20T23:06:53-07:00"
-  },
-  {
-    "id": "SPIKE-008",
-    "title": "SPIKE: Apple Platform AI — WWDC 2026 Evaluation",
-    "intent": "Evaluate Apple platform AI APIs after WWDC 2026 and prototype ApplePlatformAIProvider if APIs are available",
-    "description": "Scoped to the WWDC 2026 evaluation window (June 2026). After WWDC, review all new Apple developer documentation for system-level AI APIs (on-device LLM, text generation, writing assistance APIs). If relevant APIs are announced: prototype the ApplePlatformAIProvider implementation against the AIProvider protocol, measure performance, and assess whether it replaces or supplements LocalModelProvider. If no relevant APIs: document findings and close the spike. Updates architecture decisions [A-007] and [A-029].",
-    "priority": "must",
-    "category": "Research",
-    "steps": [],
-    "acceptanceCriteria": [
-      "WWDC 2026 sessions and documentation reviewed for on-device AI APIs",
-      "Finding documented: APIs available (with prototype) or not available (with rationale)",
-      "If APIs available: prototype ApplePlatformAIProvider with performance measurements",
-      "Written finding committed to docs/spikes/SPIKE-008.md",
-      "Architecture decisions [A-007] and [A-029] updated based on findings",
-      "Spike closed with clear resolution (adopt, defer, or not applicable)"
-    ],
-    "status": "done",
-    "passes": true,
-    "readyForSprint": false,
-    "completedAt": "2026-03-20T23:10:08-07:00"
-  },
-  {
-    "id": "SPIKE-009",
-    "title": "SPIKE: libgit2 Swift Bindings for iOS",
-    "intent": "Evaluate libgit2 Swift bindings for git operations on iOS — clone, commit, push — to validate the GitHub storage approach",
-    "description": "Evaluate SwiftGit2 or similar libgit2 Swift wrapper for iOS. Build a prototype that clones a GitHub repo, modifies a file, commits, and pushes. Measure: binary size impact, clone performance on Wi-Fi and cellular, commit+push latency, and SPM build compatibility. Verify App Store compliance (libgit2 is used by Working Copy and other shipped apps). Assess OAuth device flow for GitHub auth. Blocks FEAT-070, FEAT-071, FEAT-072 (GitHub Storage). Updates architecture decision [A-064].",
+    "id": "FEAT-069",
+    "title": "App Store Review Prompt",
+    "intent": "The review prompt must appear at the right moment — when the user is happy and engaged, never before. One shot, never again.",
+    "description": "Per PRODUCT.md §12. Prompt for App Store review only after: 7 days of active use AND 10+ AI feature uses. Uses SKStoreReviewController. Prompt appears at most once, ever. Timing tracked via on-device aggregate counters (FEAT-060). Never interrupts active editing — shown on return to home screen or after completing an AI action.",
     "priority": "should",
-    "category": "Research",
+    "category": "Growth",
     "steps": [],
     "acceptanceCriteria": [
-      "Prototype clones a GitHub repo, modifies a file, commits, and pushes successfully",
-      "Binary size impact of libgit2 measured",
-      "Clone and push performance measured on Wi-Fi and cellular",
-      "SPM build compatibility verified",
-      "GitHub OAuth device flow prototyped and working",
-      "Written finding committed to docs/spikes/SPIKE-009.md",
-      "Architecture decision [A-064] updated based on findings"
+      "Review prompt does not appear before 7 days of active use AND 10+ AI uses",
+      "Review prompt appears at most once per user, ever",
+      "Prompt never interrupts active editing",
+      "If user has not used AI features, prompt never appears regardless of time"
     ],
     "status": "done",
     "passes": true,
     "readyForSprint": false,
-    "completedAt": "2026-03-21T10:16:17-07:00"
+    "completedAt": "2026-03-21T01:34:47-07:00"
   },
   {
     "id": "FEAT-072",
@@ -1630,5 +1439,306 @@
     "passes": true,
     "readyForSprint": false,
     "completedAt": "2026-03-23T16:47:24-07:00"
+  },
+  {
+    "id": "FEAT-084",
+    "title": "INFRA: Add mbernson/SwiftGit2 SPM dependency to Package.swift",
+    "intent": "EMGit must compile with SwiftGit2 available before any git operation can be implemented",
+    "description": "EMGit currently has no libgit2/SwiftGit2 dependency in Package.swift — it is a dependency-free target. All git clone/commit/push work in FEAT-070 and FEAT-071 requires this. Add mbernson/SwiftGit2 (SPM, compiles libgit2 from source, iOS 15.5+, no pre-built binaries). Verify swift build passes before marking done.",
+    "priority": "should",
+    "category": null,
+    "steps": [
+      "Add .package(url: \"https://github.com/mbernson/SwiftGit2\", branch: \"master\") to the dependencies array in Package.swift",
+      "Add .product(name: \"SwiftGit2\", package: \"SwiftGit2\") to the EMGit target dependencies list in Package.swift",
+      "Run swift build and resolve any SPM fetch or compile errors",
+      "Run swift test to confirm no regressions"
+    ],
+    "acceptanceCriteria": [
+      "swift build succeeds with SwiftGit2 resolvable and EMGit target compiling",
+      "import SwiftGit2 compiles without errors in any EMGit source file",
+      "swift test passes with no regressions"
+    ],
+    "scope": [],
+    "dependsOn": [],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "groomingNotes": "STEPS: (1) In Package.swift, add to dependencies array: .package(url: \"https://github.com/mbernson/SwiftGit2\", branch: \"master\"). (2) Update the EMGit target in Package.swift to add .product(name: \"SwiftGit2\", package: \"SwiftGit2\") to its dependencies array. Disable SSH/libssh2/OpenSSL — check if mbernson/SwiftGit2 has build flags for this; if not, that's acceptable (binary size is still 2-4MB as per SPIKE-009). (3) Run swift build — ensure it compiles cleanly. Fix any SPM resolution errors. (4) Run swift test — no tests should regress. (5) Commit Package.swift and Package.resolved. AC: swift build succeeds with SwiftGit2 resolvable and EMGit target compiles; Repository type from SwiftGit2 is importable in a new EMGit file.",
+    "groomedAt": "2026-03-23",
+    "completedAt": "2026-03-23T23:46:07-07:00"
+  },
+  {
+    "id": "FEAT-085",
+    "title": "DEBT: MermaidRenderer — replace CDN mermaid.js with bundled local resource",
+    "intent": "mermaid.js must be bundled locally so Mermaid rendering works in a sandboxed app with no network access",
+    "description": "MermaidRenderer.htmlTemplate loads mermaid.js from cdn.jsdelivr.net. In a sandboxed iOS app this CDN request fails at runtime and in tests, causing every Mermaid render to silently fail. Per SPIKE-006 recommendation: bundle mermaid.js v10 as a local resource in EMEditor. This is a standalone fix scoped to MermaidRenderer — no rendering pipeline changes needed.",
+    "priority": "must",
+    "category": null,
+    "steps": [
+      "Download mermaid.min.js from the mermaid-js/mermaid v10 GitHub Releases page (latest v10.x) and save to Sources/EMEditor/Resources/mermaid.min.js",
+      "Add resources: [.process(\"Resources\")] to the EMEditor target in Package.swift (EMCore already uses .copy(\"Resources/Fonts\") as a reference pattern)",
+      "In MermaidRenderer.htmlTemplate, replace the CDN script tag (<script src=\"https://cdn.jsdelivr.net/...\"></script>) with an inline <script> block: read the file using Bundle.module.url(forResource: \"mermaid.min\", withExtension: \"js\"), load its contents as a String, and embed it inline in the HTML — if the file is missing, fall back to an empty string and log an error",
+      "Run swift build to confirm Bundle.module resource access compiles correctly",
+      "Run swift test — MermaidRendererTests.testRenderFlowchart should now pass without network access"
+    ],
+    "acceptanceCriteria": [
+      "swift build succeeds with mermaid.min.js bundled as a Package resource",
+      "MermaidRenderer.render() returns .success for a simple flowchart when the device has no internet access",
+      "No CDN or external URLs appear in MermaidRenderer source after this change"
+    ],
+    "scope": [],
+    "dependsOn": [],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "groomingNotes": "Elevated to must: this is a direct prerequisite for FEAT-030 (must-priority, 4 failures). The CDN load is the root cause of every FEAT-030 failure. This must ship before FEAT-030 is attempted again. Scope is narrow and self-contained — no pipeline changes, just bundle the asset and update MermaidRenderer.htmlTemplate.",
+    "groomedAt": "2026-03-23",
+    "completedAt": "2026-03-23T23:43:12-07:00"
+  },
+  {
+    "id": "FEAT-086",
+    "title": "DEBT: Implement EMGit.push() via libgit2 git_push API",
+    "intent": "EMGit must be able to push commits to GitHub before FEAT-071 can be implemented",
+    "description": "SwiftGit2 (mbernson fork) covers clone, commit, and fetch but does not wrap libgit2's push API. SPIKE-009 explicitly calls for adding push support (~50 lines, reference in SwiftGit3). This is a standalone, testable addition to EMGit that unblocks FEAT-071 (GitHub Auto-Commit and Push). Depends on FEAT-084 (SwiftGit2 SPM dependency).",
+    "priority": "should",
+    "category": null,
+    "steps": [
+      "Create Sources/EMGit/Repository+Push.swift as a Swift extension on Repository (from SwiftGit2)",
+      "Implement push(remote: String = \"origin\", token: String) async throws: call git_push_new, git_push_add_refspec (\"refs/heads/main:refs/heads/main\" or detect current branch), git_push_set_callbacks with credential callback using Credentials.plaintext(username: \"x-access-token\", password: token), git_push_finish, then git_push_unpack_ok to check for server-side errors — see SwiftGit3's GitPush.swift as reference implementation (~50 lines of C API calls via libgit2)",
+      "Map libgit2 error codes to EMError.git cases: authenticationExpired for 401, pushRejected(reason:) for non-fast-forward, networkError for unreachable remote",
+      "Add EMGitTests/PushTests.swift: unit tests using a local bare repository (init a bare repo in temp dir, clone it, commit a file, push — verify the bare repo has the commit). No network required.",
+      "Run swift test — PushTests must pass"
+    ],
+    "acceptanceCriteria": [
+      "Repository.push() compiles and is callable from EMGit",
+      "PushTests: push to a local bare repo succeeds with correct commit reaching the remote",
+      "Push with invalid credentials throws EMError.git(.authenticationExpired)",
+      "swift test passes with no regressions"
+    ],
+    "scope": [],
+    "dependsOn": [
+      "FEAT-084"
+    ],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "completedAt": "2026-03-23T23:57:28-07:00"
+  },
+  {
+    "id": "FEAT-087",
+    "title": "DEBT: MermaidRenderer — add WKWebView process termination recovery",
+    "intent": "MermaidRenderer must recover from iOS killing the WKWebView process without user-visible failure",
+    "description": "SPIKE-006 risk table calls out: 'WKWebView process killed under memory pressure (reuse) — Medium likelihood on 6GB devices'. The current MermaidRenderer has no webViewWebContentProcessDidTerminate handler, so if iOS kills the web content process the renderer silently fails on all subsequent renders. Add the recovery handler so the WKWebView is transparently re-created on the next render call.",
+    "priority": "should",
+    "category": null,
+    "steps": [
+      "In MermaidRenderer.swift, add a WKNavigationDelegate extension method webViewWebContentProcessDidTerminate(_:) to the private NavigationDelegate class",
+      "In the termination handler, post a notification or call a closure so MermaidRenderer learns the web view process died — set MermaidRenderer.webView = nil (since MermaidRenderer is @MainActor, this is safe from the delegate callback which also runs on main thread)",
+      "Verify that the next call to render() re-creates the WKWebView via the existing createWebView() path (webView is nil, so the guard in renderInWebView recreates it)",
+      "Add a test in MermaidRendererTests: create a renderer, manually call webViewWebContentProcessDidTerminate, then call render() and verify it returns a result (not a crash or permanent failure)",
+      "Run swift test to confirm the recovery test passes"
+    ],
+    "acceptanceCriteria": [
+      "After webViewWebContentProcessDidTerminate fires, MermaidRenderer.webView is nil",
+      "The next render() call succeeds (creates a new WKWebView) — no permanent failure state",
+      "swift test passes for the recovery test case"
+    ],
+    "scope": [],
+    "dependsOn": [],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "completedAt": "2026-03-24T00:00:39-07:00"
+  },
+  {
+    "id": "SPIKE-001",
+    "title": "SPIKE: TextKit 2 Keystroke Latency Validation",
+    "intent": "Validate that TextKit 2 can achieve <16ms keystroke-to-render latency before committing to it as the text engine",
+    "description": "Build a minimal TextKit 2 prototype with NSTextLayoutManager and NSTextContentStorage. Benchmark keystroke-to-render latency with attributed string updates per paragraph on iPhone 15 and iPhone SE (3rd gen). Measure with os_signpost. If TextKit 2 fails the <16ms target, document findings and evaluate TextKit 1 fallback. Blocks FEAT-039 (Text Engine). Updates architecture decision [A-004].",
+    "priority": "must",
+    "category": "Research",
+    "steps": [],
+    "acceptanceCriteria": [
+      "Minimal TextKit 2 prototype runs on iPhone 15 and iPhone SE",
+      "Keystroke-to-render latency measured via os_signpost for 100+ consecutive keystrokes",
+      "Results documented: p50, p95, p99 latency values",
+      "Written finding committed to docs/spikes/SPIKE-001.md",
+      "Architecture decision [A-004] updated based on findings"
+    ],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "completedAt": "2026-03-20T21:35:30-07:00"
+  },
+  {
+    "id": "SPIKE-002",
+    "title": "SPIKE: swift-markdown Round-Trip Fidelity",
+    "intent": "Validate that swift-markdown can parse markdown, allow AST modifications, and re-emit markdown that preserves original formatting",
+    "description": "Build a test harness that parses markdown via swift-markdown, modifies specific AST nodes (e.g. change heading level, update link URL, rewrite paragraph text), and re-emits markdown. Compare output to expected results. Test with 100+ CommonMark spec examples plus custom GFM cases (tables, task lists, strikethrough). Document any formatting loss. Blocks FEAT-038 (Parser). Updates architecture decision [A-003].",
+    "priority": "must",
+    "category": "Research",
+    "steps": [],
+    "acceptanceCriteria": [
+      "Test harness runs parse → modify → re-emit on 100+ spec examples",
+      "Formatting preservation rate documented (target: >95% of cases)",
+      "Known failure cases cataloged with workarounds",
+      "Written finding committed to docs/spikes/SPIKE-002.md",
+      "Architecture decision [A-003] updated based on findings"
+    ],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "completedAt": "2026-03-20T21:45:35-07:00"
+  },
+  {
+    "id": "SPIKE-003",
+    "title": "SPIKE: swift-markdown Incremental Parsing",
+    "intent": "Evaluate whether swift-markdown supports incremental parsing and design the debounce + local-update strategy for large documents",
+    "description": "Evaluate swift-markdown for partial/incremental re-parse capability. Benchmark full re-parse time on a 10,000-line markdown document on iPhone 15. If incremental parse is not feasible, design and validate the debounce strategy: full re-parse on ~300ms editing pause on background thread, with lightweight per-paragraph local attribute updates between parses for <16ms keystroke response. Blocks FEAT-038 (Parser). Updates architecture decisions [A-003] and [A-017].",
+    "priority": "must",
+    "category": "Research",
+    "steps": [],
+    "acceptanceCriteria": [
+      "Full re-parse time for 10,000-line document measured on iPhone 15",
+      "Incremental parse feasibility documented (supported or not)",
+      "If not incremental: debounce + local-update strategy validated with prototype",
+      "Written finding committed to docs/spikes/SPIKE-003.md",
+      "Architecture decisions [A-003] and [A-017] updated based on findings"
+    ],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "lastFailReason": "Validator agent rejected implementation",
+    "lastFailAt": "2026-03-20T21:54:19-07:00",
+    "failCount": 1,
+    "completedAt": "2026-03-21T08:27:00-07:00"
+  },
+  {
+    "id": "SPIKE-004",
+    "title": "SPIKE: The Render Animation Feasibility",
+    "intent": "Validate the snapshot-based Core Animation approach for The Render signature transition at 120fps",
+    "description": "Prototype the snapshot-based Core Animation approach for The Render (source-to-rich text transition). Capture layer snapshots, compute target positions, animate with CASpringAnimation (~400ms, damping 0.8, response 0.4). Measure frame rate on iPad Pro (ProMotion) and iPhone SE. Test with documents of varying sizes (10 lines, 100 lines, 1000 lines). Test Reduced Motion crossfade path. Blocks FEAT-014 (Signature Transition). Updates architecture decision [A-020].",
+    "priority": "must",
+    "category": "Research",
+    "steps": [],
+    "acceptanceCriteria": [
+      "Prototype demonstrates source-to-rich animation with at least heading and bold transitions",
+      "Frame rate measured on iPad Pro (target: 120fps) and iPhone SE (target: 60fps)",
+      "Reduced Motion crossfade (200ms) alternative tested",
+      "Performance with 1000-line document documented",
+      "Written finding committed to docs/spikes/SPIKE-004.md",
+      "Architecture decision [A-020] updated based on findings"
+    ],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "completedAt": "2026-03-20T22:02:27-07:00"
+  },
+  {
+    "id": "SPIKE-005",
+    "title": "SPIKE: Local AI Inference Benchmarks and Device Capability Detection",
+    "intent": "Benchmark MLX Swift vs Core ML for on-device inference, validate device capability detection, and select the local AI framework",
+    "description": "Run inference benchmarks comparing MLX Swift and Core ML on A16 (iPhone 15) and M1 hardware. Test with 1-4GB quantized language models suitable for writing assistance. Measure: first token latency (target <500ms per D-PERF-4), tokens/sec throughput, peak memory usage, and memory-mapped model behavior. Additionally, validate the device capability detection approach (ProcessInfo hardware model → chip family mapping) to correctly identify A16+/M1+ devices. Verify App Store compliance for the model download and inference approach. Blocks FEAT-041 (AI Pipeline). Updates architecture decisions [A-008] and [A-033].",
+    "priority": "must",
+    "category": "Research",
+    "steps": [],
+    "acceptanceCriteria": [
+      "MLX Swift and Core ML benchmarked on A16 and M1 hardware",
+      "First token latency, tokens/sec, and memory measured for each",
+      "Recommended framework selected with rationale",
+      "App Store compliance for model download approach verified",
+      "Device capability detection (A16+/M1+ identification) validated on multiple device models",
+      "Written finding committed to docs/spikes/SPIKE-005.md",
+      "Architecture decisions [A-008] and [A-033] updated based on findings"
+    ],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "completedAt": "2026-03-20T22:34:36-07:00"
+  },
+  {
+    "id": "SPIKE-006",
+    "title": "SPIKE: Mermaid WKWebView Memory Impact",
+    "intent": "Validate the offscreen WKWebView approach for Mermaid rendering and measure memory impact with multiple diagrams",
+    "description": "Prototype Mermaid diagram rendering using mermaid.js in an offscreen WKWebView. Render SVG output, convert to cached UIImage. Measure memory usage with 1, 5, and 10 diagrams in a single document. Test cache invalidation on content change. Test theme switching (light/dark). Evaluate WKWebView lifecycle (create/destroy vs reuse). Blocks FEAT-030 (Mermaid Rendering). Updates architecture decision [A-006].",
+    "priority": "must",
+    "category": "Research",
+    "steps": [],
+    "acceptanceCriteria": [
+      "Prototype renders at least 3 Mermaid diagram types (flowchart, sequence, ER)",
+      "Memory usage measured with 1, 5, and 10 diagrams",
+      "Cache strategy validated (content hash → image)",
+      "Theme switching (light/dark) tested",
+      "Written finding committed to docs/spikes/SPIKE-006.md",
+      "Architecture decision [A-006] updated based on findings"
+    ],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "completedAt": "2026-03-20T22:41:26-07:00"
+  },
+  {
+    "id": "SPIKE-007",
+    "title": "SPIKE: tree-sitter Swift Integration",
+    "intent": "Evaluate swift-tree-sitter package for syntax highlighting of fenced code blocks and measure binary size impact",
+    "description": "Evaluate the swift-tree-sitter (or SwiftTreeSitter) package for integration into the EMEditor package. Build a prototype that highlights 3 languages (Swift, Python, JavaScript). Measure: binary size impact of bundling grammars, parse performance on a 500-line code block, and API ergonomics for incremental updates. Assess build system compatibility with SPM. Blocks FEAT-006 (Syntax Highlighting). Updates architecture decision [A-005].",
+    "priority": "must",
+    "category": "Research",
+    "steps": [],
+    "acceptanceCriteria": [
+      "Prototype highlights Swift, Python, and JavaScript code blocks",
+      "Binary size impact of 3 grammars measured (and extrapolated for 15+)",
+      "Parse performance on 500-line code block measured",
+      "SPM build compatibility verified",
+      "Written finding committed to docs/spikes/SPIKE-007.md",
+      "Architecture decision [A-005] updated based on findings"
+    ],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "completedAt": "2026-03-20T23:06:53-07:00"
+  },
+  {
+    "id": "SPIKE-008",
+    "title": "SPIKE: Apple Platform AI — WWDC 2026 Evaluation",
+    "intent": "Evaluate Apple platform AI APIs after WWDC 2026 and prototype ApplePlatformAIProvider if APIs are available",
+    "description": "Scoped to the WWDC 2026 evaluation window (June 2026). After WWDC, review all new Apple developer documentation for system-level AI APIs (on-device LLM, text generation, writing assistance APIs). If relevant APIs are announced: prototype the ApplePlatformAIProvider implementation against the AIProvider protocol, measure performance, and assess whether it replaces or supplements LocalModelProvider. If no relevant APIs: document findings and close the spike. Updates architecture decisions [A-007] and [A-029].",
+    "priority": "must",
+    "category": "Research",
+    "steps": [],
+    "acceptanceCriteria": [
+      "WWDC 2026 sessions and documentation reviewed for on-device AI APIs",
+      "Finding documented: APIs available (with prototype) or not available (with rationale)",
+      "If APIs available: prototype ApplePlatformAIProvider with performance measurements",
+      "Written finding committed to docs/spikes/SPIKE-008.md",
+      "Architecture decisions [A-007] and [A-029] updated based on findings",
+      "Spike closed with clear resolution (adopt, defer, or not applicable)"
+    ],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "completedAt": "2026-03-20T23:10:08-07:00"
+  },
+  {
+    "id": "SPIKE-009",
+    "title": "SPIKE: libgit2 Swift Bindings for iOS",
+    "intent": "Evaluate libgit2 Swift bindings for git operations on iOS — clone, commit, push — to validate the GitHub storage approach",
+    "description": "Evaluate SwiftGit2 or similar libgit2 Swift wrapper for iOS. Build a prototype that clones a GitHub repo, modifies a file, commits, and pushes. Measure: binary size impact, clone performance on Wi-Fi and cellular, commit+push latency, and SPM build compatibility. Verify App Store compliance (libgit2 is used by Working Copy and other shipped apps). Assess OAuth device flow for GitHub auth. Blocks FEAT-070, FEAT-071, FEAT-072 (GitHub Storage). Updates architecture decision [A-064].",
+    "priority": "should",
+    "category": "Research",
+    "steps": [],
+    "acceptanceCriteria": [
+      "Prototype clones a GitHub repo, modifies a file, commits, and pushes successfully",
+      "Binary size impact of libgit2 measured",
+      "Clone and push performance measured on Wi-Fi and cellular",
+      "SPM build compatibility verified",
+      "GitHub OAuth device flow prototyped and working",
+      "Written finding committed to docs/spikes/SPIKE-009.md",
+      "Architecture decision [A-064] updated based on findings"
+    ],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "completedAt": "2026-03-21T10:16:17-07:00"
   }
 ]
