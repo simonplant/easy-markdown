@@ -1,29 +1,31 @@
 {
-  "sprintId": "sprint-1774334594",
-  "startedAt": "2026-03-23T23:43:14-07:00",
+  "sprintId": "sprint-1774334769",
+  "startedAt": "2026-03-23T23:46:09-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-084",
-    "title": "INFRA: Add mbernson/SwiftGit2 SPM dependency to Package.swift",
-    "intent": "EMGit must compile with SwiftGit2 available before any git operation can be implemented",
-    "description": "EMGit currently has no libgit2/SwiftGit2 dependency in Package.swift — it is a dependency-free target. All git clone/commit/push work in FEAT-070 and FEAT-071 requires this. Add mbernson/SwiftGit2 (SPM, compiles libgit2 from source, iOS 15.5+, no pre-built binaries). Verify swift build passes before marking done.",
+    "id": "FEAT-086",
+    "title": "DEBT: Implement EMGit.push() via libgit2 git_push API",
+    "intent": "EMGit must be able to push commits to GitHub before FEAT-071 can be implemented",
+    "description": "SwiftGit2 (mbernson fork) covers clone, commit, and fetch but does not wrap libgit2's push API. SPIKE-009 explicitly calls for adding push support (~50 lines, reference in SwiftGit3). This is a standalone, testable addition to EMGit that unblocks FEAT-071 (GitHub Auto-Commit and Push). Depends on FEAT-084 (SwiftGit2 SPM dependency).",
     "sourceBacklog": "backlog.json",
     "steps": [
-      "Add .package(url: \"https://github.com/mbernson/SwiftGit2\", branch: \"master\") to the dependencies array in Package.swift",
-      "Add .product(name: \"SwiftGit2\", package: \"SwiftGit2\") to the EMGit target dependencies list in Package.swift",
-      "Run swift build and resolve any SPM fetch or compile errors",
-      "Run swift test to confirm no regressions"
+      "Create Sources/EMGit/Repository+Push.swift as a Swift extension on Repository (from SwiftGit2)",
+      "Implement push(remote: String = \"origin\", token: String) async throws: call git_push_new, git_push_add_refspec (\"refs/heads/main:refs/heads/main\" or detect current branch), git_push_set_callbacks with credential callback using Credentials.plaintext(username: \"x-access-token\", password: token), git_push_finish, then git_push_unpack_ok to check for server-side errors — see SwiftGit3's GitPush.swift as reference implementation (~50 lines of C API calls via libgit2)",
+      "Map libgit2 error codes to EMError.git cases: authenticationExpired for 401, pushRejected(reason:) for non-fast-forward, networkError for unreachable remote",
+      "Add EMGitTests/PushTests.swift: unit tests using a local bare repository (init a bare repo in temp dir, clone it, commit a file, push — verify the bare repo has the commit). No network required.",
+      "Run swift test — PushTests must pass"
     ],
     "acceptanceCriteria": [
-      "swift build succeeds with SwiftGit2 resolvable and EMGit target compiling",
-      "import SwiftGit2 compiles without errors in any EMGit source file",
+      "Repository.push() compiles and is callable from EMGit",
+      "PushTests: push to a local bare repo succeeds with correct commit reaching the remote",
+      "Push with invalid credentials throws EMError.git(.authenticationExpired)",
       "swift test passes with no regressions"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T23:43:14-07:00",
+    "startedAt": "2026-03-23T23:46:09-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T23:46:07-07:00"
+    "completedAt": "2026-03-23T23:57:28-07:00"
   },
-  "completedAt": "2026-03-23T23:46:07-07:00",
+  "completedAt": "2026-03-23T23:57:28-07:00",
   "attempts": 1
 }

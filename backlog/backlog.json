@@ -389,9 +389,10 @@
       "dependsOn": [
         "FEAT-084"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
+      "completedAt": "2026-03-23T23:57:28-07:00"
     },
     {
       "id": "FEAT-087",
