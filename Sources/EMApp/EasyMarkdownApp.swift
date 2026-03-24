@@ -129,6 +129,7 @@ public final class AppShell {
             errorPresenter: errorPresenter,
             recentsManager: recentsManager,
             purchaseManager: purchaseManager,
+            subscriptionManager: subscriptionManager,
             fileOpenCoordinator: fileOpenCoordinator,
             fileCreateCoordinator: fileCreateCoordinator,
             aiProviderManager: aiProviderManager,
@@ -191,6 +192,7 @@ struct AppRootWrapper: View {
     @State var errorPresenter: ErrorPresenter
     @State var recentsManager: RecentsManager
     @State var purchaseManager: PurchaseManager
+    @State var subscriptionManager: SubscriptionManager
     @State var fileOpenCoordinator: FileOpenCoordinator
     @State var fileCreateCoordinator: FileCreateCoordinator
     @State var aiProviderManager: AIProviderManager
@@ -203,6 +205,7 @@ struct AppRootWrapper: View {
             .environment(errorPresenter)
             .environment(recentsManager)
             .environment(purchaseManager)
+            .environment(subscriptionManager)
             .environment(fileOpenCoordinator)
             .environment(fileCreateCoordinator)
             .environment(aiProviderManager)

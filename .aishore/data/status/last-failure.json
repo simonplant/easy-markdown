@@ -1,0 +1,9 @@
+{
+  "itemId": "FEAT-030",
+  "reason": "Implementation failed",
+  "detail": "Implementation failed",
+  "timestamp": "2026-03-23T20:30:04-07:00",
+  "agentLog": "/home/simon/dev/easy-markdown/.aishore/data/logs/developer-20260323T202014.log",
+  "result": {},
+  "logTail": ""
+}

@@ -1,25 +1,27 @@
 {
-  "sprintId": "sprint-1774309433",
-  "startedAt": "2026-03-23T16:43:53-07:00",
+  "sprintId": "sprint-1774323004",
+  "startedAt": "2026-03-23T20:30:04-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-083",
-    "title": "DEBT: Cache line offsets in MarkdownRenderer",
-    "intent": "Recomputing line offsets on every render wastes CPU on large documents — cache and invalidate only when text changes",
-    "description": "MarkdownRenderer.computeLineOffsets() iterates the full document string on every render() call to build a line-to-UTF16-offset map. For large documents (10K+ lines), this adds measurable overhead even though the text hasn't changed. Cache the line offset array and invalidate only when the source text changes (compare text length or version counter).",
+    "id": "FEAT-062",
+    "title": "Pro AI Subscription Screen and Purchase Flow",
+    "intent": "The subscription screen must be honest, clear, and never pushy — it sells Pro AI on its merits, not through dark patterns.",
+    "description": "Per D-STORE-1, D-BIZ-5, D-BIZ-7, and Journey 6. Subscription screen shown when non-subscriber taps a Pro AI action. Shows: price ($3.99/mo or $29.99/yr), what is included, what happens on cancellation, that the app and local AI keep working without it. Annual plan prominently presented (saves ~37%). Uses StoreKit 2 for purchase flow. No separate account creation. Links to terms of service. No persistent upgrade banners, no nag screens, no feature-shaped holes.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Line offsets are cached and reused across render calls when text is unchanged",
-      "Cache invalidates correctly when text changes",
-      "Rendering output is identical before and after the change",
-      "Performance improvement measurable on 10K-line document (fewer CPU cycles per render)"
+      "Subscription screen clearly shows monthly and annual pricing with annual savings highlighted",
+      "Screen states what Pro AI includes and what happens on cancellation",
+      "Purchase completes via standard StoreKit 2 flow — no separate account creation",
+      "After subscribing, Pro AI actions work immediately without app restart",
+      "Non-subscriber never sees persistent upgrade banners or nag screens anywhere in the app",
+      "Subscription terms satisfy Apple App Store Review Guideline 3.1.2"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T16:43:53-07:00",
+    "startedAt": "2026-03-23T20:30:04-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T16:47:24-07:00"
+    "completedAt": "2026-03-23T20:38:57-07:00"
   },
-  "completedAt": "2026-03-23T16:47:24-07:00",
+  "completedAt": "2026-03-23T20:38:57-07:00",
   "attempts": 1
 }
