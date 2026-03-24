@@ -142,7 +142,7 @@ final class AICoordinator {
         guard let coordinator = improveCoordinator,
               let service = improveService else { return }
 
-        let selectedRange = editorState.selectedRange
+        let selectedRange = editorState.selection.selectedRange
         guard selectedRange.length > 0,
               let swiftRange = Range(selectedRange, in: text) else { return }
 
@@ -161,7 +161,7 @@ final class AICoordinator {
         guard let coordinator = summarizeCoordinator,
               let service = summarizeService else { return }
 
-        let selectedRange = editorState.selectedRange
+        let selectedRange = editorState.selection.selectedRange
         guard selectedRange.length > 0,
               let swiftRange = Range(selectedRange, in: text) else { return }
 
@@ -182,7 +182,7 @@ final class AICoordinator {
         guard let coordinator = toneCoordinator,
               let service = toneService else { return }
 
-        let selectedRange = editorState.selectedRange
+        let selectedRange = editorState.selection.selectedRange
         guard selectedRange.length > 0,
               let swiftRange = Range(selectedRange, in: text) else { return }
 
@@ -202,7 +202,7 @@ final class AICoordinator {
 
     /// Checks selection word count and either warns (AC-5) or starts translation.
     func requestTranslation(targetLanguage: String, text: String) {
-        let selectedRange = editorState.selectedRange
+        let selectedRange = editorState.selection.selectedRange
         guard selectedRange.length > 0,
               let swiftRange = Range(selectedRange, in: text) else { return }
 
@@ -224,7 +224,7 @@ final class AICoordinator {
         guard let coordinator = translationCoordinator,
               let service = translationService else { return }
 
-        let selectedRange = editorState.selectedRange
+        let selectedRange = editorState.selection.selectedRange
         guard selectedRange.length > 0,
               let swiftRange = Range(selectedRange, in: text) else { return }
 
@@ -264,7 +264,7 @@ final class AICoordinator {
             return true
         }
         #endif
-        return editorState.selectedRange.length > 0
+        return editorState.selection.selectedRange.length > 0
     }
 
     /// The active diff phase from whichever AI coordinator is currently running.

@@ -80,7 +80,7 @@ public final class DoctorCoordinator {
 
         let fileURL = self.fileURL
         let engine = self.engine
-        let dismissedIDs = editorState.dismissedDiagnosticKeys
+        let dismissedIDs = editorState.diagnosticsState.dismissedKeys
 
         signpost.begin("doctor-evaluate")
 
@@ -98,7 +98,7 @@ public final class DoctorCoordinator {
             }.value
 
             signpost.end("doctor-evaluate")
-            editorState.updateDiagnostics(diagnostics)
+            editorState.diagnosticsState.updateDiagnostics(diagnostics)
             logger.debug("Doctor found \(diagnostics.count) issue(s)")
         }
     }

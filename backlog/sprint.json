@@ -1,27 +1,25 @@
 {
-  "sprintId": "sprint-1774331230",
-  "startedAt": "2026-03-23T22:47:10-07:00",
+  "sprintId": "sprint-1774332878",
+  "startedAt": "2026-03-23T23:14:38-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-075",
-    "title": "DEBT: Split TextViewCoordinator into focused responsibility files",
-    "intent": "A 1,666-line coordinator is a maintenance hazard — adding any feature risks side effects across unrelated concerns",
-    "description": "TextViewCoordinator handles UITextViewDelegate/NSTextViewDelegate, formatting engine orchestration, rendering pipeline (parse/debounce/apply), find/replace highlighting, interactive elements (checkboxes, links), cursor mapping, doctor coordination, ghost text coordination, and performance instrumentation. Extract orthogonal concerns into: TextViewKeyCommandHandler (keyboard shortcuts), TextViewRenderingCoordinator (parse/render/debounce logic), FindReplaceCoordinator (find/replace highlighting). Keep core delegate work in a slimmed TextViewCoordinator.",
+    "id": "FEAT-076",
+    "title": "DEBT: Decompose EditorState into focused state objects",
+    "intent": "EditorState is accumulating unrelated responsibilities — selection, find/replace, formatting, diagnostics, and undo should not share a single observable object",
+    "description": "EditorState currently holds selection state (selectedRange, selectionWordCount, selectionRect), view mode (isSourceView), statistics (documentStats), find/replace (findReplaceState, applyFindHighlights), formatting shortcuts (performBold, performItalic, performLink), floating action bar focus (focusAISection), diagnostics (diagnostics, dismissedDiagnosticKeys), and undo manager. Extract into focused state structs: SelectionState, FormattingActions, DiagnosticsState. Compose them in EditorState so each concern is independently testable.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "TextViewCoordinator is under 500 lines",
-      "TextViewRenderingCoordinator owns the parse/debounce/render pipeline",
-      "FindReplaceCoordinator owns find/replace match highlighting",
-      "TextViewKeyCommandHandler owns keyboard shortcut dispatch",
-      "All existing editor behavior works identically after the split",
-      "No new public API surface — internal decomposition only"
+      "EditorState composes focused state objects rather than owning all properties directly",
+      "SelectionState, FormattingActions, and DiagnosticsState are independently testable",
+      "No behavioral change to editor functionality",
+      "Each sub-state is @Observable for SwiftUI reactivity"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T22:47:10-07:00",
+    "startedAt": "2026-03-23T23:14:38-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T23:14:37-07:00"
+    "completedAt": "2026-03-23T23:25:47-07:00"
   },
-  "completedAt": "2026-03-23T23:14:37-07:00",
+  "completedAt": "2026-03-23T23:25:47-07:00",
   "attempts": 1
 }

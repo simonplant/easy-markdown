@@ -239,9 +239,9 @@ public struct TextViewBridge: UIViewRepresentable {
 
         // Expose formatting actions on EditorState so the floating action bar
         // can dispatch them without direct text view access per FEAT-054.
-        editorState.performBold = boldAction
-        editorState.performItalic = italicAction
-        editorState.performLink = linkAction
+        editorState.formatting.performBold = boldAction
+        editorState.formatting.performItalic = italicAction
+        editorState.formatting.performLink = linkAction
 
         // Expose replace-text action for find/replace per FEAT-017 AC-3.
         editorState.performReplaceText = { [weak coordinator = context.coordinator, weak textView] newText in
@@ -624,9 +624,9 @@ public struct TextViewBridge: NSViewRepresentable {
 
         // Expose formatting actions on EditorState so the floating action bar
         // can dispatch them without direct text view access per FEAT-054.
-        editorState.performBold = boldAction
-        editorState.performItalic = italicAction
-        editorState.performLink = linkAction
+        editorState.formatting.performBold = boldAction
+        editorState.formatting.performItalic = italicAction
+        editorState.formatting.performLink = linkAction
 
         // Expose replace-text action for find/replace per FEAT-017 AC-3.
         editorState.performReplaceText = { [weak coordinator = context.coordinator, weak textView] newText in

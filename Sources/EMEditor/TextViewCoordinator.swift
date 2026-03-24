@@ -105,14 +105,14 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
 
     public func textViewDidChangeSelection(_ textView: UITextView) {
         let range = textView.selectedRange
-        editorState.updateSelectedRange(range)
+        editorState.selection.updateSelectedRange(range)
 
         if range.length > 0, let text = textView.text,
            let swiftRange = Range(range, in: text) {
             let selectedText = String(text[swiftRange])
-            editorState.updateSelectionWordCount(DocumentStatsCalculator.countWords(in: selectedText))
+            editorState.selection.updateSelectionWordCount(DocumentStatsCalculator.countWords(in: selectedText))
         } else {
-            editorState.updateSelectionWordCount(nil)
+            editorState.selection.updateSelectionWordCount(nil)
         }
 
         updateSelectionRect(for: textView)
@@ -124,16 +124,16 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
               let start = textView.selectedTextRange?.start,
               let end = textView.selectedTextRange?.end,
               let selRange = textView.textRange(from: start, to: end) else {
-            editorState.updateSelectionRect(nil)
+            editorState.selection.updateSelectionRect(nil)
             return
         }
         let firstRect = textView.firstRect(for: selRange)
         guard !firstRect.isNull, !firstRect.isInfinite else {
-            editorState.updateSelectionRect(nil)
+            editorState.selection.updateSelectionRect(nil)
             return
         }
         let converted = textView.convert(firstRect, to: textView.superview)
-        editorState.updateSelectionRect(converted)
+        editorState.selection.updateSelectionRect(converted)
     }
 
     public func textView(
@@ -391,16 +391,16 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
     public func textViewDidChangeSelection(_ notification: Notification) {
         guard let textView = notification.object as? NSTextView else { return }
         let range = textView.selectedRange()
-        editorState.updateSelectedRange(range)
+        editorState.selection.updateSelectedRange(range)
 
         if range.length > 0 {
             let text = textView.string
             if let swiftRange = Range(range, in: text) {
                 let selectedText = String(text[swiftRange])
-                editorState.updateSelectionWordCount(DocumentStatsCalculator.countWords(in: selectedText))
+                editorState.selection.updateSelectionWordCount(DocumentStatsCalculator.countWords(in: selectedText))
             }
         } else {
-            editorState.updateSelectionWordCount(nil)
+            editorState.selection.updateSelectionWordCount(nil)
         }
 
         updateSelectionRect(for: textView)
@@ -410,20 +410,20 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
     private func updateSelectionRect(for textView: NSTextView) {
         let range = textView.selectedRange()
         guard range.length > 0 else {
-            editorState.updateSelectionRect(nil)
+            editorState.selection.updateSelectionRect(nil)
             return
         }
         var actualRange = NSRange()
         let screenRect = textView.firstRect(forCharacterRange: range, actualRange: &actualRange)
         guard !screenRect.isNull, !screenRect.isInfinite,
               let window = textView.window else {
-            editorState.updateSelectionRect(nil)
+            editorState.selection.updateSelectionRect(nil)
             return
         }
         let windowRect = window.convertFromScreen(screenRect)
         let viewRect = textView.convert(windowRect, from: nil)
         let converted = textView.convert(viewRect, to: textView.superview)
-        editorState.updateSelectionRect(converted)
+        editorState.selection.updateSelectionRect(converted)
     }
 
     // MARK: - Scroll tracking

@@ -1774,14 +1774,15 @@
         "No behavioral change to editor functionality",
         "Each sub-state is @Observable for SwiftUI reactivity"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "dependsOn": [
         "FEAT-075"
       ],
       "groomedAt": "2026-03-23",
-      "groomingNotes": "Downgraded from must to should: EditorState decomposition is internal architecture with no current user impact. Priority should; time it before adding more state-dependent features."
+      "groomingNotes": "Downgraded from must to should: EditorState decomposition is internal architecture with no current user impact. Priority should; time it before adding more state-dependent features.",
+      "completedAt": "2026-03-23T23:25:47-07:00"
     },
     {
       "id": "FEAT-077",
