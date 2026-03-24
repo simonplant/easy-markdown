@@ -123,6 +123,8 @@ public enum EMError: LocalizedError {
         case networkUnavailable
         case keychainAccessFailed(underlying: Error)
         case repoListFailed(underlying: Error)
+        case pushRejected(reason: String)
+        case pushFailed(underlying: Error)
 
         public var errorDescription: String? {
             switch self {
@@ -140,6 +142,10 @@ public enum EMError: LocalizedError {
                 return "Couldn't access saved credentials."
             case .repoListFailed:
                 return "Couldn't load your repositories. Check your connection."
+            case .pushRejected(let reason):
+                return "Push was rejected: \(reason)"
+            case .pushFailed:
+                return "Couldn't push to GitHub. Check your connection and try again."
             }
         }
     }
@@ -196,7 +202,7 @@ public enum EMError: LocalizedError {
                 return .recoverable
             case .authenticationFailed, .deviceFlowTimeout, .deviceFlowDenied:
                 return .recoverable
-            case .networkUnavailable, .repoListFailed:
+            case .networkUnavailable, .repoListFailed, .pushRejected, .pushFailed:
                 return .recoverable
             case .keychainAccessFailed:
                 return .informational

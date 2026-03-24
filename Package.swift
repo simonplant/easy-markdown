@@ -96,7 +96,10 @@ let package = Package(
         .testTarget(name: "EMAITests", dependencies: ["EMAI", "EMCore"]),
         .testTarget(name: "EMCloudTests", dependencies: ["EMCloud", "EMCore"]),
         .testTarget(name: "EMSettingsTests", dependencies: ["EMSettings", "EMCore"]),
-        .testTarget(name: "EMGitTests", dependencies: ["EMGit", "EMCore"]),
+        .testTarget(name: "EMGitTests", dependencies: [
+            "EMGit", "EMCore",
+            .product(name: "SwiftGit2", package: "SwiftGit2"),
+        ]),
         .testTarget(name: "EMAppTests", dependencies: ["EMApp", "EMSettings", "EMAI", "EMCore"]),
         .testTarget(name: "PerformanceRegressionTests", dependencies: [
             "EMCore", "EMParser", "EMFormatter", "EMEditor", "EMAI", "EMFile",
