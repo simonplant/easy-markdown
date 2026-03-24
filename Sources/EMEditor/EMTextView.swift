@@ -4,6 +4,7 @@
 
 import Foundation
 import os
+import UniformTypeIdentifiers
 #if canImport(UIKit)
 import UIKit
 #elseif canImport(AppKit)
@@ -70,6 +71,11 @@ public final class EMTextView: UITextView {
     /// Returns true if ghost text was accepted (Tab consumed), false otherwise.
     public var onGhostTextAccept: (() -> Bool)?
 
+    /// Handler for image drop/paste per FEAT-020 (F-015).
+    /// Called with raw image data and a suggested filename.
+    /// The receiver should prompt for save location and insert markdown.
+    public var onImageReceived: ((_ imageData: Data, _ suggestedName: String) -> Void)?
+
     /// Current layout metrics for device-aware spacing per FEAT-010.
     public var layoutMetrics: LayoutMetrics = .current {
         didSet { applyLayoutMetrics() }
@@ -96,6 +102,7 @@ public final class EMTextView: UITextView {
 
         configureTextView()
         setupInteractiveGestures()
+        setupImageDropInteraction()
         logger.debug("EMTextView initialized with TextKit 2")
     }
 
@@ -151,6 +158,40 @@ public final class EMTextView: UITextView {
 
         // Keyboard
         keyboardDismissMode = .interactive
+    }
+
+    // MARK: - Image Drop/Paste per FEAT-020
+
+    /// Registers this text view as a drop target for images per FEAT-020 AC-1.
+    private func setupImageDropInteraction() {
+        let dropInteraction = UIDropInteraction(delegate: self)
+        addInteraction(dropInteraction)
+    }
+
+    /// Intercepts paste to handle image data from clipboard per FEAT-020 AC-3.
+    /// Text paste takes priority — only intercepts when clipboard has images but no text.
+    public override func paste(_ sender: Any?) {
+        let pasteboard = UIPasteboard.general
+
+        // Only intercept for images when there is no text on the pasteboard.
+        // This prevents hijacking rich text paste that happens to include image data.
+        if !pasteboard.hasStrings, pasteboard.hasImages, let image = pasteboard.image {
+            if let data = image.pngData() {
+                let suggestedName = Self.suggestedImageFilename(extension: "png")
+                onImageReceived?(data, suggestedName)
+                return
+            }
+        }
+
+        // Fall through to normal paste for text
+        super.paste(sender)
+    }
+
+    /// Generates a suggested filename for a pasted/dropped image.
+    static func suggestedImageFilename(extension ext: String = "png") -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd-HHmmss"
+        return "image-\(formatter.string(from: Date())).\(ext)"
     }
 
     // MARK: - Interactive Elements (FEAT-049)
@@ -405,6 +446,61 @@ public final class EMTextView: UITextView {
     }
 }
 
+// MARK: - UIDropInteractionDelegate per FEAT-020
+
+extension EMTextView: UIDropInteractionDelegate {
+
+    /// Accepts image drops per FEAT-020 AC-1.
+    public func dropInteraction(
+        _ interaction: UIDropInteraction,
+        canHandle session: UIDropSession
+    ) -> Bool {
+        session.canLoadObjects(ofClass: UIImage.self)
+    }
+
+    /// Shows copy indicator for image drops.
+    public func dropInteraction(
+        _ interaction: UIDropInteraction,
+        sessionDidUpdate session: UIDropSession
+    ) -> UIDropProposal {
+        UIDropProposal(operation: .copy)
+    }
+
+    /// Loads dropped image data and invokes `onImageReceived` per FEAT-020 AC-1.
+    public func dropInteraction(
+        _ interaction: UIDropInteraction,
+        performDrop session: UIDropSession
+    ) {
+        // Try to load file URL first to get the original filename
+        for provider in session.items.map(\.itemProvider) {
+            if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                // Try to get the original file data with filename
+                provider.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { [weak self] url, error in
+                    guard let url, error == nil,
+                          let data = try? Data(contentsOf: url) else {
+                        // Fallback: load as UIImage and convert to PNG
+                        provider.loadObject(ofClass: UIImage.self) { [weak self] image, _ in
+                            guard let image = image as? UIImage,
+                                  let pngData = image.pngData() else { return }
+                            let name = EMTextView.suggestedImageFilename(extension: "png")
+                            Task { @MainActor in
+                                self?.onImageReceived?(pngData, name)
+                            }
+                        }
+                        return
+                    }
+
+                    let filename = url.lastPathComponent
+                    Task { @MainActor in
+                        self?.onImageReceived?(data, filename)
+                    }
+                }
+                return // Handle first image only
+            }
+        }
+    }
+}
+
 /// Custom tap gesture recognizer that only fires when the tap lands
 /// on an interactive element (checkbox or link) per FEAT-049.
 /// When the tap is not on an interactive element, the gesture fails
@@ -502,6 +598,10 @@ public final class EMTextView: NSTextView {
     /// Returns true if ghost text was accepted (Tab consumed), false otherwise.
     public var onGhostTextAccept: (() -> Bool)?
 
+    /// Handler for image drop/paste per FEAT-020 (F-015).
+    /// Called with raw image data and a suggested filename.
+    public var onImageReceived: ((_ imageData: Data, _ suggestedName: String) -> Void)?
+
     // MARK: - Context Menu AI Actions per FEAT-058
 
     /// Whether AI actions should appear in the right-click context menu.
@@ -533,6 +633,7 @@ public final class EMTextView: NSTextView {
         super.init(frame: .zero, textContainer: container)
 
         configureTextView()
+        setupImageDragTypes()
         logger.debug("EMTextView initialized with TextKit 2 (macOS)")
     }
 
@@ -580,6 +681,111 @@ public final class EMTextView: NSTextView {
     /// Applies current layout metrics to text container inset per FEAT-010.
     private func applyLayoutMetrics() {
         textContainerInset = layoutMetrics.textContainerInset
+    }
+
+    // MARK: - Image Drop/Paste per FEAT-020
+
+    /// Registers image drop types for macOS drag-and-drop per FEAT-020 AC-1.
+    private func setupImageDragTypes() {
+        registerForDraggedTypes([.fileURL, .png, .tiff])
+    }
+
+    /// Accepts image file drops per FEAT-020 AC-1.
+    public override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        let pasteboard = sender.draggingPasteboard
+        if pasteboard.canReadObject(forClasses: [NSURL.self], options: [
+            .urlReadingContentsConformToTypes: [UTType.image.identifier]
+        ]) {
+            return .copy
+        }
+        // Check for image data directly (e.g., from Preview or other apps)
+        if pasteboard.types?.contains(.png) == true ||
+           pasteboard.types?.contains(.tiff) == true {
+            return .copy
+        }
+        return super.draggingEntered(sender)
+    }
+
+    /// Handles dropped image files per FEAT-020 AC-1.
+    public override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        let pasteboard = sender.draggingPasteboard
+
+        // Try to read a file URL for an image
+        if let urls = pasteboard.readObjects(forClasses: [NSURL.self], options: [
+            .urlReadingContentsConformToTypes: [UTType.image.identifier]
+        ]) as? [URL], let imageURL = urls.first {
+            if let data = try? Data(contentsOf: imageURL) {
+                onImageReceived?(data, imageURL.lastPathComponent)
+                return true
+            }
+        }
+
+        // Try to read image data directly (PNG or TIFF)
+        if let pngData = pasteboard.data(forType: .png) {
+            let name = Self.suggestedImageFilename(extension: "png")
+            onImageReceived?(pngData, name)
+            return true
+        }
+        if let tiffData = pasteboard.data(forType: .tiff),
+           let image = NSImage(data: tiffData),
+           let pngData = image.tiffRepresentation.flatMap({
+               NSBitmapImageRep(data: $0)?.representation(using: .png, properties: [:])
+           }) {
+            let name = Self.suggestedImageFilename(extension: "png")
+            onImageReceived?(pngData, name)
+            return true
+        }
+
+        return super.performDragOperation(sender)
+    }
+
+    /// Intercepts paste to handle image data from clipboard per FEAT-020 AC-3.
+    /// Text paste takes priority — only intercepts when clipboard has images but no text.
+    public override func paste(_ sender: Any?) {
+        let pasteboard = NSPasteboard.general
+
+        // Only intercept for images when there is no text on the pasteboard.
+        // This prevents hijacking rich text paste that happens to include image data.
+        let hasText = pasteboard.string(forType: .string) != nil ||
+                      pasteboard.data(forType: .rtf) != nil ||
+                      pasteboard.data(forType: .html) != nil
+
+        if !hasText {
+            if let pngData = pasteboard.data(forType: .png) {
+                let name = Self.suggestedImageFilename(extension: "png")
+                onImageReceived?(pngData, name)
+                return
+            }
+            if let tiffData = pasteboard.data(forType: .tiff),
+               let image = NSImage(data: tiffData),
+               let pngData = image.tiffRepresentation.flatMap({
+                   NSBitmapImageRep(data: $0)?.representation(using: .png, properties: [:])
+               }) {
+                let name = Self.suggestedImageFilename(extension: "png")
+                onImageReceived?(pngData, name)
+                return
+            }
+
+            // Check for image file URLs
+            if let urls = pasteboard.readObjects(forClasses: [NSURL.self], options: [
+                .urlReadingContentsConformToTypes: [UTType.image.identifier]
+            ]) as? [URL], let imageURL = urls.first {
+                if let data = try? Data(contentsOf: imageURL) {
+                    onImageReceived?(data, imageURL.lastPathComponent)
+                    return
+                }
+            }
+        }
+
+        // Fall through to normal paste
+        super.paste(sender)
+    }
+
+    /// Generates a suggested filename for a pasted/dropped image.
+    static func suggestedImageFilename(extension ext: String = "png") -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd-HHmmss"
+        return "image-\(formatter.string(from: Date())).\(ext)"
     }
 
     // MARK: - Key Commands per [A-060] and FEAT-009

@@ -445,12 +445,13 @@
         "Pasting an image from clipboard prompts for save location and inserts relative path",
         "Very large image (10MB+) shows progress during save, does not freeze the editor"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "lastFailReason": "Validator agent rejected implementation",
       "lastFailAt": "2026-03-21T09:06:27-07:00",
-      "failCount": 2
+      "failCount": 2,
+      "completedAt": "2026-03-23T21:20:10-07:00"
     },
     {
       "id": "FEAT-021",

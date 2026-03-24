@@ -53,6 +53,10 @@ struct EditorShellView: View {
     @State private var showingPDFShareSheet = false
     @State private var exportedPDFURL: URL?
     @State private var showingMarkdownShareSheet = false
+    /// Pending image data awaiting save location per FEAT-020.
+    @State private var pendingImageData: Data?
+    @State private var pendingImageFilename: String = ""
+    @State private var showingImageSavePicker = false
     /// Find and replace engine per FEAT-017.
     private let findReplaceEngine = FindReplaceEngine()
     @Environment(\.colorScheme) private var colorScheme
@@ -112,6 +116,7 @@ struct EditorShellView: View {
                 onNewFile: { newFileFromEditor() },
                 onCloseFile: { closeFile() },
                 onFindReplace: { toggleFindReplace() },
+                onImageReceived: { data, name in handleImageReceived(data: data, suggestedName: name) },
                 showAIContextMenuActions: aiProviderManager.shouldShowAIUI,
                 onContextMenuImprove: { startImprove() },
                 onContextMenuSummarize: { startSummarize() }
@@ -119,6 +124,21 @@ struct EditorShellView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .accessibilityLabel("Document editor")
             .accessibilityHint("Edit your markdown document here")
+            .overlay {
+                // Image save progress overlay per FEAT-020 AC-4.
+                if editorState.isImageSaving {
+                    VStack {
+                        ProgressView()
+                            .controlSize(.large)
+                        Text("Saving image…")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding()
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    .accessibilityLabel("Saving image")
+                }
+            }
             .overlay(alignment: .top) {
                 // Floating action bar per FEAT-054 and [A-023].
                 // Positioned above the selection via GeometryReader + selectionRect.
@@ -272,6 +292,19 @@ struct EditorShellView: View {
                     handleFileCreatedFromEditor(url)
                 },
                 onCancel: { showingNewFilePicker = false }
+            )
+        }
+        .sheet(isPresented: $showingImageSavePicker) {
+            ImageSavePickerView(
+                suggestedFilename: pendingImageFilename,
+                onSave: { url in
+                    showingImageSavePicker = false
+                    saveAndInsertImage(to: url)
+                },
+                onCancel: {
+                    showingImageSavePicker = false
+                    pendingImageData = nil
+                }
             )
         }
         #endif
@@ -800,6 +833,87 @@ struct EditorShellView: View {
         guard let insertRange = Range(nsRange, in: text) else { return }
 
         text.insert(contentsOf: insertedText, at: insertRange.lowerBound)
+    }
+
+    // MARK: - Image Handling per FEAT-020 (F-015)
+
+    /// Handles an image received via drag-and-drop or paste per FEAT-020.
+    /// Stores the data and presents a save location picker.
+    private func handleImageReceived(data: Data, suggestedName: String) {
+        pendingImageData = data
+        pendingImageFilename = suggestedName
+
+        #if os(iOS)
+        showingImageSavePicker = true
+        #else
+        saveImageViaNSSavePanel()
+        #endif
+    }
+
+    #if os(macOS)
+    /// Shows an NSSavePanel for choosing the image save location on macOS per FEAT-020.
+    private func saveImageViaNSSavePanel() {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.png, .jpeg, .gif, .tiff, .bmp]
+        panel.nameFieldStringValue = pendingImageFilename
+        panel.canCreateDirectories = true
+
+        // Default to document's directory if available
+        if let docURL = fileOpenCoordinator.currentFileURL {
+            panel.directoryURL = docURL.deletingLastPathComponent()
+        }
+
+        panel.begin { response in
+            guard response == .OK, let url = panel.url else {
+                self.pendingImageData = nil
+                return
+            }
+            Task { @MainActor in
+                saveAndInsertImage(to: url)
+            }
+        }
+    }
+    #endif
+
+    /// Saves pending image data to the chosen URL and inserts markdown at cursor per FEAT-020.
+    /// Runs on a background thread for large images (AC-4).
+    private func saveAndInsertImage(to destinationURL: URL) {
+        guard let imageData = pendingImageData else { return }
+        let isLargeImage = imageData.count >= 10_000_000 // 10MB threshold per AC-4
+
+        if isLargeImage {
+            editorState.isImageSaving = true
+        }
+
+        let documentURL = fileOpenCoordinator.currentFileURL
+
+        Task.detached {
+            do {
+                try ImageSaveService.save(data: imageData, to: destinationURL)
+
+                let relativePath = ImageSaveService.relativePath(
+                    from: documentURL,
+                    to: destinationURL
+                )
+
+                await MainActor.run {
+                    self.editorState.isImageSaving = false
+                    self.pendingImageData = nil
+
+                    // Insert markdown image link at cursor position
+                    let markdown = "![image](\(relativePath))"
+                    self.insertTextAtCursor(markdown)
+                }
+            } catch {
+                await MainActor.run {
+                    self.editorState.isImageSaving = false
+                    self.pendingImageData = nil
+                    self.errorPresenter.present(
+                        EMError.file(.saveFailed(url: destinationURL, underlying: error))
+                    )
+                }
+            }
+        }
     }
 
     // MARK: - Link Handling per FEAT-049 AC-3, AC-5
