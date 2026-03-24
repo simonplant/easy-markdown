@@ -1,27 +1,23 @@
 {
-  "sprintId": "sprint-1774330353",
-  "startedAt": "2026-03-23T22:32:33-07:00",
-  "status": "completed",
+  "sprintId": "sprint-1774331230",
+  "startedAt": "2026-03-23T22:47:10-07:00",
+  "status": "in_progress",
   "item": {
-    "id": "FEAT-074",
-    "title": "DEBT: Decompose EditorShellView into focused coordinators",
-    "intent": "A view with 23 @State properties is untestable and unmaintainable — each concern must own its own state",
-    "description": "EditorShellView currently owns text editing state, 4 AI coordinators + 4 AI services, export state, conflict management, and subscription checks. Extract into: (1) AICoordinator that owns improve/summarize/tone/ghost coordinators and services, (2) ExportCoordinator that owns PDF and markdown share state, (3) move FileConflictManager into FileOpenCoordinator. EditorShellView should only own editor content and compose these coordinators.",
+    "id": "FEAT-075",
+    "title": "DEBT: Split TextViewCoordinator into focused responsibility files",
+    "intent": "A 1,666-line coordinator is a maintenance hazard — adding any feature risks side effects across unrelated concerns",
+    "description": "TextViewCoordinator handles UITextViewDelegate/NSTextViewDelegate, formatting engine orchestration, rendering pipeline (parse/debounce/apply), find/replace highlighting, interactive elements (checkboxes, links), cursor mapping, doctor coordination, ghost text coordination, and performance instrumentation. Extract orthogonal concerns into: TextViewKeyCommandHandler (keyboard shortcuts), TextViewRenderingCoordinator (parse/render/debounce logic), FindReplaceCoordinator (find/replace highlighting). Keep core delegate work in a slimmed TextViewCoordinator.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "EditorShellView has fewer than 10 @State properties",
-      "AICoordinator owns all AI-related state and coordinators",
-      "ExportCoordinator owns PDF and markdown share sheet state",
-      "FileConflictManager is owned by FileOpenCoordinator, not the view",
-      "All existing editor functionality works identically after decomposition",
-      "Each extracted coordinator is independently testable"
+      "TextViewCoordinator is under 500 lines",
+      "TextViewRenderingCoordinator owns the parse/debounce/render pipeline",
+      "FindReplaceCoordinator owns find/replace match highlighting",
+      "TextViewKeyCommandHandler owns keyboard shortcut dispatch",
+      "All existing editor behavior works identically after the split",
+      "No new public API surface — internal decomposition only"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T22:32:33-07:00",
-    "status": "passed",
-    "completedAt": "2026-03-23T22:47:09-07:00"
-  },
-  "completedAt": "2026-03-23T22:47:09-07:00",
-  "attempts": 1
+    "startedAt": "2026-03-23T22:47:10-07:00"
+  }
 }
