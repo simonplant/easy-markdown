@@ -28,6 +28,7 @@ let package = Package(
         .package(url: "https://github.com/alex-pinkus/tree-sitter-swift", from: "0.7.1"),
         .package(url: "https://github.com/tree-sitter/tree-sitter-python", from: "0.25.0"),
         .package(url: "https://github.com/tree-sitter/tree-sitter-javascript", from: "0.25.0"),
+        .package(url: "https://github.com/mbernson/SwiftGit2", branch: "master"),
     ],
     targets: [
         .target(
@@ -77,7 +78,10 @@ let package = Package(
         .target(name: "EMFile", dependencies: ["EMCore"]),
         .target(name: "EMAI", dependencies: ["EMCore"]),
         .target(name: "EMCloud", dependencies: ["EMCore"]),
-        .target(name: "EMGit", dependencies: ["EMCore"]),
+        .target(name: "EMGit", dependencies: [
+            "EMCore",
+            .product(name: "SwiftGit2", package: "SwiftGit2"),
+        ]),
         .target(name: "EMSettings", dependencies: ["EMCore"]),
         .target(name: "EMApp", dependencies: ["EMCore", "EMEditor", "EMFile", "EMFormatter", "EMAI", "EMCloud", "EMGit", "EMSettings"]),
         .testTarget(name: "EMCoreTests", dependencies: ["EMCore"]),
