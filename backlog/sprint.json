@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774326546",
   "startedAt": "2026-03-23T21:29:06-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-024",
     "title": "F-027: AI — Translation (Pro AI)",
@@ -17,6 +17,10 @@
       "Very long selection (5000+ words) shows warning about processing time"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T21:29:06-07:00"
-  }
+    "startedAt": "2026-03-23T21:29:06-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-23T21:41:32-07:00"
+  },
+  "completedAt": "2026-03-23T21:41:32-07:00",
+  "attempts": 1
 }
