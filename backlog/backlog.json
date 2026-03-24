@@ -309,6 +309,27 @@
       "readyForSprint": false,
       "groomedAt": "2026-03-23",
       "groomingNotes": "BLOCKED: Depends on FEAT-070 (GitHub Clone and Open) which is not yet done. Once FEAT-070 ships: hook into EMFile save path to detect files inside Documents/GitRepos/. On save: EMGit.commit('Update filename.md') then push. Pull-with-rebase before push. Toolbar indicator (unpushed badge) via published var on EMGitStatus. Conflict surfaces via existing FEAT-045 flow."
+    },
+    {
+      "id": "FEAT-088",
+      "title": "App Target Entry Point and Xcode Build Setup",
+      "intent": "The repo needs a buildable app target so developers can run on device without manual setup beyond opening Xcode",
+      "description": "Add EasyMarkdownApp/ directory with @main entry point (thin wrapper delegating to AppShell), Info.plist with UTI declarations for .md/.markdown, multi-window scene manifest for iPad Stage Manager, and document type registration. Add BUILDING.md with step-by-step Xcode setup guide. No .xcodeproj checked in (SPM-first per A-001).",
+      "priority": "should",
+      "category": "Infrastructure",
+      "steps": [],
+      "acceptanceCriteria": [
+        "EasyMarkdownApp.swift contains @main struct delegating to AppShell from EMApp",
+        "Info.plist declares UTImportedTypeDeclarations (not Exported) for net.daringfireball.markdown",
+        "Info.plist does NOT reference a SceneDelegate class (pure SwiftUI lifecycle via WindowGroup)",
+        "BUILDING.md documents step-by-step Xcode target creation, signing, and first-build validation",
+        "swift build still passes (EasyMarkdownApp/ is not part of any SPM target)"
+      ],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true,
+      "groomedAt": "2026-03-24",
+      "groomingNotes": "Derived from closed PR #1 review. Key issues found in PR: (1) Info.plist used UTExportedTypeDeclarations for net.daringfireball.markdown — must be UTImportedTypeDeclarations since the app consumes, not defines, this system UTI. (2) Scene manifest referenced $(PRODUCT_MODULE_NAME).SceneDelegate but no SceneDelegate class exists — pure SwiftUI @main + WindowGroup manages scenes automatically, so the UISceneConfigurations block should be removed entirely. (3) PR #1 was on head=main targeting base=main making it unmergeable — new implementation must use a feature branch. The BUILDING.md from the PR was solid and can be reused as-is."
     }
   ],
   "_dependsOn_docs": "Items may include an optional 'dependsOn' array of item ID strings (e.g. \"dependsOn\": [\"FEAT-001\"]). Auto-pick skips items whose dependencies are not yet done."

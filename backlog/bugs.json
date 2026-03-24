@@ -31,6 +31,28 @@
       "lastFailReason": "Implementation failed",
       "lastFailAt": "2026-03-24T00:16:35-07:00",
       "failCount": 1
+    },
+    {
+      "id": "BUG-004",
+      "title": "Quick Open (FEAT-016): no macOS keyboard nav, DateFormatter perf, fuzzy score floor",
+      "intent": "Quick Open's power-user audience is primarily macOS keyboard users — they cannot navigate results without a mouse today",
+      "description": "Three issues found during PR #2 code review: (1) Arrow key and Escape handling via .onKeyPress is wrapped in #if os(iOS) only — macOS users get no keyboard navigation in the Quick Open palette. (2) relativeDate() in QuickOpenResultRow allocates a new DateFormatter per row per render — should be a static let. (3) Fuzzy match score can go deeply negative from gap penalties before being clamped to max(score, 1), making all weak matches rank identically at score 1.",
+      "priority": "should",
+      "category": "Editor",
+      "steps": [],
+      "acceptanceCriteria": [
+        "macOS: arrow keys move selection and Return opens file in Quick Open palette",
+        "macOS: Escape dismisses the Quick Open palette",
+        "DateFormatter in QuickOpenResultRow.relativeDate is a static let, not allocated per call",
+        "Fuzzy match scores for weak matches are distinguishable — not all clamped to 1"
+      ],
+      "scope": [],
+      "dependsOn": [],
+      "status": "todo",
+      "passes": false,
+      "readyForSprint": true,
+      "groomedAt": "2026-03-24",
+      "groomingNotes": "Derived from closed PR #2 review. The PR attempted to land FEAT-016 (Quick Open) which was already completed via sprint. Issues found during review: (1) macOS keyboard nav: .onKeyPress modifiers are iOS 17+ only — on macOS, use .onKeyPress on the containing VStack or NSEvent-based key handling. This is the highest-priority fix since Cmd+P users are keyboard-first. (2) DateFormatter allocation: trivial fix, make it `private static let` on QuickOpenResultRow. (3) Fuzzy scoring: the gap penalty loop subtracts distance(from:to:) for each gap with no per-gap cap, so a query matching chars spread across a long filename yields e.g. score=-300 which clamps to 1, same as score=-1. Fix: cap per-gap penalty or use a multiplier that decays rather than going negative. Also noted but not actionable as a bug: QuickOpenResult struct is internal (should be package/private), and the hidden Button hack for Cmd+P on HomeView is fragile but acceptable given SwiftUI limitations on iOS."
     }
   ]
 }
