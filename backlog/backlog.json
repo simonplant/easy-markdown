@@ -1322,14 +1322,15 @@
         "Results are logged with historical comparison to detect gradual drift",
         "Tests run on representative device targets (iPhone 15, iPad Pro)"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "groomedAt": "2026-03-23",
       "groomingNotes": "Add XCTest performance benchmark target in Package.swift. Measure all 5 perf targets (cold launch <1s, keystroke-render <16ms, scroll 120fps, AI first token <500ms, memory <100MB) using XCTClockMetric and XCTMemoryMetric. Store baseline JSON files for drift detection. Fail CI build when any threshold is breached. Run on iPhone 15 sim for latency targets, iPad Pro sim for FPS.",
       "lastFailReason": "Validator agent rejected implementation",
       "lastFailAt": "2026-03-23T16:20:49-07:00",
-      "failCount": 1
+      "failCount": 1,
+      "completedAt": "2026-03-23T20:50:35-07:00"
     },
     {
       "id": "FEAT-065",

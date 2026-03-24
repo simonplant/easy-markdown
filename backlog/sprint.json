@@ -1,27 +1,25 @@
 {
-  "sprintId": "sprint-1774323004",
-  "startedAt": "2026-03-23T20:30:04-07:00",
+  "sprintId": "sprint-1774323539",
+  "startedAt": "2026-03-23T20:38:59-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-062",
-    "title": "Pro AI Subscription Screen and Purchase Flow",
-    "intent": "The subscription screen must be honest, clear, and never pushy — it sells Pro AI on its merits, not through dark patterns.",
-    "description": "Per D-STORE-1, D-BIZ-5, D-BIZ-7, and Journey 6. Subscription screen shown when non-subscriber taps a Pro AI action. Shows: price ($3.99/mo or $29.99/yr), what is included, what happens on cancellation, that the app and local AI keep working without it. Annual plan prominently presented (saves ~37%). Uses StoreKit 2 for purchase flow. No separate account creation. Links to terms of service. No persistent upgrade banners, no nag screens, no feature-shaped holes.",
+    "id": "FEAT-064",
+    "title": "INFRA: Performance Regression Test Suite",
+    "intent": "Performance degrades silently unless measured on every build — automated benchmarks are the only way to keep our performance promises.",
+    "description": "Per D-QA-2. Automated tests that run on every build measuring: cold launch time (D-PERF-1: <1s), keystroke-to-render latency (D-PERF-2: <16ms), scroll FPS (D-PERF-3: 120fps ProMotion), AI first token latency (D-PERF-4: <500ms), memory usage (D-PERF-5: <100MB). A regression that crosses any threshold blocks the build. Uses XCTest performance metrics and Instruments automation.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Subscription screen clearly shows monthly and annual pricing with annual savings highlighted",
-      "Screen states what Pro AI includes and what happens on cancellation",
-      "Purchase completes via standard StoreKit 2 flow — no separate account creation",
-      "After subscribing, Pro AI actions work immediately without app restart",
-      "Non-subscriber never sees persistent upgrade banners or nag screens anywhere in the app",
-      "Subscription terms satisfy Apple App Store Review Guideline 3.1.2"
+      "Automated benchmarks measure all 5 performance targets on every CI build",
+      "Build fails if any performance target is exceeded",
+      "Results are logged with historical comparison to detect gradual drift",
+      "Tests run on representative device targets (iPhone 15, iPad Pro)"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T20:30:04-07:00",
+    "startedAt": "2026-03-23T20:38:59-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T20:38:57-07:00"
+    "completedAt": "2026-03-23T20:50:35-07:00"
   },
-  "completedAt": "2026-03-23T20:38:57-07:00",
+  "completedAt": "2026-03-23T20:50:35-07:00",
   "attempts": 1
 }
