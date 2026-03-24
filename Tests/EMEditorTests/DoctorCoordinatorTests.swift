@@ -24,8 +24,8 @@ struct DoctorCoordinatorTests {
         // Wait for the background Task.detached to complete and post results
         try await Task.sleep(nanoseconds: 200_000_000)
 
-        #expect(!state.diagnostics.isEmpty, "Doctor should find diagnostics in rich view mode")
-        #expect(state.diagnostics.contains { $0.ruleID == "heading-hierarchy" })
+        #expect(!state.diagnosticsState.diagnostics.isEmpty, "Doctor should find diagnostics in rich view mode")
+        #expect(state.diagnosticsState.diagnostics.contains { $0.ruleID == "heading-hierarchy" })
     }
 
     @Test("AC-7: Doctor evaluates in source view mode (isSourceView=true)")
@@ -42,8 +42,8 @@ struct DoctorCoordinatorTests {
         // Wait for the background Task.detached to complete and post results
         try await Task.sleep(nanoseconds: 200_000_000)
 
-        #expect(!state.diagnostics.isEmpty, "Doctor should find diagnostics in source view mode")
-        #expect(state.diagnostics.contains { $0.ruleID == "heading-hierarchy" })
+        #expect(!state.diagnosticsState.diagnostics.isEmpty, "Doctor should find diagnostics in source view mode")
+        #expect(state.diagnosticsState.diagnostics.contains { $0.ruleID == "heading-hierarchy" })
     }
 
     @Test("AC-7: Doctor produces identical results in both view modes")
@@ -65,12 +65,12 @@ struct DoctorCoordinatorTests {
 
         try await Task.sleep(nanoseconds: 200_000_000)
 
-        #expect(richState.diagnostics.count == sourceState.diagnostics.count,
+        #expect(richState.diagnosticsState.diagnostics.count == sourceState.diagnosticsState.diagnostics.count,
                 "Doctor should produce the same number of diagnostics in both view modes")
 
         // Verify same rule IDs in same order
-        let richRuleIDs = richState.diagnostics.map(\.ruleID)
-        let sourceRuleIDs = sourceState.diagnostics.map(\.ruleID)
+        let richRuleIDs = richState.diagnosticsState.diagnostics.map(\.ruleID)
+        let sourceRuleIDs = sourceState.diagnosticsState.diagnostics.map(\.ruleID)
         #expect(richRuleIDs == sourceRuleIDs,
                 "Doctor should produce the same rules in both view modes")
     }

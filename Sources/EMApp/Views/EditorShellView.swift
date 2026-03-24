@@ -142,15 +142,15 @@ struct EditorShellView: View {
             }
 
             // Doctor indicator bar per FEAT-005 — non-blocking overlay
-            if !editorState.diagnostics.isEmpty {
+            if !editorState.diagnosticsState.diagnostics.isEmpty {
                 Divider()
                 DoctorIndicatorBar(
-                    diagnostics: editorState.diagnostics,
+                    diagnostics: editorState.diagnosticsState.diagnostics,
                     onTap: { showDoctorPopover = true }
                 )
                 .popover(isPresented: $showDoctorPopover) {
                     DoctorPopoverContent(
-                        diagnostics: editorState.diagnostics,
+                        diagnostics: editorState.diagnosticsState.diagnostics,
                         onFix: { diagnostic in
                             handleDoctorFix(diagnostic)
                         },
@@ -159,7 +159,7 @@ struct EditorShellView: View {
                             editorState.navigateToLine?(diagnostic.line)
                         },
                         onDismiss: { diagnostic in
-                            editorState.dismissDiagnostic(diagnostic)
+                            editorState.diagnosticsState.dismissDiagnostic(diagnostic)
                             #if canImport(UIKit)
                             HapticFeedback.trigger(.doctorFixApplied)
                             #endif
@@ -173,8 +173,8 @@ struct EditorShellView: View {
             Divider()
             StatusBar(
                 stats: editorState.documentStats,
-                selectionWordCount: editorState.selectionWordCount,
-                diagnosticCount: editorState.diagnostics.count,
+                selectionWordCount: editorState.selection.selectionWordCount,
+                diagnosticCount: editorState.diagnosticsState.diagnostics.count,
                 writingGoalWordCount: editorState.writingGoalWordCount
             )
         }
@@ -192,7 +192,7 @@ struct EditorShellView: View {
                 .zIndex(1)
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: editorState.selectedRange.length > 0)
+        .animation(.easeInOut(duration: 0.2), value: editorState.selection.selectedRange.length > 0)
         .animation(.easeInOut(duration: 0.2), value: aiCoordinator?.improveCoordinator?.diffState.phase)
         .animation(.easeInOut(duration: 0.2), value: aiCoordinator?.toneCoordinator?.diffState.phase)
         .animation(.easeInOut(duration: 0.2), value: aiCoordinator?.translationCoordinator?.diffState.phase)
@@ -417,7 +417,7 @@ struct EditorShellView: View {
             // Cancel any active AI sessions on file close
             aiCoordinator?.cancelAll()
             // Clear doctor state on file close per FEAT-005 AC-3
-            editorState.clearDiagnostics()
+            editorState.diagnosticsState.clearDiagnostics()
             // Save, then release per-scene file coordination resources per [A-028].
             // closeCurrentFile() is idempotent — safe if closeFile() already ran.
             // This handles window-close in Stage Manager per FEAT-015 AC-7.
@@ -468,13 +468,13 @@ struct EditorShellView: View {
         }
         // Format menu actions per FEAT-021 AC-5.
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name("com.easymarkdown.menu.bold"))) { _ in
-            editorState.performBold?()
+            editorState.formatting.performBold?()
         }
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name("com.easymarkdown.menu.italic"))) { _ in
-            editorState.performItalic?()
+            editorState.formatting.performItalic?()
         }
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name("com.easymarkdown.menu.insertLink"))) { _ in
-            editorState.performLink?()
+            editorState.formatting.performLink?()
         }
         #endif
     }
@@ -503,7 +503,7 @@ struct EditorShellView: View {
             isAutoFormatBlankLineSeparation: settings.isAutoFormatBlankLineSeparation,
             isAutoFormatTrailingWhitespaceTrim: settings.trailingWhitespaceBehavior == .strip,
             isProseSuggestionsEnabled: settings.isProseSuggestionsEnabled,
-            onAIAssist: { editorState.focusAISection = true },
+            onAIAssist: { editorState.formatting.focusAISection = true },
             onVoiceControl: { aiCoordinator?.toggleVoiceControl() },
             onToggleSourceView: { toggleSourceView() },
             onOpenFile: { openFileFromEditor() },
@@ -683,7 +683,7 @@ struct EditorShellView: View {
         let stringEnd = String.Index(endIdx, within: text) ?? text.endIndex
 
         text.replaceSubrange(stringStart..<stringEnd, with: fix.replacement)
-        editorState.dismissDiagnostic(diagnostic)
+        editorState.diagnosticsState.dismissDiagnostic(diagnostic)
 
         #if canImport(UIKit)
         HapticFeedback.trigger(.doctorFixApplied)
@@ -728,16 +728,16 @@ struct EditorShellView: View {
                         reviewPromptCoordinator.requestReviewIfEligible()
                     },
                     onDismiss: { aiCoordinator?.dismissActiveDiff() },
-                    onBold: { editorState.performBold?() },
-                    onItalic: { editorState.performItalic?() },
-                    onLink: { editorState.performLink?() }
+                    onBold: { editorState.formatting.performBold?() },
+                    onItalic: { editorState.formatting.performItalic?() },
+                    onLink: { editorState.formatting.performLink?() }
                 ),
                 showAIActions: aiCoordinator?.shouldShowAIUI ?? false,
                 isProSubscriber: aiCoordinator?.isProSubscriber ?? false,
                 isCompact: isFloatingBarCompact,
                 focusAISection: Binding(
-                    get: { editorState.focusAISection },
-                    set: { editorState.focusAISection = $0 }
+                    get: { editorState.formatting.focusAISection },
+                    set: { editorState.formatting.focusAISection = $0 }
                 )
             )
             .fixedSize()
@@ -749,7 +749,7 @@ struct EditorShellView: View {
 
     /// Vertical offset for the floating action bar.
     private var floatingBarYOffset: CGFloat {
-        guard let selRect = editorState.selectionRect else { return 0 }
+        guard let selRect = editorState.selection.selectionRect else { return 0 }
         let targetY = max(selRect.minY - 52, 0)
         return targetY
     }
@@ -776,7 +776,7 @@ struct EditorShellView: View {
     /// Inserts text at the current cursor position per FEAT-055 AC-2.
     /// Uses `Range(NSRange, in:)` for correct UTF-16 → String.Index conversion.
     private func insertTextAtCursor(_ insertedText: String) {
-        let cursorLocation = editorState.selectedRange.location
+        let cursorLocation = editorState.selection.selectedRange.location
         let nsRange = NSRange(location: cursorLocation, length: 0)
         guard let insertRange = Range(nsRange, in: text) else { return }
 
@@ -943,7 +943,7 @@ struct EditorShellView: View {
         } else {
             findState.isVisible = true
             // If there's selected text, use it as the search query
-            let selectedRange = editorState.selectedRange
+            let selectedRange = editorState.selection.selectedRange
             if selectedRange.length > 0,
                let swiftRange = Range(selectedRange, in: text) {
                 findState.searchQuery = String(text[swiftRange])

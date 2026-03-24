@@ -176,14 +176,14 @@ struct FloatingActionBarTests {
     func selectionRect() {
         let state = EditorState()
 
-        #expect(state.selectionRect == nil)
+        #expect(state.selection.selectionRect == nil)
 
         let rect = CGRect(x: 10, y: 20, width: 200, height: 16)
-        state.updateSelectionRect(rect)
-        #expect(state.selectionRect == rect)
+        state.selection.updateSelectionRect(rect)
+        #expect(state.selection.selectionRect == rect)
 
-        state.updateSelectionRect(nil)
-        #expect(state.selectionRect == nil)
+        state.selection.updateSelectionRect(nil)
+        #expect(state.selection.selectionRect == nil)
     }
 
     // MARK: - EditorState Formatting Actions per FEAT-054
@@ -195,32 +195,32 @@ struct FloatingActionBarTests {
         var italicCalled = false
         var linkCalled = false
 
-        state.performBold = { boldCalled = true }
-        state.performItalic = { italicCalled = true }
-        state.performLink = { linkCalled = true }
+        state.formatting.performBold = { boldCalled = true }
+        state.formatting.performItalic = { italicCalled = true }
+        state.formatting.performLink = { linkCalled = true }
 
-        state.performBold?()
+        state.formatting.performBold?()
         #expect(boldCalled)
 
-        state.performItalic?()
+        state.formatting.performItalic?()
         #expect(italicCalled)
 
-        state.performLink?()
+        state.formatting.performLink?()
         #expect(linkCalled)
     }
 
     @Test("focusAISection defaults to false")
     func focusAISectionDefault() {
         let state = EditorState()
-        #expect(!state.focusAISection)
+        #expect(!state.formatting.focusAISection)
     }
 
     @Test("focusAISection can be toggled")
     func focusAISectionToggle() {
         let state = EditorState()
-        state.focusAISection = true
-        #expect(state.focusAISection)
-        state.focusAISection = false
-        #expect(!state.focusAISection)
+        state.formatting.focusAISection = true
+        #expect(state.formatting.focusAISection)
+        state.formatting.focusAISection = false
+        #expect(!state.formatting.focusAISection)
     }
 }

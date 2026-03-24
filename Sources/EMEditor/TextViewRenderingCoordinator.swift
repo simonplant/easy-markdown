@@ -311,7 +311,7 @@ final class TextViewRenderingCoordinator {
         let nsRange = NSRange(location: offset, length: 0)
         textView.selectedRange = nsRange
         textView.scrollRangeToVisible(nsRange)
-        editorState.updateSelectedRange(nsRange)
+        editorState.selection.updateSelectedRange(nsRange)
     }
 
     /// Returns the UTF-16 offset of the start of a 1-based line number.
@@ -339,7 +339,7 @@ extension TextViewCoordinator: ImproveWritingTextViewDelegate {
     }
 
     public func currentSelectedRange() -> NSRange {
-        managedTextView?.selectedRange ?? editorState.selectedRange
+        managedTextView?.selectedRange ?? editorState.selection.selectedRange
     }
 
     public func textStorage() -> NSMutableAttributedString? {
@@ -688,7 +688,7 @@ final class TextViewRenderingCoordinator {
         let nsRange = NSRange(location: offset, length: 0)
         textView.setSelectedRange(nsRange)
         textView.scrollRangeToVisible(nsRange)
-        editorState.updateSelectedRange(nsRange)
+        editorState.selection.updateSelectedRange(nsRange)
     }
 
     /// Returns the UTF-16 offset of the start of a 1-based line number.
@@ -716,7 +716,7 @@ extension TextViewCoordinator: ImproveWritingTextViewDelegate {
     }
 
     public func currentSelectedRange() -> NSRange {
-        managedTextView?.selectedRange() ?? editorState.selectedRange
+        managedTextView?.selectedRange() ?? editorState.selection.selectedRange
     }
 
     public func textStorage() -> NSMutableAttributedString? {
