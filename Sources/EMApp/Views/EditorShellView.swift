@@ -28,47 +28,16 @@ struct EditorShellView: View {
     @Environment(AIProviderManager.self) private var aiProviderManager
     @Environment(SubscriptionManager.self) private var subscriptionManager
     @Environment(ReviewPromptCoordinator.self) private var reviewPromptCoordinator
+    // MARK: - State (kept under 10 per FEAT-074)
     @State private var editorState = EditorState()
     @State private var text = ""
     @State private var showDoctorPopover = false
-    @State private var conflictManager: FileConflictManager?
-    @State private var autoSaveManager: AutoSaveManager?
-    @State private var showingSaveElsewherePanel = false
     @State private var currentLineEnding: LineEnding = .lf
-    @State private var improveCoordinator: ImproveWritingCoordinator?
-    @State private var improveService: ImproveWritingService?
-    @State private var summarizeCoordinator: SummarizeCoordinator?
-    @State private var summarizeService: SummarizeService?
-    @State private var toneCoordinator: ToneAdjustmentCoordinator?
-    @State private var toneService: ToneAdjustmentService?
-    @State private var translationCoordinator: TranslationCoordinator?
-    @State private var translationService: TranslationService?
-    @State private var showingTonePicker = false
-    @State private var showingCustomToneInput = false
-    @State private var customToneInstruction = ""
-    @State private var showingLanguagePicker = false
-    @State private var showingLongSelectionWarning = false
-    @State private var pendingTranslationLanguage: String = ""
-    @State private var lastTranslationLanguage: String = ""
-    @State private var ghostTextCoordinator: GhostTextCoordinator?
-    @State private var ghostTextService: GhostTextService?
-    @State private var smartCompletionCoordinator: SmartCompletionCoordinator?
-    @State private var smartCompletionService: SmartCompletionService?
-    #if canImport(Speech)
-    @State private var voiceCoordinator: VoiceCoordinator?
-    @State private var voiceIntentService: VoiceIntentService?
-    #endif
+    @State private var aiCoordinator: AICoordinator?
+    @State private var exportCoordinator = ExportCoordinator()
     @State private var showingOpenFilePicker = false
     @State private var showingNewFilePicker = false
-    @State private var isProSubscriber = false
-    @State private var showingProUpgrade = false
-    @State private var showingPDFShareSheet = false
-    @State private var exportedPDFURL: URL?
-    @State private var showingMarkdownShareSheet = false
-    /// Pending image data awaiting save location per FEAT-020.
-    @State private var pendingImageData: Data?
-    @State private var pendingImageFilename: String = ""
-    @State private var showingImageSavePicker = false
+    @State private var imageDropState = ImageDropState()
     /// Find and replace engine per FEAT-017.
     private let findReplaceEngine = FindReplaceEngine()
     @Environment(\.colorScheme) private var colorScheme
@@ -140,13 +109,13 @@ struct EditorShellView: View {
             // Summary popover per FEAT-055
             .popover(
                 isPresented: Binding(
-                    get: { summarizeCoordinator?.isPopoverPresented ?? false },
+                    get: { aiCoordinator?.summarizeCoordinator?.isPopoverPresented ?? false },
                     set: { newValue in
-                        if !newValue { summarizeCoordinator?.dismiss() }
+                        if !newValue { aiCoordinator?.summarizeCoordinator?.dismiss() }
                     }
                 )
             ) {
-                if let coordinator = summarizeCoordinator {
+                if let coordinator = aiCoordinator?.summarizeCoordinator {
                     SummaryPopoverContent(
                         summaryText: coordinator.summaryText,
                         isStreaming: coordinator.phase == .streaming,
@@ -210,13 +179,13 @@ struct EditorShellView: View {
             )
         }
         .overlay(alignment: .top) {
-            if let manager = conflictManager,
+            if let manager = fileOpenCoordinator.conflictManager,
                manager.conflictState != .none {
                 ConflictBannerView(
                     conflictState: manager.conflictState,
-                    onReload: { handleReload(manager) },
+                    onReload: { handleReload() },
                     onKeepMine: { manager.keepMine() },
-                    onSaveElsewhere: { handleSaveElsewhere() }
+                    onSaveElsewhere: { fileOpenCoordinator.handleSaveElsewhere() }
                 )
                 .transition(.move(edge: .top).combined(with: .opacity))
                 .padding(.top, 8)
@@ -224,14 +193,14 @@ struct EditorShellView: View {
             }
         }
         .animation(.easeInOut(duration: 0.2), value: editorState.selectedRange.length > 0)
-        .animation(.easeInOut(duration: 0.2), value: improveCoordinator?.diffState.phase)
-        .animation(.easeInOut(duration: 0.2), value: toneCoordinator?.diffState.phase)
-        .animation(.easeInOut(duration: 0.2), value: translationCoordinator?.diffState.phase)
+        .animation(.easeInOut(duration: 0.2), value: aiCoordinator?.improveCoordinator?.diffState.phase)
+        .animation(.easeInOut(duration: 0.2), value: aiCoordinator?.toneCoordinator?.diffState.phase)
+        .animation(.easeInOut(duration: 0.2), value: aiCoordinator?.translationCoordinator?.diffState.phase)
         #if canImport(Speech)
-        .animation(.easeInOut(duration: 0.2), value: voiceCoordinator?.diffState.phase)
-        .animation(.easeInOut(duration: 0.2), value: voiceCoordinator?.phase)
+        .animation(.easeInOut(duration: 0.2), value: aiCoordinator?.voiceCoordinator?.diffState.phase)
+        .animation(.easeInOut(duration: 0.2), value: aiCoordinator?.voiceCoordinator?.phase)
         #endif
-        .animation(.easeInOut(duration: 0.25), value: conflictManager?.conflictState)
+        .animation(.easeInOut(duration: 0.25), value: fileOpenCoordinator.conflictManager?.conflictState)
         .navigationTitle(navigationTitle)
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
@@ -240,18 +209,35 @@ struct EditorShellView: View {
             EditorToolbar(
                 isSourceView: editorState.isSourceView,
                 onToggleSource: toggleSourceView,
-                onExportPDF: { exportPDF() },
-                onShareMarkdown: { shareMarkdownFile() },
-                onPrint: { printDocument() },
+                onExportPDF: {
+                    exportCoordinator.exportPDF(
+                        text: text,
+                        documentURL: fileOpenCoordinator.currentFileURL,
+                        includeWatermark: settings.isPDFExportWatermarkEnabled,
+                        errorPresenter: errorPresenter
+                    )
+                },
+                onShareMarkdown: {
+                    exportCoordinator.shareMarkdownFile(
+                        text: text,
+                        fileURL: fileOpenCoordinator.currentFileURL
+                    )
+                },
+                onPrint: {
+                    exportCoordinator.printDocument(
+                        text: text,
+                        documentURL: fileOpenCoordinator.currentFileURL
+                    )
+                },
                 onSettings: { router.showSettings() },
-                showVoiceMic: voiceMicVisible,
-                isVoiceListening: voiceIsListening,
-                isVoiceAvailable: voiceIsAvailable,
-                onVoiceToggle: { toggleVoiceControl() }
+                showVoiceMic: aiCoordinator?.voiceMicVisible ?? false,
+                isVoiceListening: aiCoordinator?.voiceIsListening ?? false,
+                isVoiceAvailable: aiCoordinator?.voiceIsAvailable ?? false,
+                onVoiceToggle: { aiCoordinator?.toggleVoiceControl() }
             )
         }
         .fileExporter(
-            isPresented: $showingSaveElsewherePanel,
+            isPresented: Bindable(fileOpenCoordinator).showingSaveElsewherePanel,
             document: TextFileDocument(text: text),
             contentType: .plainText,
             defaultFilename: fileOpenCoordinator.currentFileURL?.lastPathComponent ?? "Untitled.md"
@@ -259,7 +245,7 @@ struct EditorShellView: View {
             switch result {
             case .success:
                 // File saved successfully by fileExporter — clear conflict state.
-                conflictManager?.keepMine()
+                fileOpenCoordinator.conflictManager?.keepMine()
             case .failure(let error):
                 // User cancelled the save panel — not an error. Banner stays visible
                 // so they can try again or dismiss.
@@ -268,13 +254,16 @@ struct EditorShellView: View {
             }
         }
         #if os(iOS)
-        .sheet(isPresented: $showingPDFShareSheet) {
-            if let url = exportedPDFURL {
+        .sheet(isPresented: Bindable(exportCoordinator).showingPDFShareSheet) {
+            if let url = exportCoordinator.exportedPDFURL {
                 ShareSheetView(activityItems: [url])
             }
         }
-        .sheet(isPresented: $showingMarkdownShareSheet) {
-            if let url = markdownShareURL() {
+        .sheet(isPresented: Bindable(exportCoordinator).showingMarkdownShareSheet) {
+            if let url = exportCoordinator.markdownShareURL(
+                text: text,
+                fileURL: fileOpenCoordinator.currentFileURL
+            ) {
                 ShareSheetView(activityItems: [url])
             }
         }
@@ -298,23 +287,26 @@ struct EditorShellView: View {
                 onCancel: { showingNewFilePicker = false }
             )
         }
-        .sheet(isPresented: $showingImageSavePicker) {
+        .sheet(isPresented: $imageDropState.showingPicker) {
             ImageSavePickerView(
-                suggestedFilename: pendingImageFilename,
+                suggestedFilename: imageDropState.filename,
                 onSave: { url in
-                    showingImageSavePicker = false
+                    imageDropState.showingPicker = false
                     saveAndInsertImage(to: url)
                 },
                 onCancel: {
-                    showingImageSavePicker = false
-                    pendingImageData = nil
+                    imageDropState.showingPicker = false
+                    imageDropState.data = nil
                 }
             )
         }
         #endif
         .alert(
             "Pro AI Feature",
-            isPresented: $showingProUpgrade
+            isPresented: Binding(
+                get: { aiCoordinator?.showingProUpgrade ?? false },
+                set: { aiCoordinator?.showingProUpgrade = $0 }
+            )
         ) {
             Button("Learn More") {
                 router.showSubscriptionOffer()
@@ -325,116 +317,118 @@ struct EditorShellView: View {
         }
         .confirmationDialog(
             "Adjust Tone",
-            isPresented: $showingTonePicker,
+            isPresented: Binding(
+                get: { aiCoordinator?.showingTonePicker ?? false },
+                set: { aiCoordinator?.showingTonePicker = $0 }
+            ),
             titleVisibility: .visible
         ) {
-            Button("More Formal") { startToneAdjustment(toneStyle: .formal) }
-            Button("More Casual") { startToneAdjustment(toneStyle: .casual) }
-            Button("More Technical") { startToneAdjustment(toneStyle: .academic) }
-            Button("Simpler") { startToneAdjustment(toneStyle: .concise) }
-            Button("Friendlier") { startToneAdjustment(toneStyle: .friendly) }
-            Button("Custom...") { showingCustomToneInput = true }
+            Button("More Formal") { aiCoordinator?.startToneAdjustment(toneStyle: .formal, text: text) }
+            Button("More Casual") { aiCoordinator?.startToneAdjustment(toneStyle: .casual, text: text) }
+            Button("More Technical") { aiCoordinator?.startToneAdjustment(toneStyle: .academic, text: text) }
+            Button("Simpler") { aiCoordinator?.startToneAdjustment(toneStyle: .concise, text: text) }
+            Button("Friendlier") { aiCoordinator?.startToneAdjustment(toneStyle: .friendly, text: text) }
+            Button("Custom...") { aiCoordinator?.showingCustomToneInput = true }
             Button("Cancel", role: .cancel) {}
         }
-        .alert("Custom Tone", isPresented: $showingCustomToneInput) {
-            TextField("e.g. more persuasive", text: $customToneInstruction)
+        .alert("Custom Tone", isPresented: Binding(
+            get: { aiCoordinator?.showingCustomToneInput ?? false },
+            set: { aiCoordinator?.showingCustomToneInput = $0 }
+        )) {
+            TextField("e.g. more persuasive", text: Binding(
+                get: { aiCoordinator?.customToneInstruction ?? "" },
+                set: { aiCoordinator?.customToneInstruction = $0 }
+            ))
             Button("Apply") {
-                let instruction = customToneInstruction.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard let ai = aiCoordinator else { return }
+                let instruction = ai.customToneInstruction.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard !instruction.isEmpty else { return }
-                startToneAdjustment(toneStyle: .custom(instruction))
-                customToneInstruction = ""
+                ai.startToneAdjustment(toneStyle: .custom(instruction), text: text)
+                ai.customToneInstruction = ""
             }
             Button("Cancel", role: .cancel) {
-                customToneInstruction = ""
+                aiCoordinator?.customToneInstruction = ""
             }
         } message: {
             Text("Describe the tone you want:")
         }
         .confirmationDialog(
             "Translate To",
-            isPresented: $showingLanguagePicker,
+            isPresented: Binding(
+                get: { aiCoordinator?.showingLanguagePicker ?? false },
+                set: { aiCoordinator?.showingLanguagePicker = $0 }
+            ),
             titleVisibility: .visible
         ) {
             ForEach(TranslationLanguage.all) { language in
-                Button(language.name) { requestTranslation(targetLanguage: language.code) }
+                Button(language.name) { aiCoordinator?.requestTranslation(targetLanguage: language.code, text: text) }
             }
             Button("Cancel", role: .cancel) {}
         }
         .alert(
             "Large Selection",
-            isPresented: $showingLongSelectionWarning
+            isPresented: Binding(
+                get: { aiCoordinator?.showingLongSelectionWarning ?? false },
+                set: { aiCoordinator?.showingLongSelectionWarning = $0 }
+            )
         ) {
-            Button("Continue") { startTranslation(targetLanguage: pendingTranslationLanguage) }
-            Button("Cancel", role: .cancel) { pendingTranslationLanguage = "" }
+            Button("Continue") { aiCoordinator?.startTranslation(targetLanguage: aiCoordinator?.pendingTranslationLanguage ?? "", text: text) }
+            Button("Cancel", role: .cancel) { aiCoordinator?.pendingTranslationLanguage = "" }
         } message: {
             Text("This selection is very long and may take a while to translate. Continue?")
         }
         .alert(
             "Translation Incomplete",
             isPresented: Binding(
-                get: { translationCoordinator?.hasPartialFailure ?? false },
+                get: { aiCoordinator?.translationCoordinator?.hasPartialFailure ?? false },
                 set: { newValue in
                     if !newValue {
-                        translationCoordinator?.hasPartialFailure = false
+                        aiCoordinator?.translationCoordinator?.hasPartialFailure = false
                     }
                 }
             )
         ) {
             Button("Retry") {
-                translationCoordinator?.dismiss()
-                startTranslation(targetLanguage: lastTranslationLanguage)
+                aiCoordinator?.translationCoordinator?.dismiss()
+                aiCoordinator?.startTranslation(targetLanguage: aiCoordinator?.lastTranslationLanguage ?? "", text: text)
             }
-            Button("Cancel", role: .cancel) { translationCoordinator?.dismiss() }
+            Button("Cancel", role: .cancel) { aiCoordinator?.translationCoordinator?.dismiss() }
         } message: {
             Text("The translation was interrupted. You can retry or cancel.")
         }
         .onAppear {
             loadFileContent()
-            startConflictMonitoring()
+            fileOpenCoordinator.startConflictMonitoring()
             startAutoSave()
-            setupImproveWriting()
+            setupAI()
             editorState.writingGoalWordCount = settings.writingGoalWordCount
         }
         .task {
             // Check Pro subscription status for floating bar badge per FEAT-054 AC-3.
-            isProSubscriber = await aiProviderManager.checkProSubscription()
+            if let ai = aiCoordinator {
+                ai.isProSubscriber = await aiProviderManager.checkProSubscription()
+            }
         }
         .onChange(of: subscriptionManager.isProActive) { _, isActive in
             // Update immediately when subscription state changes per FEAT-062 AC-4.
-            isProSubscriber = isActive
+            aiCoordinator?.isProSubscriber = isActive
         }
         .onDisappear {
-            conflictManager?.stopMonitoring()
             // Cancel any active AI sessions on file close
-            improveCoordinator?.cancel()
-            toneCoordinator?.cancel()
-            translationCoordinator?.cancel()
-            summarizeCoordinator?.cancel()
-            ghostTextCoordinator?.cancel()
-            smartCompletionCoordinator?.cancel()
-            #if canImport(Speech)
-            voiceCoordinator?.cancel()
-            #endif
+            aiCoordinator?.cancelAll()
             // Clear doctor state on file close per FEAT-005 AC-3
             editorState.clearDiagnostics()
             // Save, then release per-scene file coordination resources per [A-028].
             // closeCurrentFile() is idempotent — safe if closeFile() already ran.
             // This handles window-close in Stage Manager per FEAT-015 AC-7.
-            let saveManager = autoSaveManager
             let openCoordinator = fileOpenCoordinator
             Task { @MainActor in
-                await saveManager?.saveNow()
-                saveManager?.stop()
+                await openCoordinator.autoSaveManager?.saveNow()
                 openCoordinator.closeCurrentFile()
             }
         }
         .onChange(of: settings.isGhostTextEnabled) { _, newValue in
-            ghostTextCoordinator?.isEnabled = newValue
-            smartCompletionCoordinator?.isEnabled = newValue
-            if !newValue {
-                ghostTextCoordinator?.cancel()
-                smartCompletionCoordinator?.cancel()
-            }
+            aiCoordinator?.updateGhostTextEnabled(newValue)
         }
         .onChange(of: settings.writingGoalWordCount) { _, newValue in
             editorState.writingGoalWordCount = newValue
@@ -454,12 +448,12 @@ struct EditorShellView: View {
                 editorState.applyFindHighlights?(findState.matches, findState.currentMatchIndex)
             }
         }
-        .onChange(of: autoSaveManager?.savedWhileInBackground) { _, newValue in
+        .onChange(of: fileOpenCoordinator.autoSaveManager?.savedWhileInBackground) { _, newValue in
             if newValue == true {
                 #if canImport(UIKit)
                 HapticFeedback.trigger(.autoSaveConfirm)
                 #endif
-                autoSaveManager?.clearBackgroundSaveFlag()
+                fileOpenCoordinator.autoSaveManager?.clearBackgroundSaveFlag()
             }
         }
         #if os(macOS)
@@ -485,33 +479,6 @@ struct EditorShellView: View {
         #endif
     }
 
-    /// Whether to show the voice mic button in the toolbar per FEAT-068.
-    private var voiceMicVisible: Bool {
-        #if canImport(Speech)
-        return aiProviderManager.shouldShowAIUI && voiceCoordinator != nil
-        #else
-        return false
-        #endif
-    }
-
-    /// Whether voice is currently listening.
-    private var voiceIsListening: Bool {
-        #if canImport(Speech)
-        return voiceCoordinator?.phase == .listening
-        #else
-        return false
-        #endif
-    }
-
-    /// Whether voice is available on this device.
-    private var voiceIsAvailable: Bool {
-        #if canImport(Speech)
-        return voiceCoordinator?.isAvailable ?? false
-        #else
-        return false
-        #endif
-    }
-
     /// Creates the TextViewBridge with all coordinator wiring per FEAT-039.
     /// Separated into a method so the voice coordinator (behind `#if canImport(Speech)`)
     /// can be set on the struct before returning it.
@@ -524,32 +491,32 @@ struct EditorShellView: View {
             isSpellCheckEnabled: settings.isSpellCheckEnabled,
             onTextChange: { newText in
                 updateDocumentStats(newText)
-                autoSaveManager?.contentDidChange()
+                fileOpenCoordinator.autoSaveManager?.contentDidChange()
             },
             onLinkTap: { url in handleLinkTap(url) },
-            improveCoordinator: improveCoordinator,
-            toneCoordinator: toneCoordinator,
-            translationCoordinator: translationCoordinator,
-            ghostTextCoordinator: ghostTextCoordinator,
-            smartCompletionCoordinator: smartCompletionCoordinator,
+            improveCoordinator: aiCoordinator?.improveCoordinator,
+            toneCoordinator: aiCoordinator?.toneCoordinator,
+            translationCoordinator: aiCoordinator?.translationCoordinator,
+            ghostTextCoordinator: aiCoordinator?.ghostTextCoordinator,
+            smartCompletionCoordinator: aiCoordinator?.smartCompletionCoordinator,
             isAutoFormatHeadingSpacing: settings.isAutoFormatHeadingSpacing,
             isAutoFormatBlankLineSeparation: settings.isAutoFormatBlankLineSeparation,
             isAutoFormatTrailingWhitespaceTrim: settings.trailingWhitespaceBehavior == .strip,
             isProseSuggestionsEnabled: settings.isProseSuggestionsEnabled,
             onAIAssist: { editorState.focusAISection = true },
-            onVoiceControl: { toggleVoiceControl() },
+            onVoiceControl: { aiCoordinator?.toggleVoiceControl() },
             onToggleSourceView: { toggleSourceView() },
             onOpenFile: { openFileFromEditor() },
             onNewFile: { newFileFromEditor() },
             onCloseFile: { closeFile() },
             onFindReplace: { toggleFindReplace() },
             onImageReceived: { data, name in handleImageReceived(data: data, suggestedName: name) },
-            showAIContextMenuActions: aiProviderManager.shouldShowAIUI,
-            onContextMenuImprove: { startImprove() },
-            onContextMenuSummarize: { startSummarize() }
+            showAIContextMenuActions: aiCoordinator?.shouldShowAIUI ?? false,
+            onContextMenuImprove: { aiCoordinator?.startImprove(text: text) },
+            onContextMenuSummarize: { aiCoordinator?.startSummarize(text: text) }
         )
         #if canImport(Speech)
-        bridge.voiceCoordinator = voiceCoordinator
+        bridge.voiceCoordinator = aiCoordinator?.voiceCoordinator
         #endif
         return bridge
     }
@@ -571,29 +538,35 @@ struct EditorShellView: View {
 
     /// Sets up the auto-save manager for the current file per FEAT-008 and [A-026].
     private func startAutoSave() {
-        guard let url = fileOpenCoordinator.currentFileURL,
-              let manager = conflictManager else { return }
-        let autoSave = AutoSaveManager(
-            url: url,
+        fileOpenCoordinator.startAutoSave(
             lineEnding: currentLineEnding,
-            conflictManager: manager,
-            initialContent: text
-        )
-        autoSave.contentProvider = { [self] in
-            var content = text
-            if settings.isAutoFormatEnsureTrailingNewline {
-                content = ensureTrailingNewline(content)
-            }
-            return content
-        }
-        autoSave.onSaveError = { [weak autoSave] error in
-            errorPresenter.present(error, recoveryActions: [
-                RecoveryAction(label: "Try Again") {
-                    await autoSave?.saveNow()
+            text: text,
+            contentProvider: { [self] in
+                var content = text
+                if settings.isAutoFormatEnsureTrailingNewline {
+                    content = ensureTrailingNewline(content)
                 }
-            ])
-        }
-        autoSaveManager = autoSave
+                return content
+            },
+            onSaveError: { [weak fileOpenCoordinator] error in
+                errorPresenter.present(error, recoveryActions: [
+                    RecoveryAction(label: "Try Again") {
+                        await fileOpenCoordinator?.autoSaveManager?.saveNow()
+                    }
+                ])
+            }
+        )
+    }
+
+    /// Creates the AICoordinator with all AI-related state per FEAT-074.
+    private func setupAI() {
+        let ai = AICoordinator(
+            editorState: editorState,
+            aiProviderManager: aiProviderManager,
+            settings: settings
+        )
+        ai.setup()
+        aiCoordinator = ai
     }
 
     private func toggleSourceView() {
@@ -626,7 +599,7 @@ struct EditorShellView: View {
     /// Closes the current file and returns to the home screen (Cmd+W).
     private func closeFile() {
         Task {
-            await autoSaveManager?.saveNow()
+            await fileOpenCoordinator.autoSaveManager?.saveNow()
             fileOpenCoordinator.closeCurrentFile()
             router.popToHome()
         }
@@ -634,16 +607,14 @@ struct EditorShellView: View {
 
     /// Handles a file picked via Cmd+O from the editor.
     private func handleFilePickedFromEditor(_ url: URL) {
-        // Close current file before opening the new one
+        // Close current file before opening the new one (also stops conflict monitoring + auto-save)
         fileOpenCoordinator.closeCurrentFile()
-        autoSaveManager?.stop()
-        conflictManager?.stopMonitoring()
 
         let attempt = fileOpenCoordinator.openFile(url: url)
         switch attempt {
         case .opened, .alreadyOpen:
             loadFileContent()
-            startConflictMonitoring()
+            fileOpenCoordinator.startConflictMonitoring()
             startAutoSave()
         case .failed:
             router.popToHome()
@@ -653,8 +624,6 @@ struct EditorShellView: View {
     /// Handles a file created via Cmd+N from the editor.
     private func handleFileCreatedFromEditor(_ url: URL) {
         fileOpenCoordinator.closeCurrentFile()
-        autoSaveManager?.stop()
-        conflictManager?.stopMonitoring()
 
         let attempt = fileCreateCoordinator.createFile(at: url)
         switch attempt {
@@ -664,7 +633,7 @@ struct EditorShellView: View {
                 fileCreateCoordinator.clearCreatedFile()
             }
             loadFileContent()
-            startConflictMonitoring()
+            fileOpenCoordinator.startConflictMonitoring()
             startAutoSave()
         case .failed:
             router.popToHome()
@@ -731,101 +700,7 @@ struct EditorShellView: View {
         editorState.updateDocumentStats(stats)
     }
 
-    // MARK: - AI Improve Writing per FEAT-011
-
-    /// Creates the improve writing coordinator and service per FEAT-011.
-    /// Also creates the summarize coordinator and service per FEAT-055.
-    /// Wires EMAI → EMEditor via EMCore update types, maintaining
-    /// module isolation per [A-015].
-    private func setupImproveWriting() {
-        guard aiProviderManager.shouldShowAIUI else { return }
-        let coordinator = ImproveWritingCoordinator(editorState: editorState)
-        improveCoordinator = coordinator
-        improveService = ImproveWritingService(providerManager: aiProviderManager)
-
-        // FEAT-055: Summarize
-        summarizeCoordinator = SummarizeCoordinator(editorState: editorState)
-        summarizeService = SummarizeService(providerManager: aiProviderManager)
-
-        // FEAT-023: Tone Adjustment (Pro AI)
-        toneCoordinator = ToneAdjustmentCoordinator(editorState: editorState)
-        toneService = ToneAdjustmentService(providerManager: aiProviderManager)
-
-        // FEAT-024: Translation (Pro AI)
-        translationCoordinator = TranslationCoordinator(editorState: editorState)
-        translationService = TranslationService(providerManager: aiProviderManager)
-
-        // FEAT-056: Ghost Text (Continue Writing)
-        setupGhostText()
-
-        // FEAT-025: Smart Completions
-        setupSmartCompletion()
-
-        // FEAT-068: Voice Control
-        #if canImport(Speech)
-        setupVoiceControl()
-        #endif
-    }
-
-    /// Starts the AI improve flow per FEAT-011 AC-1.
-    /// User selects text, taps Improve → AI streams improved version.
-    private func startImprove() {
-        guard let coordinator = improveCoordinator,
-              let service = improveService else { return }
-
-        let selectedRange = editorState.selectedRange
-        guard selectedRange.length > 0,
-              let swiftRange = Range(selectedRange, in: text) else { return }
-
-        // Cancel any active tone adjustment diff before starting improve
-        toneCoordinator?.cancel()
-
-        let selectedText = String(text[swiftRange])
-        let stream = service.startImproving(selectedText: selectedText)
-        coordinator.startImprove(updateStream: stream)
-    }
-
     // MARK: - Floating Action Bar per FEAT-054
-
-    /// Whether the floating action bar should be visible.
-    private var shouldShowFloatingBar: Bool {
-        guard aiProviderManager.shouldShowAIUI else { return false }
-        if let coordinator = improveCoordinator, coordinator.diffState.isActive {
-            return true
-        }
-        if let coordinator = toneCoordinator, coordinator.diffState.isActive {
-            return true
-        }
-        if let coordinator = translationCoordinator, coordinator.diffState.isActive {
-            return true
-        }
-        #if canImport(Speech)
-        if let coordinator = voiceCoordinator, coordinator.isDiffActive {
-            return true
-        }
-        #endif
-        return editorState.selectedRange.length > 0
-    }
-
-    /// The active diff phase from whichever AI coordinator is currently running.
-    /// Only one diff can be active at a time.
-    private var activeDiffPhase: InlineDiffPhase {
-        if let translation = translationCoordinator, translation.diffState.isActive {
-            return translation.diffState.phase
-        }
-        if let tone = toneCoordinator, tone.diffState.isActive {
-            return tone.diffState.phase
-        }
-        if let improve = improveCoordinator, improve.diffState.isActive {
-            return improve.diffState.phase
-        }
-        #if canImport(Speech)
-        if let voice = voiceCoordinator, voice.isDiffActive {
-            return voice.diffState.phase
-        }
-        #endif
-        return .inactive
-    }
 
     /// Whether to use compact layout (icon-only) for the floating bar.
     private var isFloatingBarCompact: Bool {
@@ -839,23 +714,26 @@ struct EditorShellView: View {
     /// Floating action bar overlay positioned above the text selection.
     @ViewBuilder
     private var floatingActionBarOverlay: some View {
-        if shouldShowFloatingBar {
+        if aiCoordinator?.shouldShowFloatingBar ?? false {
             FloatingActionBar(
-                diffPhase: activeDiffPhase,
+                diffPhase: aiCoordinator?.activeDiffPhase ?? .inactive,
                 actions: FloatingActionBarActions(
-                    onImprove: { startImprove() },
-                    onSummarize: { startSummarize() },
-                    onTranslate: { showingLanguagePicker = true },
-                    onTone: { showingTonePicker = true },
-                    onProUpgrade: { showingProUpgrade = true },
-                    onAccept: { acceptActiveDiff() },
-                    onDismiss: { dismissActiveDiff() },
+                    onImprove: { aiCoordinator?.startImprove(text: text) },
+                    onSummarize: { aiCoordinator?.startSummarize(text: text) },
+                    onTranslate: { aiCoordinator?.showingLanguagePicker = true },
+                    onTone: { aiCoordinator?.showingTonePicker = true },
+                    onProUpgrade: { aiCoordinator?.showingProUpgrade = true },
+                    onAccept: {
+                        aiCoordinator?.acceptActiveDiff()
+                        reviewPromptCoordinator.requestReviewIfEligible()
+                    },
+                    onDismiss: { aiCoordinator?.dismissActiveDiff() },
                     onBold: { editorState.performBold?() },
                     onItalic: { editorState.performItalic?() },
                     onLink: { editorState.performLink?() }
                 ),
-                showAIActions: aiProviderManager.shouldShowAIUI,
-                isProSubscriber: isProSubscriber,
+                showAIActions: aiCoordinator?.shouldShowAIUI ?? false,
+                isProSubscriber: aiCoordinator?.isProSubscriber ?? false,
                 isCompact: isFloatingBarCompact,
                 focusAISection: Binding(
                     get: { editorState.focusAISection },
@@ -869,264 +747,19 @@ struct EditorShellView: View {
         }
     }
 
-    /// Accepts the active diff — dispatches to the correct coordinator.
-    private func acceptActiveDiff() {
-        if let translation = translationCoordinator, translation.diffState.isActive {
-            translation.accept()
-        } else if let tone = toneCoordinator, tone.diffState.isActive {
-            tone.accept()
-        } else if let improve = improveCoordinator, improve.diffState.isActive {
-            improve.accept()
-        } else {
-            #if canImport(Speech)
-            if let voice = voiceCoordinator, voice.isDiffActive {
-                voice.accept()
-            }
-            #endif
-        }
-        reviewPromptCoordinator.requestReviewIfEligible()
-    }
-
-    /// Dismisses the active diff — dispatches to the correct coordinator.
-    private func dismissActiveDiff() {
-        if let translation = translationCoordinator, translation.diffState.isActive {
-            translation.dismiss()
-        } else if let tone = toneCoordinator, tone.diffState.isActive {
-            tone.dismiss()
-        } else if let improve = improveCoordinator, improve.diffState.isActive {
-            improve.dismiss()
-        } else {
-            #if canImport(Speech)
-            if let voice = voiceCoordinator, voice.isDiffActive {
-                voice.dismiss()
-            }
-            #endif
-        }
-    }
-
     /// Vertical offset for the floating action bar.
-    /// Uses selectionRect when available to position above the selection;
-    /// otherwise stays at the default overlay top position.
     private var floatingBarYOffset: CGFloat {
         guard let selRect = editorState.selectionRect else { return 0 }
-        // Place the bar above the selection. selectionRect.minY is relative
-        // to the text view's superview, which is the overlay's coordinate space.
         let targetY = max(selRect.minY - 52, 0)
         return targetY
     }
 
-    // MARK: - AI Summarize per FEAT-055
-
-    /// Starts the AI summarize flow per FEAT-055 AC-1.
-    /// User selects text (or full document), taps Summarize → AI streams summary into popover.
-    private func startSummarize() {
-        guard let coordinator = summarizeCoordinator,
-              let service = summarizeService else { return }
-
-        let selectedRange = editorState.selectedRange
-        guard selectedRange.length > 0,
-              let swiftRange = Range(selectedRange, in: text) else { return }
-
-        let selectedText = String(text[swiftRange])
-
-        // Determine if the entire document is selected for longer summary per AC-1.
-        let isFullDocument = selectedRange.length >= (text as NSString).length
-
-        let stream = service.startSummarizing(
-            selectedText: selectedText,
-            isFullDocument: isFullDocument
-        )
-        coordinator.startSummarize(updateStream: stream)
-    }
-
-    // MARK: - AI Tone Adjustment per FEAT-023
-
-    /// Starts the AI tone adjustment flow per FEAT-023 AC-1.
-    /// User selects text, picks a tone → AI streams tone-adjusted version with inline diff.
-    private func startToneAdjustment(toneStyle: ToneStyle) {
-        guard let coordinator = toneCoordinator,
-              let service = toneService else { return }
-
-        let selectedRange = editorState.selectedRange
-        guard selectedRange.length > 0,
-              let swiftRange = Range(selectedRange, in: text) else { return }
-
-        let selectedText = String(text[swiftRange])
-
-        // Cancel any active improve diff before starting tone adjustment
-        improveCoordinator?.cancel()
-
-        let stream = service.startAdjusting(
-            selectedText: selectedText,
-            toneStyle: toneStyle
-        )
-        coordinator.startToneAdjustment(updateStream: stream)
-    }
-
-    // MARK: - AI Translation per FEAT-024
-
-    /// Checks selection word count and either warns (AC-5) or starts translation.
-    private func requestTranslation(targetLanguage: String) {
-        let selectedRange = editorState.selectedRange
-        guard selectedRange.length > 0,
-              let swiftRange = Range(selectedRange, in: text) else { return }
-
-        let selectedText = String(text[swiftRange])
-
-        // AC-5: Very long selection (5000+ words) shows warning about processing time
-        let wordCount = selectedText.split(whereSeparator: { $0.isWhitespace || $0.isNewline }).count
-        if wordCount >= 5000 {
-            pendingTranslationLanguage = targetLanguage
-            showingLongSelectionWarning = true
-            return
-        }
-
-        startTranslation(targetLanguage: targetLanguage)
-    }
-
-    /// Starts the AI translation flow per FEAT-024 AC-1.
-    /// User selects text, picks a language → AI streams translated version with inline diff.
-    private func startTranslation(targetLanguage: String) {
-        guard let coordinator = translationCoordinator,
-              let service = translationService else { return }
-
-        let selectedRange = editorState.selectedRange
-        guard selectedRange.length > 0,
-              let swiftRange = Range(selectedRange, in: text) else { return }
-
-        let selectedText = String(text[swiftRange])
-
-        // Store for retry per AC-4
-        lastTranslationLanguage = targetLanguage
-
-        // Cancel any active improve or tone diff before starting translation
-        improveCoordinator?.cancel()
-        toneCoordinator?.cancel()
-
-        // AC-3: Only selected text is sent to cloud API per [D-AI-8]
-        let stream = service.startTranslating(
-            selectedText: selectedText,
-            targetLanguage: targetLanguage
-        )
-        coordinator.startTranslation(updateStream: stream)
-    }
-
-    // MARK: - AI Ghost Text per FEAT-056
-
-    /// Creates and wires the ghost text coordinator and service per FEAT-056.
-    /// Connects the coordinator's `onRequestGhostText` closure to the EMAI service,
-    /// maintaining module isolation per [A-015].
-    private func setupGhostText() {
-        guard aiProviderManager.shouldShowAIUI else { return }
-
-        let service = GhostTextService(providerManager: aiProviderManager)
-        ghostTextService = service
-
-        let coordinator = GhostTextCoordinator(editorState: editorState)
-        coordinator.isEnabled = settings.isGhostTextEnabled
-
-        // Wire the coordinator to request ghost text from EMAI when the pause timer fires.
-        // This closure bridges EMEditor → EMAI without direct import per [A-015].
-        coordinator.onRequestGhostText = { [weak service] precedingText in
-            guard let service else { return nil }
-            return service.startGenerating(precedingText: precedingText)
-        }
-
-        ghostTextCoordinator = coordinator
-    }
-
-    // MARK: - AI Smart Completions per FEAT-025
-
-    /// Creates and wires the smart completion coordinator and service per FEAT-025.
-    /// Connects the coordinator's `onRequestSmartCompletion` closure to the EMAI service,
-    /// maintaining module isolation per [A-015].
-    private func setupSmartCompletion() {
-        guard aiProviderManager.shouldShowAIUI else { return }
-
-        let service = SmartCompletionService(providerManager: aiProviderManager)
-        smartCompletionService = service
-
-        let coordinator = SmartCompletionCoordinator(editorState: editorState)
-        coordinator.isEnabled = settings.isGhostTextEnabled
-
-        // Wire the coordinator to request smart completion from EMAI when a structure is detected.
-        // This closure bridges EMEditor → EMAI without direct import per [A-015].
-        // Maps SmartCompletionStructure (EMEditor) to SmartCompletionPromptTemplate.StructureType (EMAI).
-        coordinator.onRequestSmartCompletion = { [weak service] structure, precedingText in
-            guard let service else { return nil }
-            let structureType: SmartCompletionPromptTemplate.StructureType = switch structure {
-            case .tableHeader(let columns):
-                .tableHeader(columns: columns)
-            case .listItem(let prefix, let items):
-                .listItem(prefix: prefix, items: items)
-            case .frontMatter(let existingKeys):
-                .frontMatter(existingKeys: existingKeys)
-            }
-            return service.startCompleting(
-                structureType: structureType,
-                precedingText: precedingText
-            )
-        }
-
-        smartCompletionCoordinator = coordinator
-    }
-
-    // MARK: - Voice Control per FEAT-068
+    // MARK: - Voice Transcription Overlay per FEAT-068
 
     #if canImport(Speech)
-    /// Creates and wires the voice coordinator and service per FEAT-068.
-    /// Connects the coordinator's `onRequestVoiceIntent` closure to the EMAI service,
-    /// maintaining module isolation per [A-015].
-    private func setupVoiceControl() {
-        guard aiProviderManager.shouldShowAIUI else { return }
-
-        let service = VoiceIntentService(providerManager: aiProviderManager)
-        voiceIntentService = service
-
-        let coordinator = VoiceCoordinator(editorState: editorState)
-
-        // Wire the coordinator to request voice intent interpretation from EMAI.
-        // This closure bridges EMEditor → EMAI without direct import per [A-015].
-        coordinator.onRequestVoiceIntent = { [weak service] transcript, selectedText, surroundingContext, contentType in
-            guard let service else { return nil }
-            return service.startInterpretingIntent(
-                transcript: transcript,
-                selectedText: selectedText,
-                surroundingContext: surroundingContext,
-                contentType: contentType
-            )
-        }
-
-        voiceCoordinator = coordinator
-    }
-
-    /// Toggles voice control — starts listening if idle, stops if listening.
-    /// Called by Cmd+Shift+J per AC-7 and by the mic button per AC-1.
-    private func toggleVoiceControl() {
-        guard let coordinator = voiceCoordinator else { return }
-
-        switch coordinator.phase {
-        case .idle:
-            // Cancel any active AI diffs before starting voice
-            improveCoordinator?.cancel()
-            toneCoordinator?.cancel()
-            translationCoordinator?.cancel()
-            coordinator.startListening()
-        case .listening:
-            coordinator.stopListening()
-        case .interpreting, .diffStreaming:
-            // Do nothing — wait for completion
-            break
-        case .diffReady:
-            // If diff is ready and user presses shortcut again, accept
-            coordinator.accept()
-        }
-    }
-
-    /// Voice transcription overlay shown during recording per AC-3.
     @ViewBuilder
     private var voiceTranscriptionOverlay: some View {
-        if let coordinator = voiceCoordinator,
+        if let coordinator = aiCoordinator?.voiceCoordinator,
            coordinator.phase == .listening || coordinator.phase == .interpreting {
             VoiceTranscriptionOverlay(
                 phase: coordinator.phase,
@@ -1137,10 +770,6 @@ struct EditorShellView: View {
             )
             .transition(.scale.combined(with: .opacity))
         }
-    }
-    #else
-    private func toggleVoiceControl() {
-        // Voice control requires Speech framework — not available on this platform
     }
     #endif
 
@@ -1159,11 +788,11 @@ struct EditorShellView: View {
     /// Handles an image received via drag-and-drop or paste per FEAT-020.
     /// Stores the data and presents a save location picker.
     private func handleImageReceived(data: Data, suggestedName: String) {
-        pendingImageData = data
-        pendingImageFilename = suggestedName
+        imageDropState.data = data
+        imageDropState.filename = suggestedName
 
         #if os(iOS)
-        showingImageSavePicker = true
+        imageDropState.showingPicker = true
         #else
         saveImageViaNSSavePanel()
         #endif
@@ -1174,7 +803,7 @@ struct EditorShellView: View {
     private func saveImageViaNSSavePanel() {
         let panel = NSSavePanel()
         panel.allowedContentTypes = [.png, .jpeg, .gif, .tiff, .bmp]
-        panel.nameFieldStringValue = pendingImageFilename
+        panel.nameFieldStringValue = imageDropState.filename
         panel.canCreateDirectories = true
 
         // Default to document's directory if available
@@ -1184,7 +813,7 @@ struct EditorShellView: View {
 
         panel.begin { response in
             guard response == .OK, let url = panel.url else {
-                self.pendingImageData = nil
+                self.imageDropState.data = nil
                 return
             }
             Task { @MainActor in
@@ -1197,7 +826,7 @@ struct EditorShellView: View {
     /// Saves pending image data to the chosen URL and inserts markdown at cursor per FEAT-020.
     /// Runs on a background thread for large images (AC-4).
     private func saveAndInsertImage(to destinationURL: URL) {
-        guard let imageData = pendingImageData else { return }
+        guard let imageData = imageDropState.data else { return }
         let isLargeImage = imageData.count >= 10_000_000 // 10MB threshold per AC-4
 
         if isLargeImage {
@@ -1217,7 +846,7 @@ struct EditorShellView: View {
 
                 await MainActor.run {
                     self.editorState.isImageSaving = false
-                    self.pendingImageData = nil
+                    self.imageDropState.data = nil
 
                     // Insert markdown image link at cursor position
                     let markdown = "![image](\(relativePath))"
@@ -1226,7 +855,7 @@ struct EditorShellView: View {
             } catch {
                 await MainActor.run {
                     self.editorState.isImageSaving = false
-                    self.pendingImageData = nil
+                    self.imageDropState.data = nil
                     self.errorPresenter.present(
                         EMError.file(.saveFailed(url: destinationURL, underlying: error))
                     )
@@ -1293,147 +922,15 @@ struct EditorShellView: View {
 
     // MARK: - Conflict Detection per FEAT-045
 
-    private func startConflictMonitoring() {
-        guard let url = fileOpenCoordinator.currentFileURL else { return }
-        let manager = FileConflictManager(url: url)
-        conflictManager = manager
-        manager.startMonitoring()
-    }
-
-    private func handleReload(_ manager: FileConflictManager) {
+    private func handleReload() {
         do {
-            let content = try manager.reload()
+            guard let content = try fileOpenCoordinator.handleReload() else { return }
             text = content.text
             currentLineEnding = content.lineEnding
         } catch {
             let emError = (error as? EMError) ?? .unexpected(underlying: error)
             errorPresenter.present(emError)
         }
-    }
-
-    private func handleSaveElsewhere() {
-        showingSaveElsewherePanel = true
-    }
-
-    // MARK: - PDF Export per FEAT-061
-
-    /// Exports the current document as a PDF with optional watermark.
-    private func exportPDF() {
-        let pdfData = PDFExporter.exportPDF(
-            text: text,
-            documentURL: fileOpenCoordinator.currentFileURL,
-            includeWatermark: settings.isPDFExportWatermarkEnabled
-        )
-
-        let fileName = fileOpenCoordinator.currentFileURL?
-            .deletingPathExtension().lastPathComponent ?? "Untitled"
-        let tempURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("\(fileName).pdf")
-
-        do {
-            try pdfData.write(to: tempURL)
-            exportedPDFURL = tempURL
-
-            #if os(macOS)
-            // macOS: open NSSavePanel to save the PDF
-            let savePanel = NSSavePanel()
-            savePanel.allowedContentTypes = [.pdf]
-            savePanel.nameFieldStringValue = "\(fileName).pdf"
-            savePanel.begin { response in
-                guard response == .OK, let url = savePanel.url else { return }
-                do {
-                    // Remove existing file if present so copyItem doesn't fail
-                    if FileManager.default.fileExists(atPath: url.path) {
-                        try FileManager.default.removeItem(at: url)
-                    }
-                    try FileManager.default.copyItem(at: tempURL, to: url)
-                } catch {
-                    // Best-effort save — NSSavePanel already confirmed the location
-                }
-            }
-            #else
-            showingPDFShareSheet = true
-            #endif
-        } catch {
-            errorPresenter.present(.unexpected(underlying: error))
-        }
-    }
-
-    // MARK: - Share Markdown per FEAT-018
-
-    /// Shares the .md file via the system share sheet (AirDrop, email, Messages, etc.).
-    private func shareMarkdownFile() {
-        #if os(iOS)
-        showingMarkdownShareSheet = true
-        #else
-        guard let url = markdownShareURL() else { return }
-        let picker = NSSharingServicePicker(items: [url])
-        // Present from the toolbar area — best-effort positioning
-        if let window = NSApp.keyWindow, let contentView = window.contentView {
-            picker.show(relativeTo: .zero, of: contentView, preferredEdge: .maxY)
-        }
-        #endif
-    }
-
-    /// Returns a URL to share the markdown file. Uses the original file URL if available,
-    /// otherwise writes to a temp file.
-    private func markdownShareURL() -> URL? {
-        if let fileURL = fileOpenCoordinator.currentFileURL {
-            return fileURL
-        }
-        // No file on disk — write to temp
-        let tempURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("Untitled.md")
-        guard let data = text.data(using: .utf8) else { return nil }
-        try? data.write(to: tempURL)
-        return tempURL
-    }
-
-    // MARK: - Print per FEAT-018
-
-    /// Prints the rendered document matching in-editor rich text appearance.
-    private func printDocument() {
-        #if os(iOS)
-        let printController = UIPrintInteractionController.shared
-        printController.printInfo = UIPrintInfo(dictionary: nil)
-        printController.printInfo?.jobName = fileOpenCoordinator.currentFileURL?
-            .deletingPathExtension().lastPathComponent ?? "Untitled"
-        printController.printInfo?.outputType = .general
-
-        // Use the PDF data for highest fidelity, no watermark for print per [A-056]
-        let pdfData = PDFExporter.exportPDF(
-            text: text,
-            documentURL: fileOpenCoordinator.currentFileURL,
-            includeWatermark: false
-        )
-        printController.printingItem = pdfData
-        printController.present(animated: true)
-        #else
-        // macOS: use NSPrintOperation with the rich attributed string
-        let richText = PDFExporter.renderAttributedString(
-            text: text,
-            documentURL: fileOpenCoordinator.currentFileURL
-        )
-        let printView = NSTextView(frame: NSRect(
-            x: 0, y: 0,
-            width: 468, // US Letter content width (612 - 72*2)
-            height: 648  // US Letter content height (792 - 72*2)
-        ))
-        printView.textStorage?.setAttributedString(richText)
-        printView.isEditable = false
-
-        let printInfo = NSPrintInfo.shared.copy() as! NSPrintInfo
-        printInfo.topMargin = 72
-        printInfo.bottomMargin = 72
-        printInfo.leftMargin = 72
-        printInfo.rightMargin = 72
-        printInfo.jobDisposition = .spool
-
-        let printOp = NSPrintOperation(view: printView, printInfo: printInfo)
-        printOp.showsPrintPanel = true
-        printOp.showsProgressPanel = true
-        printOp.run()
-        #endif
     }
 
     // MARK: - Find and Replace per FEAT-017
@@ -1525,6 +1022,14 @@ struct EditorShellView: View {
         }
         updateFindMatches()
     }
+}
+
+/// Bundles image drop/paste state into a single value type per FEAT-074.
+/// Replaces three separate @State properties (pendingImageData, pendingImageFilename, showingImageSavePicker).
+struct ImageDropState {
+    var data: Data?
+    var filename: String = ""
+    var showingPicker = false
 }
 
 /// Lightweight FileDocument wrapper for exporting editor content via `.fileExporter`.

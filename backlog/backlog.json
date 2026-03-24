@@ -1727,11 +1727,12 @@
         "All existing editor functionality works identically after decomposition",
         "Each extracted coordinator is independently testable"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "groomedAt": "2026-03-23",
-      "groomingNotes": "Downgraded from must to should: pure internal refactoring with zero direct user impact. A 23-@State view is a maintainability hazard, but it does not affect any user-facing behavior today. Should be done before the next major editor feature, not ahead of revenue-critical or crash-risk items."
+      "groomingNotes": "Downgraded from must to should: pure internal refactoring with zero direct user impact. A 23-@State view is a maintainability hazard, but it does not affect any user-facing behavior today. Should be done before the next major editor feature, not ahead of revenue-critical or crash-risk items.",
+      "completedAt": "2026-03-23T22:47:09-07:00"
     },
     {
       "id": "FEAT-075",
