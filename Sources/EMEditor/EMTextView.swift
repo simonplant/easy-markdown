@@ -56,6 +56,8 @@ public final class EMTextView: UITextView {
     public var onInsertLink: (() -> Void)?
     /// Handler for AI assist (Cmd+J) per [A-023].
     public var onAIAssist: (() -> Void)?
+    /// Handler for voice control (Cmd+Shift+J) per FEAT-068 AC-7.
+    public var onVoiceControl: (() -> Void)?
     /// Handler for source view toggle (Cmd+Shift+P).
     public var onToggleSourceView: (() -> Void)?
     /// Handler for open file (Cmd+O).
@@ -342,6 +344,11 @@ public final class EMTextView: UITextView {
         ai.discoverabilityTitle = NSLocalizedString("AI Assist", comment: "Keyboard shortcut")
         commands.append(ai)
 
+        // Voice control per FEAT-068 AC-7
+        let voice = UIKeyCommand(input: "J", modifierFlags: [.command, .shift], action: #selector(handleVoiceControl))
+        voice.discoverabilityTitle = NSLocalizedString("Voice Command", comment: "Keyboard shortcut")
+        commands.append(voice)
+
         // App navigation per FEAT-009
         let toggleSource = UIKeyCommand(input: "P", modifierFlags: [.command, .shift], action: #selector(handleToggleSource))
         toggleSource.discoverabilityTitle = NSLocalizedString("Toggle Source View", comment: "Keyboard shortcut")
@@ -376,6 +383,7 @@ public final class EMTextView: UITextView {
     @objc private func handleInsertLink() { onInsertLink?() }
     @objc private func handleCode() { onCode?() }
     @objc private func handleAIAssist() { onAIAssist?() }
+    @objc private func handleVoiceControl() { onVoiceControl?() }
     @objc private func handleToggleSource() { onToggleSourceView?() }
     @objc private func handleOpenFile() { onOpenFile?() }
     @objc private func handleNewFile() { onNewFile?() }
@@ -583,6 +591,8 @@ public final class EMTextView: NSTextView {
     public var onInsertLink: (() -> Void)?
     /// Handler for AI assist (Cmd+J) per [A-023].
     public var onAIAssist: (() -> Void)?
+    /// Handler for voice control (Cmd+Shift+J) per FEAT-068 AC-7.
+    public var onVoiceControl: (() -> Void)?
     /// Handler for source view toggle (Cmd+Shift+P).
     public var onToggleSourceView: (() -> Void)?
     /// Handler for open file (Cmd+O).
@@ -814,6 +824,8 @@ public final class EMTextView: NSTextView {
             onCode?(); return true
         case ("j", .command):
             onAIAssist?(); return true
+        case ("j", [.command, .shift]):
+            onVoiceControl?(); return true
         case ("p", [.command, .shift]):
             onToggleSourceView?(); return true
         case ("o", .command):

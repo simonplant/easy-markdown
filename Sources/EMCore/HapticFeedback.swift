@@ -12,6 +12,8 @@ public enum HapticFeedback {
             generator = UIImpactFeedbackGenerator(style: .medium)
         case .autoSaveConfirm:
             generator = UIImpactFeedbackGenerator(style: .soft)
+        case .voiceActivated:
+            generator = UIImpactFeedbackGenerator(style: .medium)
         }
         generator.impactOccurred()
     }

@@ -42,6 +42,10 @@ public struct TextViewBridge: UIViewRepresentable {
     public var ghostTextCoordinator: GhostTextCoordinator?
     /// Optional smart completion coordinator for AI structure-aware completions per FEAT-025.
     public var smartCompletionCoordinator: SmartCompletionCoordinator?
+    #if canImport(Speech)
+    /// Optional voice coordinator for voice control per FEAT-068.
+    public var voiceCoordinator: VoiceCoordinator?
+    #endif
 
     // MARK: - Formatting settings per FEAT-053 AC-6
 
@@ -59,6 +63,8 @@ public struct TextViewBridge: UIViewRepresentable {
 
     /// Called when Cmd+J is pressed (AI assist).
     public var onAIAssist: (() -> Void)?
+    /// Called when Cmd+Shift+J is pressed (voice control) per FEAT-068 AC-7.
+    public var onVoiceControl: (() -> Void)?
     /// Called when Cmd+Shift+P is pressed (toggle source view).
     public var onToggleSourceView: (() -> Void)?
     /// Called when Cmd+O is pressed (open file).
@@ -101,6 +107,7 @@ public struct TextViewBridge: UIViewRepresentable {
         isAutoFormatTrailingWhitespaceTrim: Bool = true,
         isProseSuggestionsEnabled: Bool = false,
         onAIAssist: (() -> Void)? = nil,
+        onVoiceControl: (() -> Void)? = nil,
         onToggleSourceView: (() -> Void)? = nil,
         onOpenFile: (() -> Void)? = nil,
         onNewFile: (() -> Void)? = nil,
@@ -128,6 +135,7 @@ public struct TextViewBridge: UIViewRepresentable {
         self.isAutoFormatTrailingWhitespaceTrim = isAutoFormatTrailingWhitespaceTrim
         self.isProseSuggestionsEnabled = isProseSuggestionsEnabled
         self.onAIAssist = onAIAssist
+        self.onVoiceControl = onVoiceControl
         self.onToggleSourceView = onToggleSourceView
         self.onOpenFile = onOpenFile
         self.onNewFile = onNewFile
@@ -183,6 +191,13 @@ public struct TextViewBridge: UIViewRepresentable {
             smartCompletionCoordinator.textViewDelegate = context.coordinator
             context.coordinator.smartCompletionCoordinator = smartCompletionCoordinator
         }
+
+        // Wire voice coordinator per FEAT-068
+        #if canImport(Speech)
+        if let voiceCoordinator {
+            voiceCoordinator.textViewDelegate = context.coordinator
+        }
+        #endif
 
         // Wire Shift-Tab handler for list outdent per FEAT-004
         textView.onShiftTab = { [weak coordinator = context.coordinator, weak textView] in
@@ -248,6 +263,7 @@ public struct TextViewBridge: UIViewRepresentable {
 
         // Wire app-level shortcut handlers per FEAT-009
         textView.onAIAssist = onAIAssist
+        textView.onVoiceControl = onVoiceControl
         textView.onToggleSourceView = onToggleSourceView
         textView.onOpenFile = onOpenFile
         textView.onNewFile = onNewFile
@@ -310,6 +326,13 @@ public struct TextViewBridge: UIViewRepresentable {
             smartCompletionCoordinator.textViewDelegate = coordinator
             coordinator.smartCompletionCoordinator = smartCompletionCoordinator
         }
+
+        // Ensure voice coordinator stays wired per FEAT-068
+        #if canImport(Speech)
+        if let voiceCoordinator, voiceCoordinator.textViewDelegate == nil {
+            voiceCoordinator.textViewDelegate = coordinator
+        }
+        #endif
 
         // Track whether we need to re-render
         let textChanged = coordinator.updateTextView(textView, with: text)
@@ -398,6 +421,10 @@ public struct TextViewBridge: NSViewRepresentable {
     public var ghostTextCoordinator: GhostTextCoordinator?
     /// Optional smart completion coordinator for AI structure-aware completions per FEAT-025.
     public var smartCompletionCoordinator: SmartCompletionCoordinator?
+    #if canImport(Speech)
+    /// Optional voice coordinator for voice control per FEAT-068.
+    public var voiceCoordinator: VoiceCoordinator?
+    #endif
 
     // MARK: - Formatting settings per FEAT-053 AC-6
 
@@ -415,6 +442,8 @@ public struct TextViewBridge: NSViewRepresentable {
 
     /// Called when Cmd+J is pressed (AI assist).
     public var onAIAssist: (() -> Void)?
+    /// Called when Cmd+Shift+J is pressed (voice control) per FEAT-068 AC-7.
+    public var onVoiceControl: (() -> Void)?
     /// Called when Cmd+Shift+P is pressed (toggle source view).
     public var onToggleSourceView: (() -> Void)?
     /// Called when Cmd+O is pressed (open file).
@@ -457,6 +486,7 @@ public struct TextViewBridge: NSViewRepresentable {
         isAutoFormatTrailingWhitespaceTrim: Bool = true,
         isProseSuggestionsEnabled: Bool = false,
         onAIAssist: (() -> Void)? = nil,
+        onVoiceControl: (() -> Void)? = nil,
         onToggleSourceView: (() -> Void)? = nil,
         onOpenFile: (() -> Void)? = nil,
         onNewFile: (() -> Void)? = nil,
@@ -484,6 +514,7 @@ public struct TextViewBridge: NSViewRepresentable {
         self.isAutoFormatTrailingWhitespaceTrim = isAutoFormatTrailingWhitespaceTrim
         self.isProseSuggestionsEnabled = isProseSuggestionsEnabled
         self.onAIAssist = onAIAssist
+        self.onVoiceControl = onVoiceControl
         self.onToggleSourceView = onToggleSourceView
         self.onOpenFile = onOpenFile
         self.onNewFile = onNewFile
@@ -545,6 +576,13 @@ public struct TextViewBridge: NSViewRepresentable {
             smartCompletionCoordinator.textViewDelegate = context.coordinator
             context.coordinator.smartCompletionCoordinator = smartCompletionCoordinator
         }
+
+        // Wire voice coordinator per FEAT-068
+        #if canImport(Speech)
+        if let voiceCoordinator {
+            voiceCoordinator.textViewDelegate = context.coordinator
+        }
+        #endif
 
         // Wire Shift-Tab handler for list outdent per FEAT-004
         textView.onShiftTab = { [weak coordinator = context.coordinator, weak textView] in
@@ -610,6 +648,7 @@ public struct TextViewBridge: NSViewRepresentable {
 
         // Wire app-level shortcut handlers per FEAT-009
         textView.onAIAssist = onAIAssist
+        textView.onVoiceControl = onVoiceControl
         textView.onToggleSourceView = onToggleSourceView
         textView.onOpenFile = onOpenFile
         textView.onNewFile = onNewFile
