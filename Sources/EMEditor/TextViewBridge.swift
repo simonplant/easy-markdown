@@ -66,6 +66,10 @@ public struct TextViewBridge: UIViewRepresentable {
     /// Called when Cmd+F is pressed (find and replace) per FEAT-017.
     public var onFindReplace: (() -> Void)?
 
+    /// Called when an image is dropped or pasted per FEAT-020 (F-015).
+    /// Receives raw image data and a suggested filename.
+    public var onImageReceived: ((_ imageData: Data, _ suggestedName: String) -> Void)?
+
     // MARK: - Context menu AI actions per FEAT-058
 
     /// Whether AI actions should appear in the right-click context menu.
@@ -96,6 +100,7 @@ public struct TextViewBridge: UIViewRepresentable {
         onNewFile: (() -> Void)? = nil,
         onCloseFile: (() -> Void)? = nil,
         onFindReplace: (() -> Void)? = nil,
+        onImageReceived: ((_ imageData: Data, _ suggestedName: String) -> Void)? = nil,
         showAIContextMenuActions: Bool = false,
         onContextMenuImprove: (() -> Void)? = nil,
         onContextMenuSummarize: (() -> Void)? = nil
@@ -120,6 +125,7 @@ public struct TextViewBridge: UIViewRepresentable {
         self.onNewFile = onNewFile
         self.onCloseFile = onCloseFile
         self.onFindReplace = onFindReplace
+        self.onImageReceived = onImageReceived
         self.showAIContextMenuActions = showAIContextMenuActions
         self.onContextMenuImprove = onContextMenuImprove
         self.onContextMenuSummarize = onContextMenuSummarize
@@ -222,6 +228,9 @@ public struct TextViewBridge: UIViewRepresentable {
         textView.onNewFile = onNewFile
         textView.onCloseFile = onCloseFile
         textView.onFindReplace = onFindReplace
+
+        // Wire image drop/paste handler per FEAT-020
+        textView.onImageReceived = onImageReceived
 
         // Wire context menu AI actions per FEAT-058
         context.coordinator.showAIContextMenuActions = showAIContextMenuActions
@@ -377,6 +386,10 @@ public struct TextViewBridge: NSViewRepresentable {
     /// Called when Cmd+F is pressed (find and replace) per FEAT-017.
     public var onFindReplace: (() -> Void)?
 
+    /// Called when an image is dropped or pasted per FEAT-020 (F-015).
+    /// Receives raw image data and a suggested filename.
+    public var onImageReceived: ((_ imageData: Data, _ suggestedName: String) -> Void)?
+
     // MARK: - Context menu AI actions per FEAT-058
 
     /// Whether AI actions should appear in the right-click context menu.
@@ -407,6 +420,7 @@ public struct TextViewBridge: NSViewRepresentable {
         onNewFile: (() -> Void)? = nil,
         onCloseFile: (() -> Void)? = nil,
         onFindReplace: (() -> Void)? = nil,
+        onImageReceived: ((_ imageData: Data, _ suggestedName: String) -> Void)? = nil,
         showAIContextMenuActions: Bool = false,
         onContextMenuImprove: (() -> Void)? = nil,
         onContextMenuSummarize: (() -> Void)? = nil
@@ -431,6 +445,7 @@ public struct TextViewBridge: NSViewRepresentable {
         self.onNewFile = onNewFile
         self.onCloseFile = onCloseFile
         self.onFindReplace = onFindReplace
+        self.onImageReceived = onImageReceived
         self.showAIContextMenuActions = showAIContextMenuActions
         self.onContextMenuImprove = onContextMenuImprove
         self.onContextMenuSummarize = onContextMenuSummarize
@@ -539,6 +554,9 @@ public struct TextViewBridge: NSViewRepresentable {
         textView.onNewFile = onNewFile
         textView.onCloseFile = onCloseFile
         textView.onFindReplace = onFindReplace
+
+        // Wire image drop/paste handler per FEAT-020
+        textView.onImageReceived = onImageReceived
 
         // Wire context menu AI actions per FEAT-058
         textView.showAIContextMenuActions = showAIContextMenuActions

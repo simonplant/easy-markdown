@@ -60,6 +60,10 @@ public final class EditorState {
     /// Format: "ruleID:line". Cleared on file close.
     public private(set) var dismissedDiagnosticKeys: Set<String> = []
 
+    /// Whether an image is currently being saved per FEAT-020 AC-4.
+    /// When true, EMApp shows a progress indicator overlay.
+    public var isImageSaving: Bool = false
+
     /// Find and replace state per FEAT-017.
     public let findReplaceState = FindReplaceState()
 

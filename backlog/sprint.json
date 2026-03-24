@@ -1,25 +1,21 @@
 {
-  "sprintId": "sprint-1774324236",
-  "startedAt": "2026-03-23T20:50:36-07:00",
-  "status": "completed",
+  "sprintId": "sprint-1774325031",
+  "startedAt": "2026-03-23T21:03:51-07:00",
+  "status": "in_progress",
   "item": {
-    "id": "FEAT-019",
-    "title": "F-014: Custom Themes and Fonts",
-    "intent": "Personalization deepens attachment to the tool — users should be able to make easy-markdown feel like theirs",
-    "description": "3-5 built-in color themes with light and dark variants each. Font selection from curated list (we control quality). Font size adjustment. Theme preview before committing. Settings persist via UserDefaults. All themes meet WCAG AA contrast ratios.",
+    "id": "FEAT-020",
+    "title": "F-015: Image Handling",
+    "intent": "Working with images in markdown should be effortless — drag, drop, done",
+    "description": "Drop/paste image into editor prompts for save location, inserts relative path markdown. Images rendered inline in rich text mode. Broken image paths shown with placeholder and doctor warning (F-005).",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "User selects a different theme and font — entire editor updates immediately",
-      "Selection persists across app launches",
-      "All themes pass WCAG AA contrast check",
-      "Theme preview shows the effect on editor content before committing the selection"
+      "User drags image into editor — saved to chosen location, relative markdown link inserted, renders inline",
+      "Broken image paths show placeholder with doctor warning",
+      "Pasting an image from clipboard prompts for save location and inserts relative path",
+      "Very large image (10MB+) shows progress during save, does not freeze the editor"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T20:50:36-07:00",
-    "status": "passed",
-    "completedAt": "2026-03-23T21:03:50-07:00"
-  },
-  "completedAt": "2026-03-23T21:03:50-07:00",
-  "attempts": 1
+    "startedAt": "2026-03-23T21:03:51-07:00"
+  }
 }
