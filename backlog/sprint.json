@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774324236",
   "startedAt": "2026-03-23T20:50:36-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-019",
     "title": "F-014: Custom Themes and Fonts",
@@ -16,6 +16,10 @@
       "Theme preview shows the effect on editor content before committing the selection"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T20:50:36-07:00"
-  }
+    "startedAt": "2026-03-23T20:50:36-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-23T21:03:50-07:00"
+  },
+  "completedAt": "2026-03-23T21:03:50-07:00",
+  "attempts": 1
 }
