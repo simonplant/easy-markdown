@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774325031",
   "startedAt": "2026-03-23T21:03:51-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-020",
     "title": "F-015: Image Handling",
@@ -16,6 +16,10 @@
       "Very large image (10MB+) shows progress during save, does not freeze the editor"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T21:03:51-07:00"
-  }
+    "startedAt": "2026-03-23T21:03:51-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-23T21:20:10-07:00"
+  },
+  "completedAt": "2026-03-23T21:20:10-07:00",
+  "attempts": 1
 }
