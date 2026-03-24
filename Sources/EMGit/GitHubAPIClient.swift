@@ -1,5 +1,6 @@
 import Foundation
 import EMCore
+import SwiftGit2
 import os
 
 /// GitHub REST API client for repo listing and token validation per [A-064].

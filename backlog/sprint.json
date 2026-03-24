@@ -1,30 +1,29 @@
 {
-  "sprintId": "sprint-1774334434",
-  "startedAt": "2026-03-23T23:40:34-07:00",
+  "sprintId": "sprint-1774334594",
+  "startedAt": "2026-03-23T23:43:14-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-085",
-    "title": "DEBT: MermaidRenderer — replace CDN mermaid.js with bundled local resource",
-    "intent": "mermaid.js must be bundled locally so Mermaid rendering works in a sandboxed app with no network access",
-    "description": "MermaidRenderer.htmlTemplate loads mermaid.js from cdn.jsdelivr.net. In a sandboxed iOS app this CDN request fails at runtime and in tests, causing every Mermaid render to silently fail. Per SPIKE-006 recommendation: bundle mermaid.js v10 as a local resource in EMEditor. This is a standalone fix scoped to MermaidRenderer — no rendering pipeline changes needed.",
+    "id": "FEAT-084",
+    "title": "INFRA: Add mbernson/SwiftGit2 SPM dependency to Package.swift",
+    "intent": "EMGit must compile with SwiftGit2 available before any git operation can be implemented",
+    "description": "EMGit currently has no libgit2/SwiftGit2 dependency in Package.swift — it is a dependency-free target. All git clone/commit/push work in FEAT-070 and FEAT-071 requires this. Add mbernson/SwiftGit2 (SPM, compiles libgit2 from source, iOS 15.5+, no pre-built binaries). Verify swift build passes before marking done.",
     "sourceBacklog": "backlog.json",
     "steps": [
-      "Download mermaid.min.js from the mermaid-js/mermaid v10 GitHub Releases page (latest v10.x) and save to Sources/EMEditor/Resources/mermaid.min.js",
-      "Add resources: [.process(\"Resources\")] to the EMEditor target in Package.swift (EMCore already uses .copy(\"Resources/Fonts\") as a reference pattern)",
-      "In MermaidRenderer.htmlTemplate, replace the CDN script tag (<script src=\"https://cdn.jsdelivr.net/...\"></script>) with an inline <script> block: read the file using Bundle.module.url(forResource: \"mermaid.min\", withExtension: \"js\"), load its contents as a String, and embed it inline in the HTML — if the file is missing, fall back to an empty string and log an error",
-      "Run swift build to confirm Bundle.module resource access compiles correctly",
-      "Run swift test — MermaidRendererTests.testRenderFlowchart should now pass without network access"
+      "Add .package(url: \"https://github.com/mbernson/SwiftGit2\", branch: \"master\") to the dependencies array in Package.swift",
+      "Add .product(name: \"SwiftGit2\", package: \"SwiftGit2\") to the EMGit target dependencies list in Package.swift",
+      "Run swift build and resolve any SPM fetch or compile errors",
+      "Run swift test to confirm no regressions"
     ],
     "acceptanceCriteria": [
-      "swift build succeeds with mermaid.min.js bundled as a Package resource",
-      "MermaidRenderer.render() returns .success for a simple flowchart when the device has no internet access",
-      "No CDN or external URLs appear in MermaidRenderer source after this change"
+      "swift build succeeds with SwiftGit2 resolvable and EMGit target compiling",
+      "import SwiftGit2 compiles without errors in any EMGit source file",
+      "swift test passes with no regressions"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T23:40:34-07:00",
+    "startedAt": "2026-03-23T23:43:14-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T23:43:12-07:00"
+    "completedAt": "2026-03-23T23:46:07-07:00"
   },
-  "completedAt": "2026-03-23T23:43:12-07:00",
+  "completedAt": "2026-03-23T23:46:07-07:00",
   "attempts": 1
 }

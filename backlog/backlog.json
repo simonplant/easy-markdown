@@ -330,11 +330,12 @@
       ],
       "scope": [],
       "dependsOn": [],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "groomingNotes": "STEPS: (1) In Package.swift, add to dependencies array: .package(url: \"https://github.com/mbernson/SwiftGit2\", branch: \"master\"). (2) Update the EMGit target in Package.swift to add .product(name: \"SwiftGit2\", package: \"SwiftGit2\") to its dependencies array. Disable SSH/libssh2/OpenSSL — check if mbernson/SwiftGit2 has build flags for this; if not, that's acceptable (binary size is still 2-4MB as per SPIKE-009). (3) Run swift build — ensure it compiles cleanly. Fix any SPM resolution errors. (4) Run swift test — no tests should regress. (5) Commit Package.swift and Package.resolved. AC: swift build succeeds with SwiftGit2 resolvable and EMGit target compiles; Repository type from SwiftGit2 is importable in a new EMGit file.",
-      "groomedAt": "2026-03-23"
+      "groomedAt": "2026-03-23",
+      "completedAt": "2026-03-23T23:46:07-07:00"
     },
     {
       "id": "FEAT-085",
