@@ -30,6 +30,11 @@ public final class AppRouter {
         presentedSheet = .subscriptionOffer
     }
 
+    /// Present the GitHub repo browser sheet (includes auth if needed).
+    public func showGitHubRepoBrowser() {
+        presentedSheet = .gitHubRepoBrowser
+    }
+
     /// Dismiss any presented sheet.
     public func dismissSheet() {
         presentedSheet = nil

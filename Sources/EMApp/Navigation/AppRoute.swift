@@ -10,6 +10,7 @@ public enum AppRoute: Hashable {
 public enum SheetRoute: Identifiable, Hashable {
     case settings
     case subscriptionOffer
+    case gitHubRepoBrowser
 
     public var id: Self { self }
 }

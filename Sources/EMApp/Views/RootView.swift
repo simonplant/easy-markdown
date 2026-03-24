@@ -45,6 +45,8 @@ public struct RootView: View {
                 SettingsView()
             case .subscriptionOffer:
                 SubscriptionOfferView()
+            case .gitHubRepoBrowser:
+                RepoBrowserView()
             }
         }
         .overlay(alignment: .top) {

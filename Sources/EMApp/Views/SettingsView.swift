@@ -1,14 +1,17 @@
 import SwiftUI
 import EMSettings
 import EMCore
+import EMGit
 
 /// Settings screen presented as a sheet per [A-058].
 /// Sections: Appearance, Editor, AI, About.
 /// Opinionated defaults — settings exist to turn things OFF.
 struct SettingsView: View {
     @Environment(SettingsManager.self) private var settings
+    @Environment(GitHubOAuthManager.self) private var gitHubOAuth
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @State private var showingSignOutConfirmation = false
 
     var body: some View {
         NavigationStack {
@@ -33,6 +36,7 @@ struct SettingsView: View {
             writingSection(settings: $settings)
             aiSection(settings: $settings)
             exportSection(settings: $settings)
+            gitHubSection
             aboutSection
         }
     }
@@ -176,6 +180,70 @@ struct SettingsView: View {
         Section("Export") {
             Toggle("PDF Watermark", isOn: settings.isPDFExportWatermarkEnabled)
                 .accessibilityHint("Include a Made with easy-markdown watermark in exported PDFs")
+        }
+    }
+
+    // MARK: - GitHub per FEAT-072
+
+    /// GitHub account section — shows sign-in status and sign-out button (AC5).
+    /// Sign out clears token and offers to delete local clones.
+    private var gitHubSection: some View {
+        Section("GitHub") {
+            if gitHubOAuth.isSignedIn {
+                HStack {
+                    Text("Signed In")
+                    Spacer()
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                        .accessibilityHidden(true)
+                }
+                .accessibilityLabel("GitHub: Signed in")
+
+                Button(role: .destructive) {
+                    showingSignOutConfirmation = true
+                } label: {
+                    Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
+                }
+                .accessibilityHint("Signs out of GitHub and optionally deletes local clones")
+                .confirmationDialog(
+                    "Sign Out of GitHub",
+                    isPresented: $showingSignOutConfirmation,
+                    titleVisibility: .visible
+                ) {
+                    Button("Sign Out", role: .destructive) {
+                        gitHubOAuth.signOut()
+                    }
+                    Button("Sign Out & Delete Local Clones", role: .destructive) {
+                        // Delete clones directory, then sign out.
+                        deleteLocalClones()
+                        gitHubOAuth.signOut()
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("This will remove your GitHub credentials. You can also delete any locally cloned repositories.")
+                }
+            } else {
+                HStack {
+                    Text("Not Signed In")
+                    Spacer()
+                    Image(systemName: "person.crop.circle.badge.questionmark")
+                        .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
+                }
+                .accessibilityLabel("GitHub: Not signed in")
+            }
+        }
+    }
+
+    /// Deletes the local GitHub clones directory.
+    private func deleteLocalClones() {
+        let clonesDir = FileManager.default
+            .urls(for: .applicationSupportDirectory, in: .userDomainMask)
+            .first?
+            .appendingPathComponent("GitHubClones", isDirectory: true)
+
+        if let dir = clonesDir {
+            try? FileManager.default.removeItem(at: dir)
         }
     }
 
