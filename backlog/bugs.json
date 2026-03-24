@@ -82,7 +82,10 @@
       "passes": false,
       "readyForSprint": true,
       "groomingNotes": "User impact: iOS users on cellular frequently hit brief connectivity drops (subway, elevator, building handoff). Today, a 1-second blip during an AI rewrite shows the user an error banner and loses their work-in-progress — they must re-invoke the action manually. One silent retry converts this from a frustrating visible failure to a seamless experience. Scope is intentionally narrow: only two transient error codes are retried; offline and server errors fail immediately. No new UI needed. Priority is correct at 'should' — affects all cloud AI users but is not a blocking defect.",
-      "groomedAt": "2026-03-24"
+      "groomedAt": "2026-03-24",
+      "lastFailReason": "Implementation failed",
+      "lastFailAt": "2026-03-24T00:16:35-07:00",
+      "failCount": 1
     }
   ]
 }
