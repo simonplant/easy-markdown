@@ -534,12 +534,13 @@
         "Cloud API failure mid-translation shows partial result with option to retry or cancel",
         "Very long selection (5000+ words) shows warning about processing time"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "lastFailReason": "Validator agent rejected implementation",
       "lastFailAt": "2026-03-21T09:48:43-07:00",
-      "failCount": 2
+      "failCount": 2,
+      "completedAt": "2026-03-23T21:41:32-07:00"
     },
     {
       "id": "FEAT-025",
