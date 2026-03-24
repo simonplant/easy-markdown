@@ -6,4 +6,5 @@ public enum HapticStyle: Sendable {
     case aiAccepted
     case autoSaveConfirm
     case toggleView
+    case voiceActivated
 }

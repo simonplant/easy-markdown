@@ -54,6 +54,10 @@ struct EditorShellView: View {
     @State private var ghostTextService: GhostTextService?
     @State private var smartCompletionCoordinator: SmartCompletionCoordinator?
     @State private var smartCompletionService: SmartCompletionService?
+    #if canImport(Speech)
+    @State private var voiceCoordinator: VoiceCoordinator?
+    @State private var voiceIntentService: VoiceIntentService?
+    #endif
     @State private var showingOpenFilePicker = false
     @State private var showingNewFilePicker = false
     @State private var isProSubscriber = false
@@ -100,37 +104,7 @@ struct EditorShellView: View {
         VStack(spacing: 0) {
             // Editor content area — TextKit 2 via EMEditor per [A-004]
             // Rich text rendering per FEAT-003 and [A-018]
-            TextViewBridge(
-                text: $text,
-                editorState: editorState,
-                renderConfig: renderConfig,
-                isEditable: true,
-                isSpellCheckEnabled: settings.isSpellCheckEnabled,
-                onTextChange: { newText in
-                    updateDocumentStats(newText)
-                    autoSaveManager?.contentDidChange()
-                },
-                onLinkTap: { url in handleLinkTap(url) },
-                improveCoordinator: improveCoordinator,
-                toneCoordinator: toneCoordinator,
-                translationCoordinator: translationCoordinator,
-                ghostTextCoordinator: ghostTextCoordinator,
-                smartCompletionCoordinator: smartCompletionCoordinator,
-                isAutoFormatHeadingSpacing: settings.isAutoFormatHeadingSpacing,
-                isAutoFormatBlankLineSeparation: settings.isAutoFormatBlankLineSeparation,
-                isAutoFormatTrailingWhitespaceTrim: settings.trailingWhitespaceBehavior == .strip,
-                isProseSuggestionsEnabled: settings.isProseSuggestionsEnabled,
-                onAIAssist: { editorState.focusAISection = true },
-                onToggleSourceView: { toggleSourceView() },
-                onOpenFile: { openFileFromEditor() },
-                onNewFile: { newFileFromEditor() },
-                onCloseFile: { closeFile() },
-                onFindReplace: { toggleFindReplace() },
-                onImageReceived: { data, name in handleImageReceived(data: data, suggestedName: name) },
-                showAIContextMenuActions: aiProviderManager.shouldShowAIUI,
-                onContextMenuImprove: { startImprove() },
-                onContextMenuSummarize: { startSummarize() }
-            )
+            makeTextViewBridge()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .accessibilityLabel("Document editor")
             .accessibilityHint("Edit your markdown document here")
@@ -155,6 +129,13 @@ struct EditorShellView: View {
                 // Falls back to top-center when selection rect is unavailable.
                 floatingActionBarOverlay
             }
+            #if canImport(Speech)
+            .overlay(alignment: .bottom) {
+                // Voice transcription overlay per FEAT-068 AC-3
+                voiceTranscriptionOverlay
+                    .padding(.bottom, 80)
+            }
+            #endif
 
             // Summary popover per FEAT-055
             .popover(
@@ -246,6 +227,10 @@ struct EditorShellView: View {
         .animation(.easeInOut(duration: 0.2), value: improveCoordinator?.diffState.phase)
         .animation(.easeInOut(duration: 0.2), value: toneCoordinator?.diffState.phase)
         .animation(.easeInOut(duration: 0.2), value: translationCoordinator?.diffState.phase)
+        #if canImport(Speech)
+        .animation(.easeInOut(duration: 0.2), value: voiceCoordinator?.diffState.phase)
+        .animation(.easeInOut(duration: 0.2), value: voiceCoordinator?.phase)
+        #endif
         .animation(.easeInOut(duration: 0.25), value: conflictManager?.conflictState)
         .navigationTitle(navigationTitle)
         #if os(iOS)
@@ -258,7 +243,11 @@ struct EditorShellView: View {
                 onExportPDF: { exportPDF() },
                 onShareMarkdown: { shareMarkdownFile() },
                 onPrint: { printDocument() },
-                onSettings: { router.showSettings() }
+                onSettings: { router.showSettings() },
+                showVoiceMic: voiceMicVisible,
+                isVoiceListening: voiceIsListening,
+                isVoiceAvailable: voiceIsAvailable,
+                onVoiceToggle: { toggleVoiceControl() }
             )
         }
         .fileExporter(
@@ -423,6 +412,9 @@ struct EditorShellView: View {
             summarizeCoordinator?.cancel()
             ghostTextCoordinator?.cancel()
             smartCompletionCoordinator?.cancel()
+            #if canImport(Speech)
+            voiceCoordinator?.cancel()
+            #endif
             // Clear doctor state on file close per FEAT-005 AC-3
             editorState.clearDiagnostics()
             // Save, then release per-scene file coordination resources per [A-028].
@@ -491,6 +483,75 @@ struct EditorShellView: View {
             editorState.performLink?()
         }
         #endif
+    }
+
+    /// Whether to show the voice mic button in the toolbar per FEAT-068.
+    private var voiceMicVisible: Bool {
+        #if canImport(Speech)
+        return aiProviderManager.shouldShowAIUI && voiceCoordinator != nil
+        #else
+        return false
+        #endif
+    }
+
+    /// Whether voice is currently listening.
+    private var voiceIsListening: Bool {
+        #if canImport(Speech)
+        return voiceCoordinator?.phase == .listening
+        #else
+        return false
+        #endif
+    }
+
+    /// Whether voice is available on this device.
+    private var voiceIsAvailable: Bool {
+        #if canImport(Speech)
+        return voiceCoordinator?.isAvailable ?? false
+        #else
+        return false
+        #endif
+    }
+
+    /// Creates the TextViewBridge with all coordinator wiring per FEAT-039.
+    /// Separated into a method so the voice coordinator (behind `#if canImport(Speech)`)
+    /// can be set on the struct before returning it.
+    private func makeTextViewBridge() -> TextViewBridge {
+        var bridge = TextViewBridge(
+            text: $text,
+            editorState: editorState,
+            renderConfig: renderConfig,
+            isEditable: true,
+            isSpellCheckEnabled: settings.isSpellCheckEnabled,
+            onTextChange: { newText in
+                updateDocumentStats(newText)
+                autoSaveManager?.contentDidChange()
+            },
+            onLinkTap: { url in handleLinkTap(url) },
+            improveCoordinator: improveCoordinator,
+            toneCoordinator: toneCoordinator,
+            translationCoordinator: translationCoordinator,
+            ghostTextCoordinator: ghostTextCoordinator,
+            smartCompletionCoordinator: smartCompletionCoordinator,
+            isAutoFormatHeadingSpacing: settings.isAutoFormatHeadingSpacing,
+            isAutoFormatBlankLineSeparation: settings.isAutoFormatBlankLineSeparation,
+            isAutoFormatTrailingWhitespaceTrim: settings.trailingWhitespaceBehavior == .strip,
+            isProseSuggestionsEnabled: settings.isProseSuggestionsEnabled,
+            onAIAssist: { editorState.focusAISection = true },
+            onVoiceControl: { toggleVoiceControl() },
+            onToggleSourceView: { toggleSourceView() },
+            onOpenFile: { openFileFromEditor() },
+            onNewFile: { newFileFromEditor() },
+            onCloseFile: { closeFile() },
+            onFindReplace: { toggleFindReplace() },
+            onImageReceived: { data, name in handleImageReceived(data: data, suggestedName: name) },
+            showAIContextMenuActions: aiProviderManager.shouldShowAIUI,
+            onContextMenuImprove: { startImprove() },
+            onContextMenuSummarize: { startSummarize() }
+        )
+        #if canImport(Speech)
+        bridge.voiceCoordinator = voiceCoordinator
+        #endif
+        return bridge
     }
 
     /// The navigation title shows the filename or "Untitled".
@@ -699,6 +760,11 @@ struct EditorShellView: View {
 
         // FEAT-025: Smart Completions
         setupSmartCompletion()
+
+        // FEAT-068: Voice Control
+        #if canImport(Speech)
+        setupVoiceControl()
+        #endif
     }
 
     /// Starts the AI improve flow per FEAT-011 AC-1.
@@ -733,6 +799,11 @@ struct EditorShellView: View {
         if let coordinator = translationCoordinator, coordinator.diffState.isActive {
             return true
         }
+        #if canImport(Speech)
+        if let coordinator = voiceCoordinator, coordinator.isDiffActive {
+            return true
+        }
+        #endif
         return editorState.selectedRange.length > 0
     }
 
@@ -748,6 +819,11 @@ struct EditorShellView: View {
         if let improve = improveCoordinator, improve.diffState.isActive {
             return improve.diffState.phase
         }
+        #if canImport(Speech)
+        if let voice = voiceCoordinator, voice.isDiffActive {
+            return voice.diffState.phase
+        }
+        #endif
         return .inactive
     }
 
@@ -801,6 +877,12 @@ struct EditorShellView: View {
             tone.accept()
         } else if let improve = improveCoordinator, improve.diffState.isActive {
             improve.accept()
+        } else {
+            #if canImport(Speech)
+            if let voice = voiceCoordinator, voice.isDiffActive {
+                voice.accept()
+            }
+            #endif
         }
         reviewPromptCoordinator.requestReviewIfEligible()
     }
@@ -813,6 +895,12 @@ struct EditorShellView: View {
             tone.dismiss()
         } else if let improve = improveCoordinator, improve.diffState.isActive {
             improve.dismiss()
+        } else {
+            #if canImport(Speech)
+            if let voice = voiceCoordinator, voice.isDiffActive {
+                voice.dismiss()
+            }
+            #endif
         }
     }
 
@@ -982,6 +1070,79 @@ struct EditorShellView: View {
 
         smartCompletionCoordinator = coordinator
     }
+
+    // MARK: - Voice Control per FEAT-068
+
+    #if canImport(Speech)
+    /// Creates and wires the voice coordinator and service per FEAT-068.
+    /// Connects the coordinator's `onRequestVoiceIntent` closure to the EMAI service,
+    /// maintaining module isolation per [A-015].
+    private func setupVoiceControl() {
+        guard aiProviderManager.shouldShowAIUI else { return }
+
+        let service = VoiceIntentService(providerManager: aiProviderManager)
+        voiceIntentService = service
+
+        let coordinator = VoiceCoordinator(editorState: editorState)
+
+        // Wire the coordinator to request voice intent interpretation from EMAI.
+        // This closure bridges EMEditor → EMAI without direct import per [A-015].
+        coordinator.onRequestVoiceIntent = { [weak service] transcript, selectedText, surroundingContext, contentType in
+            guard let service else { return nil }
+            return service.startInterpretingIntent(
+                transcript: transcript,
+                selectedText: selectedText,
+                surroundingContext: surroundingContext,
+                contentType: contentType
+            )
+        }
+
+        voiceCoordinator = coordinator
+    }
+
+    /// Toggles voice control — starts listening if idle, stops if listening.
+    /// Called by Cmd+Shift+J per AC-7 and by the mic button per AC-1.
+    private func toggleVoiceControl() {
+        guard let coordinator = voiceCoordinator else { return }
+
+        switch coordinator.phase {
+        case .idle:
+            // Cancel any active AI diffs before starting voice
+            improveCoordinator?.cancel()
+            toneCoordinator?.cancel()
+            translationCoordinator?.cancel()
+            coordinator.startListening()
+        case .listening:
+            coordinator.stopListening()
+        case .interpreting, .diffStreaming:
+            // Do nothing — wait for completion
+            break
+        case .diffReady:
+            // If diff is ready and user presses shortcut again, accept
+            coordinator.accept()
+        }
+    }
+
+    /// Voice transcription overlay shown during recording per AC-3.
+    @ViewBuilder
+    private var voiceTranscriptionOverlay: some View {
+        if let coordinator = voiceCoordinator,
+           coordinator.phase == .listening || coordinator.phase == .interpreting {
+            VoiceTranscriptionOverlay(
+                phase: coordinator.phase,
+                transcript: coordinator.liveTranscript,
+                isAvailable: coordinator.isAvailable,
+                onStartListening: { coordinator.startListening() },
+                onStopListening: { coordinator.stopListening() }
+            )
+            .transition(.scale.combined(with: .opacity))
+        }
+    }
+    #else
+    private func toggleVoiceControl() {
+        // Voice control requires Speech framework — not available on this platform
+    }
+    #endif
 
     /// Inserts text at the current cursor position per FEAT-055 AC-2.
     /// Uses `Range(NSRange, in:)` for correct UTF-16 → String.Index conversion.
