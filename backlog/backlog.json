@@ -148,7 +148,7 @@
       "title": "F-029: AI — Generate from Prompt (Pro AI)",
       "intent": "Let users describe what they want and have AI generate the markdown — README scaffolds, comparison tables, outlines",
       "description": "Cloud-powered Pro AI feature. User types a prompt like 'write a README for a React component library' or 'create a table comparing AWS vs GCP storage'. AI generates markdown inserted at cursor. Inline preview before accepting.",
-      "priority": "future",
+      "priority": "should",
       "category": "AI",
       "steps": [],
       "acceptanceCriteria": [
@@ -158,15 +158,15 @@
       "status": "todo",
       "passes": false,
       "readyForSprint": false,
-      "groomedAt": null,
-      "groomingNotes": null
+      "groomedAt": "2026-03-24",
+      "groomingNotes": "Pro AI pipeline (FEAT-041), subscription screen (FEAT-062), and receipt validation (FEAT-063) are all done. Infrastructure is ready. Per D-AI-6, generation ships in v1.0. This is a natural next Pro AI feature after translation (done). User invokes via command palette or AI action menu, types a prompt, receives structured markdown inserted at cursor with inline preview before accepting. Ensure acceptance flow follows the existing AI assist pattern (preview → accept/edit/dismiss per D-AI-4). Only the prompt text is sent to the API (no full-document context unless user adds it, per D-AI-8)."
     },
     {
       "id": "FEAT-034",
       "title": "F-030: AI — Document-Level Analysis (Pro AI)",
       "intent": "Let users ask the AI about their entire document — what is missing, suggest an outline, identify gaps in coverage",
       "description": "Cloud-powered Pro AI feature. User can ask document-level questions: 'what is missing from this doc?', 'suggest an outline', 'identify gaps'. Requires sending document content to cloud with explicit user consent per D-AI-8.",
-      "priority": "future",
+      "priority": "should",
       "category": "AI",
       "steps": [],
       "acceptanceCriteria": [
@@ -176,8 +176,8 @@
       "status": "todo",
       "passes": false,
       "readyForSprint": false,
-      "groomedAt": null,
-      "groomingNotes": null
+      "groomedAt": "2026-03-24",
+      "groomingNotes": "Pro AI pipeline and subscription infrastructure are done. Per D-AI-6, document-level analysis ships in v1.0. This is a meaningful differentiator — no other markdown editor can analyze your document's content and structure. Critical privacy constraint per D-AI-8: user must explicitly consent before any document content is sent to cloud. Implement consent as a per-session opt-in (not a one-time global setting) — the stakes are higher here since this sends document content (not just selected text). Sent content should be the full document only after user confirms. Analysis results appear inline via the existing non-modal doctor pattern per D-EDIT-4."
     },
     {
       "id": "FEAT-035",
