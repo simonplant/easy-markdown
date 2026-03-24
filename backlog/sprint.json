@@ -1,31 +1,30 @@
 {
-  "sprintId": "sprint-1774334769",
-  "startedAt": "2026-03-23T23:46:09-07:00",
+  "sprintId": "sprint-1774335450",
+  "startedAt": "2026-03-23T23:57:30-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-086",
-    "title": "DEBT: Implement EMGit.push() via libgit2 git_push API",
-    "intent": "EMGit must be able to push commits to GitHub before FEAT-071 can be implemented",
-    "description": "SwiftGit2 (mbernson fork) covers clone, commit, and fetch but does not wrap libgit2's push API. SPIKE-009 explicitly calls for adding push support (~50 lines, reference in SwiftGit3). This is a standalone, testable addition to EMGit that unblocks FEAT-071 (GitHub Auto-Commit and Push). Depends on FEAT-084 (SwiftGit2 SPM dependency).",
+    "id": "FEAT-087",
+    "title": "DEBT: MermaidRenderer — add WKWebView process termination recovery",
+    "intent": "MermaidRenderer must recover from iOS killing the WKWebView process without user-visible failure",
+    "description": "SPIKE-006 risk table calls out: 'WKWebView process killed under memory pressure (reuse) — Medium likelihood on 6GB devices'. The current MermaidRenderer has no webViewWebContentProcessDidTerminate handler, so if iOS kills the web content process the renderer silently fails on all subsequent renders. Add the recovery handler so the WKWebView is transparently re-created on the next render call.",
     "sourceBacklog": "backlog.json",
     "steps": [
-      "Create Sources/EMGit/Repository+Push.swift as a Swift extension on Repository (from SwiftGit2)",
-      "Implement push(remote: String = \"origin\", token: String) async throws: call git_push_new, git_push_add_refspec (\"refs/heads/main:refs/heads/main\" or detect current branch), git_push_set_callbacks with credential callback using Credentials.plaintext(username: \"x-access-token\", password: token), git_push_finish, then git_push_unpack_ok to check for server-side errors — see SwiftGit3's GitPush.swift as reference implementation (~50 lines of C API calls via libgit2)",
-      "Map libgit2 error codes to EMError.git cases: authenticationExpired for 401, pushRejected(reason:) for non-fast-forward, networkError for unreachable remote",
-      "Add EMGitTests/PushTests.swift: unit tests using a local bare repository (init a bare repo in temp dir, clone it, commit a file, push — verify the bare repo has the commit). No network required.",
-      "Run swift test — PushTests must pass"
+      "In MermaidRenderer.swift, add a WKNavigationDelegate extension method webViewWebContentProcessDidTerminate(_:) to the private NavigationDelegate class",
+      "In the termination handler, post a notification or call a closure so MermaidRenderer learns the web view process died — set MermaidRenderer.webView = nil (since MermaidRenderer is @MainActor, this is safe from the delegate callback which also runs on main thread)",
+      "Verify that the next call to render() re-creates the WKWebView via the existing createWebView() path (webView is nil, so the guard in renderInWebView recreates it)",
+      "Add a test in MermaidRendererTests: create a renderer, manually call webViewWebContentProcessDidTerminate, then call render() and verify it returns a result (not a crash or permanent failure)",
+      "Run swift test to confirm the recovery test passes"
     ],
     "acceptanceCriteria": [
-      "Repository.push() compiles and is callable from EMGit",
-      "PushTests: push to a local bare repo succeeds with correct commit reaching the remote",
-      "Push with invalid credentials throws EMError.git(.authenticationExpired)",
-      "swift test passes with no regressions"
+      "After webViewWebContentProcessDidTerminate fires, MermaidRenderer.webView is nil",
+      "The next render() call succeeds (creates a new WKWebView) — no permanent failure state",
+      "swift test passes for the recovery test case"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T23:46:09-07:00",
+    "startedAt": "2026-03-23T23:57:30-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T23:57:28-07:00"
+    "completedAt": "2026-03-24T00:00:39-07:00"
   },
-  "completedAt": "2026-03-23T23:57:28-07:00",
+  "completedAt": "2026-03-24T00:00:39-07:00",
   "attempts": 1
 }

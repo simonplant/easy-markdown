@@ -250,6 +250,21 @@ public final class MermaidRenderer {
         cacheMissCount = 0
     }
 
+    // MARK: - Process Termination Recovery
+
+    /// Handles WKWebView content process termination by clearing the web view
+    /// so the next render() call recreates it via createWebView().
+    private func handleProcessTermination() {
+        webView = nil
+        logger.info("MermaidRenderer: webView cleared after process termination")
+    }
+
+    /// Simulates a WKWebView content process termination for testing.
+    /// Sets webView to nil so the next render() recreates it.
+    internal func simulateWebContentProcessTermination() {
+        handleProcessTermination()
+    }
+
     // MARK: - Internal Rendering
 
     private func renderInWebView(
@@ -331,6 +346,9 @@ public final class MermaidRenderer {
             let delegate = NavigationDelegate { success in
                 continuation.resume(returning: success)
             }
+            delegate.onProcessTerminated = { [weak self] in
+                self?.handleProcessTermination()
+            }
             // Store delegate to keep it alive
             objc_setAssociatedObject(webView, &Self.delegateKey, delegate, .OBJC_ASSOCIATION_RETAIN)
             webView.navigationDelegate = delegate
@@ -405,6 +423,7 @@ public final class MermaidRenderer {
 private final class NavigationDelegate: NSObject, WKNavigationDelegate {
     private let completion: (Bool) -> Void
     private var hasCompleted = false
+    var onProcessTerminated: (() -> Void)?
 
     init(completion: @escaping (Bool) -> Void) {
         self.completion = completion
@@ -426,5 +445,10 @@ private final class NavigationDelegate: NSObject, WKNavigationDelegate {
         guard !hasCompleted else { return }
         hasCompleted = true
         completion(false)
+    }
+
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        logger.warning("WKWebView content process terminated — will recreate on next render")
+        onProcessTerminated?()
     }
 }
