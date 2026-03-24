@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774331230",
   "startedAt": "2026-03-23T22:47:10-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-075",
     "title": "DEBT: Split TextViewCoordinator into focused responsibility files",
@@ -18,6 +18,10 @@
       "No new public API surface — internal decomposition only"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T22:47:10-07:00"
-  }
+    "startedAt": "2026-03-23T22:47:10-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-23T23:14:37-07:00"
+  },
+  "completedAt": "2026-03-23T23:14:37-07:00",
+  "attempts": 1
 }
