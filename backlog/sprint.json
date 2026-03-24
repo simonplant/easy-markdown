@@ -1,25 +1,30 @@
 {
-  "sprintId": "sprint-1774333548",
-  "startedAt": "2026-03-23T23:25:48-07:00",
+  "sprintId": "sprint-1774334434",
+  "startedAt": "2026-03-23T23:40:34-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-077",
-    "title": "DEBT: Replace four identical AI update enums with a single generic",
-    "intent": "Four line-for-line identical enums is copy-paste debt that will diverge — one generic type eliminates the duplication and makes future changes atomic",
-    "description": "ImproveWritingUpdate, SummarizeUpdate, ToneAdjustmentUpdate, and GhostTextUpdate in EMCore are structurally identical (token, completed, failed). Replace with a single generic: AIUpdate<Action: Sendable> with the same three cases. Use phantom types (ImproveWritingAction, SummarizeAction, ToneAdjustmentAction, GhostTextAction) for compile-time type safety at call sites. Update all consumers in EMAI and EMApp.",
+    "id": "FEAT-085",
+    "title": "DEBT: MermaidRenderer — replace CDN mermaid.js with bundled local resource",
+    "intent": "mermaid.js must be bundled locally so Mermaid rendering works in a sandboxed app with no network access",
+    "description": "MermaidRenderer.htmlTemplate loads mermaid.js from cdn.jsdelivr.net. In a sandboxed iOS app this CDN request fails at runtime and in tests, causing every Mermaid render to silently fail. Per SPIKE-006 recommendation: bundle mermaid.js v10 as a local resource in EMEditor. This is a standalone fix scoped to MermaidRenderer — no rendering pipeline changes needed.",
     "sourceBacklog": "backlog.json",
-    "steps": [],
+    "steps": [
+      "Download mermaid.min.js from the mermaid-js/mermaid v10 GitHub Releases page (latest v10.x) and save to Sources/EMEditor/Resources/mermaid.min.js",
+      "Add resources: [.process(\"Resources\")] to the EMEditor target in Package.swift (EMCore already uses .copy(\"Resources/Fonts\") as a reference pattern)",
+      "In MermaidRenderer.htmlTemplate, replace the CDN script tag (<script src=\"https://cdn.jsdelivr.net/...\"></script>) with an inline <script> block: read the file using Bundle.module.url(forResource: \"mermaid.min\", withExtension: \"js\"), load its contents as a String, and embed it inline in the HTML — if the file is missing, fall back to an empty string and log an error",
+      "Run swift build to confirm Bundle.module resource access compiles correctly",
+      "Run swift test — MermaidRendererTests.testRenderFlowchart should now pass without network access"
+    ],
     "acceptanceCriteria": [
-      "Only one AIUpdate<Action> enum exists in EMCore",
-      "Four phantom action types provide compile-time type safety",
-      "All AI streaming consumers in EMAI and EMApp compile and work correctly",
-      "No behavioral change to AI features"
+      "swift build succeeds with mermaid.min.js bundled as a Package resource",
+      "MermaidRenderer.render() returns .success for a simple flowchart when the device has no internet access",
+      "No CDN or external URLs appear in MermaidRenderer source after this change"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T23:25:48-07:00",
+    "startedAt": "2026-03-23T23:40:34-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T23:30:56-07:00"
+    "completedAt": "2026-03-23T23:43:12-07:00"
   },
-  "completedAt": "2026-03-23T23:30:56-07:00",
+  "completedAt": "2026-03-23T23:43:12-07:00",
   "attempts": 1
 }
