@@ -488,12 +488,13 @@
         "User can accept suggestion (cursor positioned for edit) or dismiss",
         "Writing goal progress is shown visually as user approaches target word count"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "lastFailReason": "Validator agent rejected implementation",
       "lastFailAt": "2026-03-21T09:19:30-07:00",
-      "failCount": 2
+      "failCount": 2,
+      "completedAt": "2026-03-23T21:29:04-07:00"
     },
     {
       "id": "FEAT-023",

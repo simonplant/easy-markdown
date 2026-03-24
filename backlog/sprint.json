@@ -1,25 +1,24 @@
 {
-  "sprintId": "sprint-1774325031",
-  "startedAt": "2026-03-23T21:03:51-07:00",
+  "sprintId": "sprint-1774326011",
+  "startedAt": "2026-03-23T21:20:11-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-020",
-    "title": "F-015: Image Handling",
-    "intent": "Working with images in markdown should be effortless — drag, drop, done",
-    "description": "Drop/paste image into editor prompts for save location, inserts relative path markdown. Images rendered inline in rich text mode. Broken image paths shown with placeholder and doctor warning (F-005).",
+    "id": "FEAT-022",
+    "title": "F-017: Extended Document Doctor",
+    "intent": "Deepen writing intelligence beyond structural checks — help users write better prose, not just better markdown",
+    "description": "Readability scoring (Flesch-Kincaid or similar) in status bar. Writing goals: user sets target word count, progress shown visually. Prose suggestions (opt-in): flag very long sentences, passive voice, repeated words.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "User drags image into editor — saved to chosen location, relative markdown link inserted, renders inline",
-      "Broken image paths show placeholder with doctor warning",
-      "Pasting an image from clipboard prompts for save location and inserts relative path",
-      "Very large image (10MB+) shows progress during save, does not freeze the editor"
+      "User enables prose suggestions — doctor flags a 60-word sentence with suggestion to break it up",
+      "User can accept suggestion (cursor positioned for edit) or dismiss",
+      "Writing goal progress is shown visually as user approaches target word count"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T21:03:51-07:00",
+    "startedAt": "2026-03-23T21:20:11-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T21:20:10-07:00"
+    "completedAt": "2026-03-23T21:29:04-07:00"
   },
-  "completedAt": "2026-03-23T21:20:10-07:00",
+  "completedAt": "2026-03-23T21:29:04-07:00",
   "attempts": 1
 }
