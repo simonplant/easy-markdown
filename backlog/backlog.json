@@ -1279,14 +1279,15 @@
         "Non-subscriber never sees persistent upgrade banners or nag screens anywhere in the app",
         "Subscription terms satisfy Apple App Store Review Guideline 3.1.2"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "lastFailReason": "Validator agent rejected implementation",
       "lastFailAt": "2026-03-23T16:08:55-07:00",
       "failCount": 2,
       "groomedAt": "2026-03-23",
-      "groomingNotes": "Elevated to must: FEAT-063 (receipt validation) is shipped, meaning the subscription backend is live but users have no way to purchase. All Pro AI features are built and working but unmonetized. The purchase screen is now the critical gap blocking revenue — it belongs in the same tier as the infra that depends on it."
+      "groomingNotes": "Elevated to must: FEAT-063 (receipt validation) is shipped, meaning the subscription backend is live but users have no way to purchase. All Pro AI features are built and working but unmonetized. The purchase screen is now the critical gap blocking revenue — it belongs in the same tier as the infra that depends on it.",
+      "completedAt": "2026-03-23T20:38:57-07:00"
     },
     {
       "id": "FEAT-063",

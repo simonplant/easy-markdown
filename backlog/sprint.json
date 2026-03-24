@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774323004",
   "startedAt": "2026-03-23T20:30:04-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-062",
     "title": "Pro AI Subscription Screen and Purchase Flow",
@@ -18,6 +18,10 @@
       "Subscription terms satisfy Apple App Store Review Guideline 3.1.2"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T20:30:04-07:00"
-  }
+    "startedAt": "2026-03-23T20:30:04-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-23T20:38:57-07:00"
+  },
+  "completedAt": "2026-03-23T20:38:57-07:00",
+  "attempts": 1
 }
