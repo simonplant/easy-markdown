@@ -105,7 +105,7 @@
       "lastFailAt": "2026-03-23T20:30:04-07:00",
       "failCount": 4,
       "groomedAt": "2026-03-23",
-      "groomingNotes": "Root cause of 4 failures: MermaidRenderer.htmlTemplate loads mermaid.js from cdn.jsdelivr.net — this CDN reference fails in a sandboxed iOS app (no outbound network access during tests/runtime). Fix before anything else. CRITICAL PATH: (1) Bundle mermaid.min.js v10 as a local resource: download mermaid.min.js from the mermaid-js/mermaid v10 GitHub release, place at Sources/EMEditor/Resources/mermaid.min.js, add resources: [.process(\"Resources\")] to the EMEditor target in Package.swift — verify with swift build. (2) Update MermaidRenderer.htmlTemplate: replace the CDN script tag with an inline script loaded via Bundle.module.url(forResource: \"mermaid.min\", withExtension: \"js\") — read the JS file content and embed it inline in the HTML string. (3) Integrate MermaidRenderer into MarkdownRenderer.renderCodeBlock: when language == \"mermaid\" and config.isSourceView == false, skip the existing syntax-highlighting path; instead show a placeholder NSTextAttachment (same pattern as broken-image placeholder in renderLoadedImage) and fire Task { @MainActor in let result = await mermaidRenderer.render(mermaidSource: content, theme: config.colorVariant == \"dark\" ? .dark : .light) — then trigger a re-render pass to replace the placeholder. (4) When MermaidRenderResult.failure is returned: apply standard code block styling (no attachment) and post a Diagnostic with .warning severity and message \"Invalid Mermaid syntax: <error>\". (5) Add MermaidRenderer as a stored property on MarkdownRenderer (lazy, created on first use). Call invalidateCache() when config.colorVariant changes. (6) Add WKWebView to window hierarchy for takeSnapshot: UIApplication.shared.connectedScenes' first UIWindowScene's keyWindow — addSubview(webView) at frame CGRect(x: -9999, y: -9999, ...) then removeFromSuperview after snapshot. Without this, takeSnapshot returns black/blank on some iOS versions. (7) Add webViewWebContentProcessDidTerminate: in NavigationDelegate, implement webViewWebContentProcessDidTerminate — set MermaidRenderer.webView = nil so next render re-creates it. (8) VoiceOver: set NSTextAttachment.accessibilityLabel to \"Mermaid diagram: <first line of source>\" using NSMutableAttributedString.addAttribute(.accessibilityLabel, ...). (9) Source view toggle: in source view, renderCodeBlock applies normal code block styling (language badge shows 'mermaid') — no attachment. (10) Tests: MermaidRendererTests should verify cache hit/miss, theme cache separation, and failure path. Integration test in MarkdownRenderer: render a document with a mermaid block and confirm an NSTextAttachment is set. Package build must pass: swift build. NOTE: FEAT-085 (bundle mermaid.js locally) must be done first — it is now listed as a dependency."
+      "groomingNotes": "PREREQUISITES NOW COMPLETE: FEAT-085 (bundle mermaid.min.js locally) is done — mermaid.min.js is already in Sources/EMEditor/Resources/ and Package.swift already has resources: [.process(\"Resources\")] for the EMEditor target. FEAT-087 (WKWebView process termination recovery) is done — webViewWebContentProcessDidTerminate is implemented. Skip steps 1 and 7 from prior notes. REMAINING WORK: (1) Update MermaidRenderer.htmlTemplate: replace the CDN script tag with inline JS — load via Bundle.module.url(forResource: \"mermaid.min\", withExtension: \"js\"), read the file content, and embed it as an inline <script> tag in the HTML string. (2) Integrate MermaidRenderer into MarkdownRenderer.renderCodeBlock: when language == \"mermaid\" and config.isSourceView == false, skip the syntax-highlighting path; show a placeholder NSTextAttachment (same pattern as broken-image placeholder in renderLoadedImage) and fire Task { @MainActor in let result = await mermaidRenderer.render(mermaidSource: content, theme: config.colorVariant == \"dark\" ? .dark : .light) } — then trigger a re-render pass to replace the placeholder. (3) When MermaidRenderResult.failure is returned: apply standard code block styling (no attachment) and post a Diagnostic with .warning severity and message \"Invalid Mermaid syntax: <error>\". (4) Add MermaidRenderer as a stored property on MarkdownRenderer (lazy, created on first use). Call invalidateCache() when config.colorVariant changes. (5) Add WKWebView to window hierarchy for takeSnapshot: UIApplication.shared.connectedScenes' first UIWindowScene's keyWindow — addSubview(webView) at frame CGRect(x: -9999, y: -9999, ...) then removeFromSuperview after snapshot. Without this, takeSnapshot returns black/blank on some iOS versions. (6) VoiceOver: set NSTextAttachment.accessibilityLabel to \"Mermaid diagram: <first line of source>\" using NSMutableAttributedString.addAttribute(.accessibilityLabel, ...). (7) Source view toggle: in source view, renderCodeBlock applies normal code block styling (language badge shows 'mermaid') — no attachment. (8) Tests: MermaidRendererTests should verify cache hit/miss, theme cache separation, and failure path. Integration test in MarkdownRenderer: render a document with a mermaid block and confirm an NSTextAttachment is set. Package build must pass: swift build."
     },
     {
       "id": "FEAT-031",
@@ -309,116 +309,6 @@
       "readyForSprint": false,
       "groomedAt": "2026-03-23",
       "groomingNotes": "BLOCKED: Depends on FEAT-070 (GitHub Clone and Open) which is not yet done. Once FEAT-070 ships: hook into EMFile save path to detect files inside Documents/GitRepos/. On save: EMGit.commit('Update filename.md') then push. Pull-with-rebase before push. Toolbar indicator (unpushed badge) via published var on EMGitStatus. Conflict surfaces via existing FEAT-045 flow."
-    },
-    {
-      "id": "FEAT-084",
-      "title": "INFRA: Add mbernson/SwiftGit2 SPM dependency to Package.swift",
-      "intent": "EMGit must compile with SwiftGit2 available before any git operation can be implemented",
-      "description": "EMGit currently has no libgit2/SwiftGit2 dependency in Package.swift — it is a dependency-free target. All git clone/commit/push work in FEAT-070 and FEAT-071 requires this. Add mbernson/SwiftGit2 (SPM, compiles libgit2 from source, iOS 15.5+, no pre-built binaries). Verify swift build passes before marking done.",
-      "priority": "should",
-      "category": null,
-      "steps": [
-        "Add .package(url: \"https://github.com/mbernson/SwiftGit2\", branch: \"master\") to the dependencies array in Package.swift",
-        "Add .product(name: \"SwiftGit2\", package: \"SwiftGit2\") to the EMGit target dependencies list in Package.swift",
-        "Run swift build and resolve any SPM fetch or compile errors",
-        "Run swift test to confirm no regressions"
-      ],
-      "acceptanceCriteria": [
-        "swift build succeeds with SwiftGit2 resolvable and EMGit target compiling",
-        "import SwiftGit2 compiles without errors in any EMGit source file",
-        "swift test passes with no regressions"
-      ],
-      "scope": [],
-      "dependsOn": [],
-      "status": "done",
-      "passes": true,
-      "readyForSprint": false,
-      "groomingNotes": "STEPS: (1) In Package.swift, add to dependencies array: .package(url: \"https://github.com/mbernson/SwiftGit2\", branch: \"master\"). (2) Update the EMGit target in Package.swift to add .product(name: \"SwiftGit2\", package: \"SwiftGit2\") to its dependencies array. Disable SSH/libssh2/OpenSSL — check if mbernson/SwiftGit2 has build flags for this; if not, that's acceptable (binary size is still 2-4MB as per SPIKE-009). (3) Run swift build — ensure it compiles cleanly. Fix any SPM resolution errors. (4) Run swift test — no tests should regress. (5) Commit Package.swift and Package.resolved. AC: swift build succeeds with SwiftGit2 resolvable and EMGit target compiles; Repository type from SwiftGit2 is importable in a new EMGit file.",
-      "groomedAt": "2026-03-23",
-      "completedAt": "2026-03-23T23:46:07-07:00"
-    },
-    {
-      "id": "FEAT-085",
-      "title": "DEBT: MermaidRenderer — replace CDN mermaid.js with bundled local resource",
-      "intent": "mermaid.js must be bundled locally so Mermaid rendering works in a sandboxed app with no network access",
-      "description": "MermaidRenderer.htmlTemplate loads mermaid.js from cdn.jsdelivr.net. In a sandboxed iOS app this CDN request fails at runtime and in tests, causing every Mermaid render to silently fail. Per SPIKE-006 recommendation: bundle mermaid.js v10 as a local resource in EMEditor. This is a standalone fix scoped to MermaidRenderer — no rendering pipeline changes needed.",
-      "priority": "must",
-      "category": null,
-      "steps": [
-        "Download mermaid.min.js from the mermaid-js/mermaid v10 GitHub Releases page (latest v10.x) and save to Sources/EMEditor/Resources/mermaid.min.js",
-        "Add resources: [.process(\"Resources\")] to the EMEditor target in Package.swift (EMCore already uses .copy(\"Resources/Fonts\") as a reference pattern)",
-        "In MermaidRenderer.htmlTemplate, replace the CDN script tag (<script src=\"https://cdn.jsdelivr.net/...\"></script>) with an inline <script> block: read the file using Bundle.module.url(forResource: \"mermaid.min\", withExtension: \"js\"), load its contents as a String, and embed it inline in the HTML — if the file is missing, fall back to an empty string and log an error",
-        "Run swift build to confirm Bundle.module resource access compiles correctly",
-        "Run swift test — MermaidRendererTests.testRenderFlowchart should now pass without network access"
-      ],
-      "acceptanceCriteria": [
-        "swift build succeeds with mermaid.min.js bundled as a Package resource",
-        "MermaidRenderer.render() returns .success for a simple flowchart when the device has no internet access",
-        "No CDN or external URLs appear in MermaidRenderer source after this change"
-      ],
-      "scope": [],
-      "dependsOn": [],
-      "status": "done",
-      "passes": true,
-      "readyForSprint": false,
-      "groomingNotes": "Elevated to must: this is a direct prerequisite for FEAT-030 (must-priority, 4 failures). The CDN load is the root cause of every FEAT-030 failure. This must ship before FEAT-030 is attempted again. Scope is narrow and self-contained — no pipeline changes, just bundle the asset and update MermaidRenderer.htmlTemplate.",
-      "groomedAt": "2026-03-23",
-      "completedAt": "2026-03-23T23:43:12-07:00"
-    },
-    {
-      "id": "FEAT-086",
-      "title": "DEBT: Implement EMGit.push() via libgit2 git_push API",
-      "intent": "EMGit must be able to push commits to GitHub before FEAT-071 can be implemented",
-      "description": "SwiftGit2 (mbernson fork) covers clone, commit, and fetch but does not wrap libgit2's push API. SPIKE-009 explicitly calls for adding push support (~50 lines, reference in SwiftGit3). This is a standalone, testable addition to EMGit that unblocks FEAT-071 (GitHub Auto-Commit and Push). Depends on FEAT-084 (SwiftGit2 SPM dependency).",
-      "priority": "should",
-      "category": null,
-      "steps": [
-        "Create Sources/EMGit/Repository+Push.swift as a Swift extension on Repository (from SwiftGit2)",
-        "Implement push(remote: String = \"origin\", token: String) async throws: call git_push_new, git_push_add_refspec (\"refs/heads/main:refs/heads/main\" or detect current branch), git_push_set_callbacks with credential callback using Credentials.plaintext(username: \"x-access-token\", password: token), git_push_finish, then git_push_unpack_ok to check for server-side errors — see SwiftGit3's GitPush.swift as reference implementation (~50 lines of C API calls via libgit2)",
-        "Map libgit2 error codes to EMError.git cases: authenticationExpired for 401, pushRejected(reason:) for non-fast-forward, networkError for unreachable remote",
-        "Add EMGitTests/PushTests.swift: unit tests using a local bare repository (init a bare repo in temp dir, clone it, commit a file, push — verify the bare repo has the commit). No network required.",
-        "Run swift test — PushTests must pass"
-      ],
-      "acceptanceCriteria": [
-        "Repository.push() compiles and is callable from EMGit",
-        "PushTests: push to a local bare repo succeeds with correct commit reaching the remote",
-        "Push with invalid credentials throws EMError.git(.authenticationExpired)",
-        "swift test passes with no regressions"
-      ],
-      "scope": [],
-      "dependsOn": [
-        "FEAT-084"
-      ],
-      "status": "done",
-      "passes": true,
-      "readyForSprint": false,
-      "completedAt": "2026-03-23T23:57:28-07:00"
-    },
-    {
-      "id": "FEAT-087",
-      "title": "DEBT: MermaidRenderer — add WKWebView process termination recovery",
-      "intent": "MermaidRenderer must recover from iOS killing the WKWebView process without user-visible failure",
-      "description": "SPIKE-006 risk table calls out: 'WKWebView process killed under memory pressure (reuse) — Medium likelihood on 6GB devices'. The current MermaidRenderer has no webViewWebContentProcessDidTerminate handler, so if iOS kills the web content process the renderer silently fails on all subsequent renders. Add the recovery handler so the WKWebView is transparently re-created on the next render call.",
-      "priority": "should",
-      "category": null,
-      "steps": [
-        "In MermaidRenderer.swift, add a WKNavigationDelegate extension method webViewWebContentProcessDidTerminate(_:) to the private NavigationDelegate class",
-        "In the termination handler, post a notification or call a closure so MermaidRenderer learns the web view process died — set MermaidRenderer.webView = nil (since MermaidRenderer is @MainActor, this is safe from the delegate callback which also runs on main thread)",
-        "Verify that the next call to render() re-creates the WKWebView via the existing createWebView() path (webView is nil, so the guard in renderInWebView recreates it)",
-        "Add a test in MermaidRendererTests: create a renderer, manually call webViewWebContentProcessDidTerminate, then call render() and verify it returns a result (not a crash or permanent failure)",
-        "Run swift test to confirm the recovery test passes"
-      ],
-      "acceptanceCriteria": [
-        "After webViewWebContentProcessDidTerminate fires, MermaidRenderer.webView is nil",
-        "The next render() call succeeds (creates a new WKWebView) — no permanent failure state",
-        "swift test passes for the recovery test case"
-      ],
-      "scope": [],
-      "dependsOn": [],
-      "status": "done",
-      "passes": true,
-      "readyForSprint": false,
-      "completedAt": "2026-03-24T00:00:39-07:00"
     }
   ],
   "_dependsOn_docs": "Items may include an optional 'dependsOn' array of item ID strings (e.g. \"dependsOn\": [\"FEAT-001\"]). Auto-pick skips items whose dependencies are not yet done."

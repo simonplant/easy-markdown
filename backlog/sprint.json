@@ -1,30 +1,29 @@
 {
-  "sprintId": "sprint-1774335450",
-  "startedAt": "2026-03-23T23:57:30-07:00",
+  "sprintId": "sprint-1774336103",
+  "startedAt": "2026-03-24T00:08:23-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-087",
-    "title": "DEBT: MermaidRenderer — add WKWebView process termination recovery",
-    "intent": "MermaidRenderer must recover from iOS killing the WKWebView process without user-visible failure",
-    "description": "SPIKE-006 risk table calls out: 'WKWebView process killed under memory pressure (reuse) — Medium likelihood on 6GB devices'. The current MermaidRenderer has no webViewWebContentProcessDidTerminate handler, so if iOS kills the web content process the renderer silently fails on all subsequent renders. Add the recovery handler so the WKWebView is transparently re-created on the next render call.",
-    "sourceBacklog": "backlog.json",
+    "id": "BUG-001",
+    "title": "SpeechRecognitionManager: no deinit cleanup — audio engine leaks if deallocated while recording",
+    "intent": "Audio resources must be released on dealloc — a live mic after the editor closes is a privacy violation and a resource bug",
+    "description": "SpeechRecognitionManager has no deinit. If the instance is deallocated while state is .recording or .starting, AVAudioEngine and SFSpeechRecognitionTask are never stopped or cancelled. The microphone tap remains active and the OS audio session is not released. stopRecording() exists but is not called on dealloc.",
+    "sourceBacklog": "bugs.json",
     "steps": [
-      "In MermaidRenderer.swift, add a WKNavigationDelegate extension method webViewWebContentProcessDidTerminate(_:) to the private NavigationDelegate class",
-      "In the termination handler, post a notification or call a closure so MermaidRenderer learns the web view process died — set MermaidRenderer.webView = nil (since MermaidRenderer is @MainActor, this is safe from the delegate callback which also runs on main thread)",
-      "Verify that the next call to render() re-creates the WKWebView via the existing createWebView() path (webView is nil, so the guard in renderInWebView recreates it)",
-      "Add a test in MermaidRendererTests: create a renderer, manually call webViewWebContentProcessDidTerminate, then call render() and verify it returns a result (not a crash or permanent failure)",
-      "Run swift test to confirm the recovery test passes"
+      "In Sources/EMEditor/SpeechRecognitionManager.swift, add deinit: if audioEngine \\!= nil { audioEngine?.stop(); audioEngine?.inputNode.removeTap(onBus: 0); audioEngine = nil; recognitionTask?.cancel(); recognitionTask = nil; state = .idle }",
+      "Verify the deinit executes on the main actor (SpeechRecognitionManager is @MainActor — Swift guarantees deinit runs on the actor's executor for actor-isolated types)",
+      "Test: in EMAITests or EMEditorTests, create SpeechRecognitionManager, set audioEngine to a non-nil AVAudioEngine stub, then nil the manager reference and verify via weak var that the instance deallocates and audioEngine cleanup path was hit (use a spy/subclass or test hook)",
+      "swift build must pass"
     ],
     "acceptanceCriteria": [
-      "After webViewWebContentProcessDidTerminate fires, MermaidRenderer.webView is nil",
-      "The next render() call succeeds (creates a new WKWebView) — no permanent failure state",
-      "swift test passes for the recovery test case"
+      "Deallocating SpeechRecognitionManager while audioEngine is non-nil stops the engine and removes the tap",
+      "Deallocating SpeechRecognitionManager while recognitionTask is non-nil cancels the task",
+      "Unit test passes verifying dealloc path cleans up audio resources"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T23:57:30-07:00",
+    "startedAt": "2026-03-24T00:08:23-07:00",
     "status": "passed",
-    "completedAt": "2026-03-24T00:00:39-07:00"
+    "completedAt": "2026-03-24T00:11:37-07:00"
   },
-  "completedAt": "2026-03-24T00:00:39-07:00",
+  "completedAt": "2026-03-24T00:11:37-07:00",
   "attempts": 1
 }
