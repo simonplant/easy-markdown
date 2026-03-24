@@ -41,9 +41,15 @@ struct EditorShellView: View {
     @State private var summarizeService: SummarizeService?
     @State private var toneCoordinator: ToneAdjustmentCoordinator?
     @State private var toneService: ToneAdjustmentService?
+    @State private var translationCoordinator: TranslationCoordinator?
+    @State private var translationService: TranslationService?
     @State private var showingTonePicker = false
     @State private var showingCustomToneInput = false
     @State private var customToneInstruction = ""
+    @State private var showingLanguagePicker = false
+    @State private var showingLongSelectionWarning = false
+    @State private var pendingTranslationLanguage: String = ""
+    @State private var lastTranslationLanguage: String = ""
     @State private var ghostTextCoordinator: GhostTextCoordinator?
     @State private var ghostTextService: GhostTextService?
     @State private var showingOpenFilePicker = false
@@ -105,6 +111,7 @@ struct EditorShellView: View {
                 onLinkTap: { url in handleLinkTap(url) },
                 improveCoordinator: improveCoordinator,
                 toneCoordinator: toneCoordinator,
+                translationCoordinator: translationCoordinator,
                 ghostTextCoordinator: ghostTextCoordinator,
                 isAutoFormatHeadingSpacing: settings.isAutoFormatHeadingSpacing,
                 isAutoFormatBlankLineSeparation: settings.isAutoFormatBlankLineSeparation,
@@ -235,6 +242,7 @@ struct EditorShellView: View {
         .animation(.easeInOut(duration: 0.2), value: editorState.selectedRange.length > 0)
         .animation(.easeInOut(duration: 0.2), value: improveCoordinator?.diffState.phase)
         .animation(.easeInOut(duration: 0.2), value: toneCoordinator?.diffState.phase)
+        .animation(.easeInOut(duration: 0.2), value: translationCoordinator?.diffState.phase)
         .animation(.easeInOut(duration: 0.25), value: conflictManager?.conflictState)
         .navigationTitle(navigationTitle)
         #if os(iOS)
@@ -350,6 +358,44 @@ struct EditorShellView: View {
         } message: {
             Text("Describe the tone you want:")
         }
+        .confirmationDialog(
+            "Translate To",
+            isPresented: $showingLanguagePicker,
+            titleVisibility: .visible
+        ) {
+            ForEach(TranslationLanguage.all) { language in
+                Button(language.name) { requestTranslation(targetLanguage: language.code) }
+            }
+            Button("Cancel", role: .cancel) {}
+        }
+        .alert(
+            "Large Selection",
+            isPresented: $showingLongSelectionWarning
+        ) {
+            Button("Continue") { startTranslation(targetLanguage: pendingTranslationLanguage) }
+            Button("Cancel", role: .cancel) { pendingTranslationLanguage = "" }
+        } message: {
+            Text("This selection is very long and may take a while to translate. Continue?")
+        }
+        .alert(
+            "Translation Incomplete",
+            isPresented: Binding(
+                get: { translationCoordinator?.hasPartialFailure ?? false },
+                set: { newValue in
+                    if !newValue {
+                        translationCoordinator?.hasPartialFailure = false
+                    }
+                }
+            )
+        ) {
+            Button("Retry") {
+                translationCoordinator?.dismiss()
+                startTranslation(targetLanguage: lastTranslationLanguage)
+            }
+            Button("Cancel", role: .cancel) { translationCoordinator?.dismiss() }
+        } message: {
+            Text("The translation was interrupted. You can retry or cancel.")
+        }
         .onAppear {
             loadFileContent()
             startConflictMonitoring()
@@ -370,6 +416,7 @@ struct EditorShellView: View {
             // Cancel any active AI sessions on file close
             improveCoordinator?.cancel()
             toneCoordinator?.cancel()
+            translationCoordinator?.cancel()
             summarizeCoordinator?.cancel()
             ghostTextCoordinator?.cancel()
             // Clear doctor state on file close per FEAT-005 AC-3
@@ -637,6 +684,10 @@ struct EditorShellView: View {
         toneCoordinator = ToneAdjustmentCoordinator(editorState: editorState)
         toneService = ToneAdjustmentService(providerManager: aiProviderManager)
 
+        // FEAT-024: Translation (Pro AI)
+        translationCoordinator = TranslationCoordinator(editorState: editorState)
+        translationService = TranslationService(providerManager: aiProviderManager)
+
         // FEAT-056: Ghost Text (Continue Writing)
         setupGhostText()
     }
@@ -670,12 +721,18 @@ struct EditorShellView: View {
         if let coordinator = toneCoordinator, coordinator.diffState.isActive {
             return true
         }
+        if let coordinator = translationCoordinator, coordinator.diffState.isActive {
+            return true
+        }
         return editorState.selectedRange.length > 0
     }
 
     /// The active diff phase from whichever AI coordinator is currently running.
     /// Only one diff can be active at a time.
     private var activeDiffPhase: InlineDiffPhase {
+        if let translation = translationCoordinator, translation.diffState.isActive {
+            return translation.diffState.phase
+        }
         if let tone = toneCoordinator, tone.diffState.isActive {
             return tone.diffState.phase
         }
@@ -703,7 +760,7 @@ struct EditorShellView: View {
                 actions: FloatingActionBarActions(
                     onImprove: { startImprove() },
                     onSummarize: { startSummarize() },
-                    onTranslate: { /* Pro action — wired in future FEAT-024 */ },
+                    onTranslate: { showingLanguagePicker = true },
                     onTone: { showingTonePicker = true },
                     onProUpgrade: { showingProUpgrade = true },
                     onAccept: { acceptActiveDiff() },
@@ -729,7 +786,9 @@ struct EditorShellView: View {
 
     /// Accepts the active diff — dispatches to the correct coordinator.
     private func acceptActiveDiff() {
-        if let tone = toneCoordinator, tone.diffState.isActive {
+        if let translation = translationCoordinator, translation.diffState.isActive {
+            translation.accept()
+        } else if let tone = toneCoordinator, tone.diffState.isActive {
             tone.accept()
         } else if let improve = improveCoordinator, improve.diffState.isActive {
             improve.accept()
@@ -739,7 +798,9 @@ struct EditorShellView: View {
 
     /// Dismisses the active diff — dispatches to the correct coordinator.
     private func dismissActiveDiff() {
-        if let tone = toneCoordinator, tone.diffState.isActive {
+        if let translation = translationCoordinator, translation.diffState.isActive {
+            translation.dismiss()
+        } else if let tone = toneCoordinator, tone.diffState.isActive {
             tone.dismiss()
         } else if let improve = improveCoordinator, improve.diffState.isActive {
             improve.dismiss()
@@ -803,6 +864,54 @@ struct EditorShellView: View {
             toneStyle: toneStyle
         )
         coordinator.startToneAdjustment(updateStream: stream)
+    }
+
+    // MARK: - AI Translation per FEAT-024
+
+    /// Checks selection word count and either warns (AC-5) or starts translation.
+    private func requestTranslation(targetLanguage: String) {
+        let selectedRange = editorState.selectedRange
+        guard selectedRange.length > 0,
+              let swiftRange = Range(selectedRange, in: text) else { return }
+
+        let selectedText = String(text[swiftRange])
+
+        // AC-5: Very long selection (5000+ words) shows warning about processing time
+        let wordCount = selectedText.split(whereSeparator: { $0.isWhitespace || $0.isNewline }).count
+        if wordCount >= 5000 {
+            pendingTranslationLanguage = targetLanguage
+            showingLongSelectionWarning = true
+            return
+        }
+
+        startTranslation(targetLanguage: targetLanguage)
+    }
+
+    /// Starts the AI translation flow per FEAT-024 AC-1.
+    /// User selects text, picks a language → AI streams translated version with inline diff.
+    private func startTranslation(targetLanguage: String) {
+        guard let coordinator = translationCoordinator,
+              let service = translationService else { return }
+
+        let selectedRange = editorState.selectedRange
+        guard selectedRange.length > 0,
+              let swiftRange = Range(selectedRange, in: text) else { return }
+
+        let selectedText = String(text[swiftRange])
+
+        // Store for retry per AC-4
+        lastTranslationLanguage = targetLanguage
+
+        // Cancel any active improve or tone diff before starting translation
+        improveCoordinator?.cancel()
+        toneCoordinator?.cancel()
+
+        // AC-3: Only selected text is sent to cloud API per [D-AI-8]
+        let stream = service.startTranslating(
+            selectedText: selectedText,
+            targetLanguage: targetLanguage
+        )
+        coordinator.startTranslation(updateStream: stream)
     }
 
     // MARK: - AI Ghost Text per FEAT-056

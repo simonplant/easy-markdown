@@ -36,6 +36,8 @@ public struct TextViewBridge: UIViewRepresentable {
     public var improveCoordinator: ImproveWritingCoordinator?
     /// Optional tone adjustment coordinator per FEAT-023.
     public var toneCoordinator: ToneAdjustmentCoordinator?
+    /// Optional translation coordinator per FEAT-024.
+    public var translationCoordinator: TranslationCoordinator?
     /// Optional ghost text coordinator for AI continue writing per FEAT-056.
     public var ghostTextCoordinator: GhostTextCoordinator?
 
@@ -89,6 +91,7 @@ public struct TextViewBridge: UIViewRepresentable {
         onLinkTap: ((URL) -> Void)? = nil,
         improveCoordinator: ImproveWritingCoordinator? = nil,
         toneCoordinator: ToneAdjustmentCoordinator? = nil,
+        translationCoordinator: TranslationCoordinator? = nil,
         ghostTextCoordinator: GhostTextCoordinator? = nil,
         isAutoFormatHeadingSpacing: Bool = true,
         isAutoFormatBlankLineSeparation: Bool = true,
@@ -114,6 +117,7 @@ public struct TextViewBridge: UIViewRepresentable {
         self.onLinkTap = onLinkTap
         self.improveCoordinator = improveCoordinator
         self.toneCoordinator = toneCoordinator
+        self.translationCoordinator = translationCoordinator
         self.ghostTextCoordinator = ghostTextCoordinator
         self.isAutoFormatHeadingSpacing = isAutoFormatHeadingSpacing
         self.isAutoFormatBlankLineSeparation = isAutoFormatBlankLineSeparation
@@ -157,6 +161,11 @@ public struct TextViewBridge: UIViewRepresentable {
         // Wire tone adjustment coordinator per FEAT-023
         if let toneCoordinator {
             toneCoordinator.textViewDelegate = context.coordinator
+        }
+
+        // Wire translation coordinator per FEAT-024
+        if let translationCoordinator {
+            translationCoordinator.textViewDelegate = context.coordinator
         }
 
         // Wire ghost text coordinator per FEAT-056
@@ -275,6 +284,11 @@ public struct TextViewBridge: UIViewRepresentable {
             toneCoordinator.textViewDelegate = coordinator
         }
 
+        // Ensure translation coordinator stays wired per FEAT-024
+        if let translationCoordinator, translationCoordinator.textViewDelegate == nil {
+            translationCoordinator.textViewDelegate = coordinator
+        }
+
         // Ensure ghost text coordinator stays wired per FEAT-056
         if let ghostTextCoordinator, ghostTextCoordinator.textViewDelegate == nil {
             ghostTextCoordinator.textViewDelegate = coordinator
@@ -362,6 +376,8 @@ public struct TextViewBridge: NSViewRepresentable {
     public var improveCoordinator: ImproveWritingCoordinator?
     /// Optional tone adjustment coordinator per FEAT-023.
     public var toneCoordinator: ToneAdjustmentCoordinator?
+    /// Optional translation coordinator per FEAT-024.
+    public var translationCoordinator: TranslationCoordinator?
     /// Optional ghost text coordinator for AI continue writing per FEAT-056.
     public var ghostTextCoordinator: GhostTextCoordinator?
 
@@ -415,6 +431,7 @@ public struct TextViewBridge: NSViewRepresentable {
         onLinkTap: ((URL) -> Void)? = nil,
         improveCoordinator: ImproveWritingCoordinator? = nil,
         toneCoordinator: ToneAdjustmentCoordinator? = nil,
+        translationCoordinator: TranslationCoordinator? = nil,
         ghostTextCoordinator: GhostTextCoordinator? = nil,
         isAutoFormatHeadingSpacing: Bool = true,
         isAutoFormatBlankLineSeparation: Bool = true,
@@ -440,6 +457,7 @@ public struct TextViewBridge: NSViewRepresentable {
         self.onLinkTap = onLinkTap
         self.improveCoordinator = improveCoordinator
         self.toneCoordinator = toneCoordinator
+        self.translationCoordinator = translationCoordinator
         self.ghostTextCoordinator = ghostTextCoordinator
         self.isAutoFormatHeadingSpacing = isAutoFormatHeadingSpacing
         self.isAutoFormatBlankLineSeparation = isAutoFormatBlankLineSeparation
@@ -489,6 +507,11 @@ public struct TextViewBridge: NSViewRepresentable {
         // Wire tone adjustment coordinator per FEAT-023
         if let toneCoordinator {
             toneCoordinator.textViewDelegate = context.coordinator
+        }
+
+        // Wire translation coordinator per FEAT-024
+        if let translationCoordinator {
+            translationCoordinator.textViewDelegate = context.coordinator
         }
 
         // Wire ghost text coordinator per FEAT-056
@@ -610,6 +633,11 @@ public struct TextViewBridge: NSViewRepresentable {
         // Ensure tone adjustment coordinator stays wired per FEAT-023
         if let toneCoordinator, toneCoordinator.textViewDelegate == nil {
             toneCoordinator.textViewDelegate = coordinator
+        }
+
+        // Ensure translation coordinator stays wired per FEAT-024
+        if let translationCoordinator, translationCoordinator.textViewDelegate == nil {
+            translationCoordinator.textViewDelegate = coordinator
         }
 
         // Ensure ghost text coordinator stays wired per FEAT-056

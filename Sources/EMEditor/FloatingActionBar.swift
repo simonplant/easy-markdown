@@ -207,7 +207,7 @@ public struct FloatingActionBar: View {
                     #endif
                     .accessibilityLabel("AI is generating")
 
-                Text("Improving...")
+                Text("Processing...")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
