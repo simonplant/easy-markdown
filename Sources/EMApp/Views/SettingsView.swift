@@ -1,5 +1,6 @@
 import SwiftUI
 import EMSettings
+import EMCore
 
 /// Settings screen presented as a sheet per [A-058].
 /// Sections: Appearance, Editor, AI, About.
@@ -7,6 +8,7 @@ import EMSettings
 struct SettingsView: View {
     @Environment(SettingsManager.self) private var settings
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         NavigationStack {
@@ -35,23 +37,40 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - Appearance
+    // MARK: - Appearance per FEAT-019
 
     private func appearanceSection(settings: Bindable<SettingsManager>) -> some View {
         Section("Appearance") {
-            Picker("Theme", selection: settings.preferredColorScheme) {
+            // Color scheme (System/Light/Dark)
+            Picker("Color Scheme", selection: settings.preferredColorScheme) {
                 Text("System").tag(ColorSchemePreference.system)
                 Text("Light").tag(ColorSchemePreference.light)
                 Text("Dark").tag(ColorSchemePreference.dark)
             }
             .accessibilityHint("Choose light, dark, or system color scheme")
 
+            // Theme picker with inline preview per FEAT-019 AC4
+            NavigationLink {
+                ThemePickerView()
+            } label: {
+                HStack {
+                    Text("Theme")
+                    Spacer()
+                    Text(Theme.builtIn(id: self.settings.themeID).name)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .accessibilityHint("Choose a color theme for the editor")
+
+            // Font picker per FEAT-019
             Picker("Font", selection: settings.fontName) {
-                Text("System").tag(FontName.system)
-                Text("Monospaced").tag(FontName.monospaced)
+                ForEach(FontName.allChoices, id: \.self) { choice in
+                    Text(FontName.displayName(choice)).tag(choice)
+                }
             }
             .accessibilityHint("Choose the editor font")
 
+            // Font size
             HStack {
                 Text("Font Size")
                 Spacer()
@@ -190,6 +209,109 @@ struct SettingsView: View {
     private var supportURL: URL {
         // Placeholder URL — replaced with real support link before App Store submission.
         URL(string: "https://easymarkdown.app/support")!
+    }
+}
+
+/// Theme picker with live preview per FEAT-019 AC4.
+/// Shows a preview of editor content in each theme before the user commits.
+struct ThemePickerView: View {
+    @Environment(SettingsManager.self) private var settings
+    @Environment(\.colorScheme) private var colorScheme
+
+    /// Sample markdown content for theme preview.
+    private let previewText = "# Heading\nBody text with **bold** and *italic*.\n`inline code` and [links](url)."
+
+    var body: some View {
+        List {
+            ForEach(Theme.allBuiltIn) { theme in
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        settings.themeID = theme.id
+                    }
+                } label: {
+                    themeRow(theme: theme)
+                }
+                .listRowBackground(
+                    settings.themeID == theme.id
+                        ? Color.accentColor.opacity(0.1)
+                        : Color.clear
+                )
+                .accessibilityLabel("\(theme.name) theme")
+                .accessibilityAddTraits(settings.themeID == theme.id ? .isSelected : [])
+            }
+        }
+        .navigationTitle("Theme")
+        #if os(iOS)
+        .navigationBarTitleDisplayMode(.inline)
+        #endif
+    }
+
+    private func themeRow(theme: Theme) -> some View {
+        let isDark = colorScheme == .dark
+        let colors = theme.colors(isDark: isDark)
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(theme.name)
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(.primary)
+                Spacer()
+                if settings.themeID == theme.id {
+                    Image(systemName: "checkmark")
+                        .foregroundStyle(.accent)
+                        .accessibilityHidden(true)
+                }
+            }
+
+            // Preview card showing theme colors per AC4
+            themePreviewCard(colors: colors)
+        }
+        .padding(.vertical, 4)
+    }
+
+    /// Renders a mini preview card showing the theme's colors on sample content.
+    private func themePreviewCard(colors: ThemeColors) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            // Heading preview
+            Text("Heading")
+                .font(.system(size: 15, weight: .bold))
+                .foregroundColor(Color(colors.heading))
+
+            // Body text preview
+            Text("Body text with emphasis and links.")
+                .font(.system(size: 12))
+                .foregroundColor(Color(colors.foreground))
+
+            // Code preview
+            Text("let code = true")
+                .font(.system(size: 11, design: .monospaced))
+                .foregroundColor(Color(colors.codeForeground))
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(Color(colors.codeBackground), in: RoundedRectangle(cornerRadius: 3))
+
+            // Color swatches for accent colors
+            HStack(spacing: 4) {
+                colorSwatch(colors.link)
+                colorSwatch(colors.syntaxKeyword)
+                colorSwatch(colors.syntaxString)
+                colorSwatch(colors.syntaxFunction)
+                colorSwatch(colors.blockquoteBorder)
+            }
+            .padding(.top, 2)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(colors.background), in: RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .strokeBorder(Color(colors.divider), lineWidth: 1)
+        )
+    }
+
+    private func colorSwatch(_ color: PlatformColor) -> some View {
+        Circle()
+            .fill(Color(color))
+            .frame(width: 14, height: 14)
     }
 }
 

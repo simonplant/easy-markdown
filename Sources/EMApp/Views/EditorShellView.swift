@@ -70,14 +70,16 @@ struct EditorShellView: View {
         #endif
     }
 
-    /// Rendering configuration for the current view mode per FEAT-003, FEAT-007, FEAT-010.
+    /// Rendering configuration for the current view mode per FEAT-003, FEAT-007, FEAT-010, FEAT-019.
     private var renderConfig: RenderConfiguration {
         let isDark = colorScheme == .dark
+        let selectedTheme = Theme.builtIn(id: settings.themeID)
+        let typeScale = TypeScale.make(fontChoice: settings.fontName, baseSize: CGFloat(settings.fontSize))
         return RenderConfiguration(
-            typeScale: .default,
-            colors: Theme.default.colors(isDark: isDark),
+            typeScale: typeScale,
+            colors: selectedTheme.colors(isDark: isDark),
             isSourceView: editorState.isSourceView,
-            colorVariant: isDark ? "dark" : "light",
+            colorVariant: "\(settings.themeID)-\(isDark ? "dark" : "light")",
             layoutMetrics: layoutMetrics
         )
     }

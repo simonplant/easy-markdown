@@ -1,25 +1,25 @@
 {
-  "sprintId": "sprint-1774323539",
-  "startedAt": "2026-03-23T20:38:59-07:00",
+  "sprintId": "sprint-1774324236",
+  "startedAt": "2026-03-23T20:50:36-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-064",
-    "title": "INFRA: Performance Regression Test Suite",
-    "intent": "Performance degrades silently unless measured on every build — automated benchmarks are the only way to keep our performance promises.",
-    "description": "Per D-QA-2. Automated tests that run on every build measuring: cold launch time (D-PERF-1: <1s), keystroke-to-render latency (D-PERF-2: <16ms), scroll FPS (D-PERF-3: 120fps ProMotion), AI first token latency (D-PERF-4: <500ms), memory usage (D-PERF-5: <100MB). A regression that crosses any threshold blocks the build. Uses XCTest performance metrics and Instruments automation.",
+    "id": "FEAT-019",
+    "title": "F-014: Custom Themes and Fonts",
+    "intent": "Personalization deepens attachment to the tool — users should be able to make easy-markdown feel like theirs",
+    "description": "3-5 built-in color themes with light and dark variants each. Font selection from curated list (we control quality). Font size adjustment. Theme preview before committing. Settings persist via UserDefaults. All themes meet WCAG AA contrast ratios.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Automated benchmarks measure all 5 performance targets on every CI build",
-      "Build fails if any performance target is exceeded",
-      "Results are logged with historical comparison to detect gradual drift",
-      "Tests run on representative device targets (iPhone 15, iPad Pro)"
+      "User selects a different theme and font — entire editor updates immediately",
+      "Selection persists across app launches",
+      "All themes pass WCAG AA contrast check",
+      "Theme preview shows the effect on editor content before committing the selection"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T20:38:59-07:00",
+    "startedAt": "2026-03-23T20:50:36-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T20:50:35-07:00"
+    "completedAt": "2026-03-23T21:03:50-07:00"
   },
-  "completedAt": "2026-03-23T20:50:35-07:00",
+  "completedAt": "2026-03-23T21:03:50-07:00",
   "attempts": 1
 }

@@ -19,7 +19,8 @@ struct SettingsManagerTests {
     func defaultValues() {
         let (m, _) = makeManager()
         #expect(m.preferredColorScheme == .system)
-        #expect(m.fontName == FontName.system)
+        #expect(m.themeID == "default")
+        #expect(m.fontName == FontName.sourceSerif)
         #expect(m.fontSize == 17.0)
         #expect(m.isSpellCheckEnabled == true)
         #expect(m.isAutoFormatEnabled == true)
@@ -43,6 +44,13 @@ struct SettingsManagerTests {
         let (m, d) = makeManager()
         m.preferredColorScheme = .dark
         #expect(d.string(forKey: "em_colorScheme") == "dark")
+    }
+
+    @Test("Theme ID persists to UserDefaults")
+    func themeIDPersists() {
+        let (m, d) = makeManager()
+        m.themeID = "sepia"
+        #expect(d.string(forKey: "em_themeID") == "sepia")
     }
 
     @Test("Font name persists to UserDefaults")
@@ -142,6 +150,7 @@ struct SettingsManagerTests {
 
         // Write values before creating manager
         defaults.set("dark", forKey: "em_colorScheme")
+        defaults.set("nord", forKey: "em_themeID")
         defaults.set(FontName.monospaced, forKey: "em_fontName")
         defaults.set(22.0, forKey: "em_fontSize")
         defaults.set(false, forKey: "em_spellCheck")
@@ -161,6 +170,7 @@ struct SettingsManagerTests {
         let m = SettingsManager(defaults: defaults)
 
         #expect(m.preferredColorScheme == .dark)
+        #expect(m.themeID == "nord")
         #expect(m.fontName == FontName.monospaced)
         #expect(m.fontSize == 22.0)
         #expect(m.isSpellCheckEnabled == false)
