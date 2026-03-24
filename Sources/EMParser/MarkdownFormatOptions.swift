@@ -1,4 +1,4 @@
-import Markdown
+@preconcurrency import Markdown
 
 /// Options for formatting an AST back to markdown text.
 /// Wraps swift-markdown's `MarkupFormatter.Options` with sensible defaults.

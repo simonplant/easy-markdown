@@ -1,5 +1,5 @@
 import Foundation
-import Markdown
+@preconcurrency import Markdown
 
 /// The parsed AST representation of a markdown document per [A-003].
 ///

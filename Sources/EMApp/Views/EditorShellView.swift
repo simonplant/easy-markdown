@@ -69,114 +69,115 @@ struct EditorShellView: View {
         )
     }
 
-    var body: some View {
-        VStack(spacing: 0) {
-            // Editor content area — TextKit 2 via EMEditor per [A-004]
-            // Rich text rendering per FEAT-003 and [A-018]
-            makeTextViewBridge()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .accessibilityLabel("Document editor")
-            .accessibilityHint("Edit your markdown document here")
-            .overlay {
-                // Image save progress overlay per FEAT-020 AC-4.
-                if editorState.isImageSaving {
-                    VStack {
-                        ProgressView()
-                            .controlSize(.large)
-                        Text("Saving image…")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding()
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
-                    .accessibilityLabel("Saving image")
+    @ViewBuilder
+    private var editorContentArea: some View {
+        makeTextViewBridge()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .accessibilityLabel("Document editor")
+        .accessibilityHint("Edit your markdown document here")
+        .overlay {
+            if editorState.isImageSaving {
+                VStack {
+                    ProgressView()
+                        .controlSize(.large)
+                    Text("Saving image…")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
+                .padding()
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                .accessibilityLabel("Saving image")
             }
-            .overlay(alignment: .top) {
-                // Floating action bar per FEAT-054 and [A-023].
-                // Positioned above the selection via GeometryReader + selectionRect.
-                // Falls back to top-center when selection rect is unavailable.
-                floatingActionBarOverlay
-            }
-            #if canImport(Speech)
-            .overlay(alignment: .bottom) {
-                // Voice transcription overlay per FEAT-068 AC-3
-                voiceTranscriptionOverlay
-                    .padding(.bottom, 80)
-            }
-            #endif
-
-            // Summary popover per FEAT-055
-            .popover(
-                isPresented: Binding(
-                    get: { aiCoordinator?.summarizeCoordinator?.isPopoverPresented ?? false },
-                    set: { newValue in
-                        if !newValue { aiCoordinator?.summarizeCoordinator?.dismiss() }
-                    }
-                )
-            ) {
-                if let coordinator = aiCoordinator?.summarizeCoordinator {
-                    SummaryPopoverContent(
-                        summaryText: coordinator.summaryText,
-                        isStreaming: coordinator.phase == .streaming,
-                        onInsert: {
-                            coordinator.insert { summary in
-                                insertTextAtCursor(summary)
-                            }
-                        },
-                        onCopy: { coordinator.copyToClipboard() },
-                        onDismiss: { coordinator.dismiss() }
-                    )
+        }
+        .overlay(alignment: .top) {
+            floatingActionBarOverlay
+        }
+        #if canImport(Speech)
+        .overlay(alignment: .bottom) {
+            voiceTranscriptionOverlay
+                .padding(.bottom, 80)
+        }
+        #endif
+        .popover(
+            isPresented: Binding(
+                get: { aiCoordinator?.summarizeCoordinator?.isPopoverPresented ?? false },
+                set: { newValue in
+                    if !newValue { aiCoordinator?.summarizeCoordinator?.dismiss() }
                 }
-            }
-
-            // Find and replace bar per FEAT-017
-            if editorState.findReplaceState.isVisible {
-                Divider()
-                FindReplaceBar(
-                    state: editorState.findReplaceState,
-                    onReplace: { performReplace() },
-                    onReplaceAll: { performReplaceAll() },
-                    onDismiss: { dismissFindReplace() }
-                )
-            }
-
-            // Doctor indicator bar per FEAT-005 — non-blocking overlay
-            if !editorState.diagnosticsState.diagnostics.isEmpty {
-                Divider()
-                DoctorIndicatorBar(
-                    diagnostics: editorState.diagnosticsState.diagnostics,
-                    onTap: { showDoctorPopover = true }
-                )
-                .popover(isPresented: $showDoctorPopover) {
-                    DoctorPopoverContent(
-                        diagnostics: editorState.diagnosticsState.diagnostics,
-                        onFix: { diagnostic in
-                            handleDoctorFix(diagnostic)
-                        },
-                        onNavigate: { diagnostic in
-                            showDoctorPopover = false
-                            editorState.navigateToLine?(diagnostic.line)
-                        },
-                        onDismiss: { diagnostic in
-                            editorState.diagnosticsState.dismissDiagnostic(diagnostic)
-                            #if canImport(UIKit)
-                            HapticFeedback.trigger(.doctorFixApplied)
-                            #endif
-                        }
-                    )
-                }
-            }
-
-            Divider()
-            FormatBar()
-            Divider()
-            StatusBar(
-                stats: editorState.documentStats,
-                selectionWordCount: editorState.selection.selectionWordCount,
-                diagnosticCount: editorState.diagnosticsState.diagnostics.count,
-                writingGoalWordCount: editorState.writingGoalWordCount
             )
+        ) {
+            if let coordinator = aiCoordinator?.summarizeCoordinator {
+                SummaryPopoverContent(
+                    summaryText: coordinator.summaryText,
+                    isStreaming: coordinator.phase == .streaming,
+                    onInsert: {
+                        coordinator.insert { summary in
+                            insertTextAtCursor(summary)
+                        }
+                    },
+                    onCopy: { coordinator.copyToClipboard() },
+                    onDismiss: { coordinator.dismiss() }
+                )
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var bottomBars: some View {
+        // Find and replace bar per FEAT-017
+        if editorState.findReplaceState.isVisible {
+            Divider()
+            FindReplaceBar(
+                state: editorState.findReplaceState,
+                onReplace: { performReplace() },
+                onReplaceAll: { performReplaceAll() },
+                onDismiss: { dismissFindReplace() }
+            )
+        }
+
+        // Doctor indicator bar per FEAT-005 — non-blocking overlay
+        if !editorState.diagnosticsState.diagnostics.isEmpty {
+            Divider()
+            DoctorIndicatorBar(
+                diagnostics: editorState.diagnosticsState.diagnostics,
+                onTap: { showDoctorPopover = true }
+            )
+            .popover(isPresented: $showDoctorPopover) {
+                DoctorPopoverContent(
+                    diagnostics: editorState.diagnosticsState.diagnostics,
+                    onFix: { diagnostic in
+                        handleDoctorFix(diagnostic)
+                    },
+                    onNavigate: { diagnostic in
+                        showDoctorPopover = false
+                        editorState.navigateToLine?(diagnostic.line)
+                    },
+                    onDismiss: { diagnostic in
+                        editorState.diagnosticsState.dismissDiagnostic(diagnostic)
+                        #if canImport(UIKit)
+                        HapticFeedback.trigger(.doctorFixApplied)
+                        #endif
+                    }
+                )
+            }
+        }
+
+        Divider()
+        FormatBar()
+        Divider()
+        StatusBar(
+            stats: editorState.documentStats,
+            selectionWordCount: editorState.selection.selectionWordCount,
+            diagnosticCount: editorState.diagnosticsState.diagnostics.count,
+            writingGoalWordCount: editorState.writingGoalWordCount
+        )
+    }
+
+    @ViewBuilder
+    private var mainContent: some View {
+        VStack(spacing: 0) {
+            editorContentArea
+            bottomBars
         }
         .overlay(alignment: .top) {
             if let manager = fileOpenCoordinator.conflictManager,
@@ -236,6 +237,11 @@ struct EditorShellView: View {
                 onVoiceToggle: { aiCoordinator?.toggleVoiceControl() }
             )
         }
+    }
+
+    @ViewBuilder
+    private var sheetsAndDialogs: some View {
+        mainContent
         .fileExporter(
             isPresented: Bindable(fileOpenCoordinator).showingSaveElsewherePanel,
             document: TextFileDocument(text: text),
@@ -244,11 +250,8 @@ struct EditorShellView: View {
         ) { result in
             switch result {
             case .success:
-                // File saved successfully by fileExporter — clear conflict state.
                 fileOpenCoordinator.conflictManager?.keepMine()
             case .failure(let error):
-                // User cancelled the save panel — not an error. Banner stays visible
-                // so they can try again or dismiss.
                 if (error as? CocoaError)?.code == .userCancelled { return }
                 errorPresenter.present(.unexpected(underlying: error))
             }
@@ -267,8 +270,6 @@ struct EditorShellView: View {
                 ShareSheetView(activityItems: [url])
             }
         }
-        #endif
-        #if os(iOS)
         .sheet(isPresented: $showingOpenFilePicker) {
             DocumentPickerView(
                 onPick: { url in
@@ -301,6 +302,11 @@ struct EditorShellView: View {
             )
         }
         #endif
+    }
+
+    @ViewBuilder
+    private var aiDialogs: some View {
+        sheetsAndDialogs
         .alert(
             "Pro AI Feature",
             isPresented: Binding(
@@ -308,9 +314,7 @@ struct EditorShellView: View {
                 set: { aiCoordinator?.showingProUpgrade = $0 }
             )
         ) {
-            Button("Learn More") {
-                router.showSubscriptionOffer()
-            }
+            Button("Learn More") { router.showSubscriptionOffer() }
             Button("Not Now", role: .cancel) {}
         } message: {
             Text("Translate and Tone adjustment are Pro AI features powered by cloud models. Subscribe to unlock them.")
@@ -396,6 +400,10 @@ struct EditorShellView: View {
         } message: {
             Text("The translation was interrupted. You can retry or cancel.")
         }
+    }
+
+    var body: some View {
+        aiDialogs
         .onAppear {
             loadFileContent()
             fileOpenCoordinator.startConflictMonitoring()

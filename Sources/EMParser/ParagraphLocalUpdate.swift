@@ -92,18 +92,26 @@ public struct ParagraphLocalUpdater: Sendable {
 
     // MARK: - Block Prefix Detection
 
+    // Pre-compiled patterns for block prefix detection (avoid pound-literal
+    // parsing ambiguity in Swift 6.x regex literals).
+    private static let headingPattern = try! Regex(#"^(#{1,6})\s"#)
+    private static let unorderedListPattern = try! Regex(#"^(\s*[-*+])\s"#)
+    private static let orderedListPattern = try! Regex(#"^(\s*\d+[.)]) "#)
+    private static let taskListPattern = try! Regex(#"^(\s*[-*+]\s+\[([ xX])\])\s"#)
+    private static let blockquotePattern = try! Regex(#"^(>\s?)+"#)
+
     private func detectBlockPrefix(in text: String, spans: inout [SyntaxSpan]) {
         // ATX heading: # through ######
-        if let match = text.prefixMatch(of: /^(#{1,6})\s/) {
-            let level = match.output.1.count
+        if let match = text.prefixMatch(of: Self.headingPattern) {
+            let hashStr = match.output[1].substring ?? ""
             spans.append(SyntaxSpan(
                 range: match.range,
-                type: .heading(level: level)
+                type: .heading(level: hashStr.count)
             ))
         }
 
         // Unordered list marker: -, *, +
-        if let match = text.prefixMatch(of: /^(\s*[-*+])\s/) {
+        if let match = text.prefixMatch(of: Self.unorderedListPattern) {
             spans.append(SyntaxSpan(
                 range: match.range,
                 type: .listMarker
@@ -111,7 +119,7 @@ public struct ParagraphLocalUpdater: Sendable {
         }
 
         // Ordered list marker: 1. 2. etc.
-        if let match = text.prefixMatch(of: /^(\s*\d+[.)]) /) {
+        if let match = text.prefixMatch(of: Self.orderedListPattern) {
             spans.append(SyntaxSpan(
                 range: match.range,
                 type: .listMarker
@@ -119,16 +127,16 @@ public struct ParagraphLocalUpdater: Sendable {
         }
 
         // Task list marker: - [x] or - [ ]
-        if let match = text.prefixMatch(of: /^(\s*[-*+]\s+\[([ xX])\])\s/) {
-            let checked = match.output.2 != " "
+        if let match = text.prefixMatch(of: Self.taskListPattern) {
+            let checkChar = match.output[2].substring ?? " "
             spans.append(SyntaxSpan(
                 range: match.range,
-                type: .taskListMarker(checked: checked)
+                type: .taskListMarker(checked: checkChar != " ")
             ))
         }
 
         // Blockquote marker: >
-        if let match = text.prefixMatch(of: /^(>\s?)+/) {
+        if let match = text.prefixMatch(of: Self.blockquotePattern) {
             spans.append(SyntaxSpan(
                 range: match.range,
                 type: .blockquoteMarker
@@ -138,34 +146,46 @@ public struct ParagraphLocalUpdater: Sendable {
 
     // MARK: - Inline Detection
 
+    // Pre-compiled patterns for inline detection (avoid regex literal parsing
+    // ambiguity in Swift 6.x).
+    private static let codeSpanPattern = try! Regex(#"`{1,2}[^`]+`{1,2}"#)
+    private static let boldItalicStarPattern = try! Regex(#"\*{3}(?!\s)(.+?)(?<!\s)\*{3}"#)
+    private static let boldItalicUnderPattern = try! Regex(#"_{3}(?!\s)(.+?)(?<!\s)_{3}"#)
+    private static let boldStarPattern = try! Regex(#"\*{2}(?!\s)(.+?)(?<!\s)\*{2}"#)
+    private static let boldUnderPattern = try! Regex(#"_{2}(?!\s)(.+?)(?<!\s)_{2}"#)
+    private static let italicPattern = try! Regex(#"(?<!\*)\*(?!\s)([^*]+?)(?<!\s)\*(?!\*)|(?<!_)_(?!\s)([^_]+?)(?<!\s)_(?!_)"#)
+    private static let strikethroughPattern = try! Regex(#"~~(?!\s)(.+?)(?<!\s)~~"#)
+    private static let linkPattern = try! Regex(#"(?<!!)\[([^\]]+)\]\(([^)]+)\)"#)
+    private static let imagePattern = try! Regex(#"!\[([^\]]*)\]\(([^)]+)\)"#)
+
     private func detectCodeSpans(in text: String, spans: inout [SyntaxSpan]) {
-        // Backtick code spans: `code` or ``code``
-        let pattern = /`{1,2}[^`]+`{1,2}/
-        for match in text.matches(of: pattern) {
+        for match in text.matches(of: Self.codeSpanPattern) {
             spans.append(SyntaxSpan(range: match.range, type: .codeSpan))
         }
     }
 
     private func detectBoldItalic(in text: String, spans: inout [SyntaxSpan]) {
-        // Bold+italic: ***text*** or ___text___
-        let boldItalicPattern = /(\*{3}|_{3})(?!\s)(.+?)(?<!\s)\1/
-        for match in text.matches(of: boldItalicPattern) {
+        for match in text.matches(of: Self.boldItalicStarPattern) {
+            spans.append(SyntaxSpan(range: match.range, type: .boldItalic))
+        }
+        for match in text.matches(of: Self.boldItalicUnderPattern) {
             spans.append(SyntaxSpan(range: match.range, type: .boldItalic))
         }
 
-        // Bold: **text** or __text__
-        let boldPattern = /(\*{2}|_{2})(?!\s)(.+?)(?<!\s)\1/
-        for match in text.matches(of: boldPattern) {
-            // Skip if already covered by bold+italic
+        for match in text.matches(of: Self.boldStarPattern) {
+            let alreadyCovered = spans.contains { $0.range == match.range && $0.type == .boldItalic }
+            if !alreadyCovered {
+                spans.append(SyntaxSpan(range: match.range, type: .bold))
+            }
+        }
+        for match in text.matches(of: Self.boldUnderPattern) {
             let alreadyCovered = spans.contains { $0.range == match.range && $0.type == .boldItalic }
             if !alreadyCovered {
                 spans.append(SyntaxSpan(range: match.range, type: .bold))
             }
         }
 
-        // Italic: *text* or _text_
-        let italicPattern = /(?<!\*)\*(?!\s)([^*]+?)(?<!\s)\*(?!\*)|(?<!_)_(?!\s)([^_]+?)(?<!\s)_(?!_)/
-        for match in text.matches(of: italicPattern) {
+        for match in text.matches(of: Self.italicPattern) {
             let alreadyCovered = spans.contains { span in
                 span.range.overlaps(match.range) && (span.type == .bold || span.type == .boldItalic)
             }
@@ -176,24 +196,19 @@ public struct ParagraphLocalUpdater: Sendable {
     }
 
     private func detectStrikethrough(in text: String, spans: inout [SyntaxSpan]) {
-        let pattern = /~~(?!\s)(.+?)(?<!\s)~~/
-        for match in text.matches(of: pattern) {
+        for match in text.matches(of: Self.strikethroughPattern) {
             spans.append(SyntaxSpan(range: match.range, type: .strikethrough))
         }
     }
 
     private func detectLinks(in text: String, spans: inout [SyntaxSpan]) {
-        // Inline links: [text](url)
-        let pattern = /(?<!!)\[([^\]]+)\]\(([^)]+)\)/
-        for match in text.matches(of: pattern) {
+        for match in text.matches(of: Self.linkPattern) {
             spans.append(SyntaxSpan(range: match.range, type: .link))
         }
     }
 
     private func detectImages(in text: String, spans: inout [SyntaxSpan]) {
-        // Images: ![alt](url)
-        let pattern = /!\[([^\]]*)\]\(([^)]+)\)/
-        for match in text.matches(of: pattern) {
+        for match in text.matches(of: Self.imagePattern) {
             spans.append(SyntaxSpan(range: match.range, type: .image))
         }
     }

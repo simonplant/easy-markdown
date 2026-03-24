@@ -1,5 +1,6 @@
 import Foundation
 import Network
+import os
 
 /// Monitors network connectivity for AI download and cloud inference decisions.
 /// Uses NWPathMonitor per structured concurrency conventions [A-013].

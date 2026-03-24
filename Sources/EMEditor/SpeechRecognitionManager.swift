@@ -60,18 +60,6 @@ public final class SpeechRecognitionManager {
         speechRecognizer = SFSpeechRecognizer()
     }
 
-    deinit {
-        // Stop audio engine and remove tap to release the microphone
-        if let audioEngine {
-            audioEngine.stop()
-            audioEngine.inputNode.removeTap(onBus: 0)
-        }
-        audioEngine = nil
-        // Cancel any in-flight recognition task
-        recognitionTask?.cancel()
-        recognitionTask = nil
-    }
-
     /// Starts speech recognition.
     /// Requests permissions if not yet granted, configures the audio session,
     /// and begins streaming recognized text per AC-2 (within 200ms).

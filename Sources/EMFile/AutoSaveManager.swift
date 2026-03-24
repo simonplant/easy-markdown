@@ -51,7 +51,7 @@ public final class AutoSaveManager {
     private let fileURL: URL
     private let lineEnding: LineEnding
     private let conflictManager: FileConflictManager
-    private var debounceTask: Task<Void, Never>?
+    nonisolated(unsafe) private var debounceTask: Task<Void, Never>?
     private var lastSavedContent: String?
     private var isInBackground: Bool = false
 
@@ -94,7 +94,7 @@ public final class AutoSaveManager {
     }
 
     deinit {
-        stop()
+        debounceTask?.cancel()
     }
 
     // MARK: - Public API

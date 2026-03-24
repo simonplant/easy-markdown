@@ -1,5 +1,5 @@
 import Foundation
-import Markdown
+@preconcurrency import Markdown
 import os
 
 /// Thread-safe markdown parser wrapping Apple's `swift-markdown` per [A-003].
@@ -72,7 +72,6 @@ public struct ParseOptions: Sendable {
     public static let `default` = ParseOptions(
         markupParsingOptions: [
             .parseBlockDirectives,
-            .parseMinimalDashes,
         ]
     )
 

@@ -96,7 +96,7 @@ struct RepoBrowserView: View {
         }
         .searchable(
             text: $vm.searchText,
-            placement: .navigationBarDrawer(displayMode: .always),
+            placement: .automatic,
             prompt: "Filter repos by name"
         )
         .refreshable {

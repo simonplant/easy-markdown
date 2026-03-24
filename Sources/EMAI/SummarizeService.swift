@@ -76,7 +76,7 @@ public final class SummarizeService {
             isFullDocument: isFullDocument
         )
 
-        return AsyncStream { [weak self] continuation in
+        return AsyncStream<SummarizeUpdate> { [weak self] (continuation: AsyncStream<SummarizeUpdate>.Continuation) in
             guard let self else {
                 continuation.finish()
                 return
@@ -110,7 +110,7 @@ public final class SummarizeService {
 
                 var isFirstToken = true
                 let fullID = self.signposter.makeSignpostID()
-                var fullState: OSSignposter.State?
+                var fullState: OSSignpostIntervalState?
                 let tokenStream = provider.generate(prompt: prompt, context: context)
 
                 do {

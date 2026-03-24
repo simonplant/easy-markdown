@@ -177,7 +177,7 @@ public enum FullReparseBenchmark {
         let lineCount = source.filter { $0 == "\n" }.count + 1
 
         let signpostID = OSSignpostID(log: benchmarkLog)
-        let parseOptions: Markdown.ParseOptions = [.parseBlockDirectives, .parseMinimalDashes]
+        let parseOptions: Markdown.ParseOptions = [.parseBlockDirectives]
 
         let logger = Logger(subsystem: "com.easymarkdown.spike003", category: "benchmark")
         logger.info("Starting SPIKE-003 benchmark: \(lineCount) lines, \(warmUpIterations) warm-up + \(measuredIterations) measured iterations")

@@ -325,7 +325,7 @@ struct ThemePickerView: View {
                 Spacer()
                 if settings.themeID == theme.id {
                     Image(systemName: "checkmark")
-                        .foregroundStyle(.accent)
+                        .foregroundStyle(.tint)
                         .accessibilityHidden(true)
                 }
             }

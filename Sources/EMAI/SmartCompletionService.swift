@@ -55,7 +55,7 @@ public final class SmartCompletionService {
             surroundingContext: surroundingContext
         )
 
-        return AsyncStream { [weak self] continuation in
+        return AsyncStream<GhostTextUpdate> { [weak self] (continuation: AsyncStream<GhostTextUpdate>.Continuation) in
             guard let self else {
                 continuation.finish()
                 return
@@ -89,7 +89,7 @@ public final class SmartCompletionService {
 
                 var isFirstToken = true
                 let fullID = self.signposter.makeSignpostID()
-                var fullState: OSSignposter.State?
+                var fullState: OSSignpostIntervalState?
                 let tokenStream = provider.generate(prompt: prompt, context: context)
 
                 do {

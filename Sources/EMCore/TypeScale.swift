@@ -22,7 +22,7 @@ import AppKit
 /// Each font is wrapped with `UIFontMetrics` (iOS) so Dynamic Type
 /// scales editor content automatically. On macOS, fonts use the registered
 /// custom typefaces at fixed sizes that respond to system text size settings.
-public struct TypeScale: Sendable {
+public struct TypeScale: @unchecked Sendable {
     public let heading1: PlatformFont
     public let heading2: PlatformFont
     public let heading3: PlatformFont

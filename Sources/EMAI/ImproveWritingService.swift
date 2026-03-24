@@ -73,7 +73,7 @@ public final class ImproveWritingService {
             contentType: contentType
         )
 
-        return AsyncStream { [weak self] continuation in
+        return AsyncStream<ImproveWritingUpdate> { [weak self] (continuation: AsyncStream<ImproveWritingUpdate>.Continuation) in
             guard let self else {
                 continuation.finish()
                 return
@@ -107,7 +107,7 @@ public final class ImproveWritingService {
 
                 var isFirstToken = true
                 let fullID = self.signposter.makeSignpostID()
-                var fullState: OSSignposter.State?
+                var fullState: OSSignpostIntervalState?
                 let tokenStream = provider.generate(prompt: prompt, context: context)
 
                 do {

@@ -38,8 +38,8 @@ struct SyntaxToken: Sendable {
 
 /// Tokenizes source code and applies syntax highlighting colors.
 ///
-/// Thread-safe: all methods operate on value types. Regex patterns are compiled
-/// once and cached per language.
+/// Regex patterns are compiled once and cached per language.
+/// Thread safety: all callers go through @MainActor MarkdownRenderer.render().
 struct SyntaxHighlighter {
 
     /// Applies syntax highlighting attributes to a code block's content range.
@@ -50,7 +50,6 @@ struct SyntaxHighlighter {
     ///   - language: The language identifier from the info string, or nil.
     ///   - colors: The current theme's color palette.
     ///   - codeFont: The monospace font for code.
-    @MainActor
     func highlight(
         in attrStr: NSMutableAttributedString,
         contentRange: NSRange,
@@ -206,12 +205,10 @@ struct SyntaxHighlighter {
     }
 
     /// Compiled rules per language, lazily cached.
-    /// Accessed only from @MainActor context (via MarkdownRenderer.render).
-    @MainActor
-    private static var ruleCache: [String: [HighlightRule]] = [:]
+    /// Thread safety: all callers reach this through @MainActor MarkdownRenderer.render().
+    nonisolated(unsafe) private static var ruleCache: [String: [HighlightRule]] = [:]
 
     /// Returns compiled highlight rules for a language, or nil if unsupported.
-    @MainActor
     private func highlightRules(for language: String?) -> [HighlightRule]? {
         guard let lang = language else { return nil }
 

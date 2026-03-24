@@ -5,7 +5,7 @@ import EMCore
 ///
 /// Persists bookmark data in UserDefaults so files remain accessible across app
 /// launches without requiring the user to re-pick them from the file picker.
-public final class BookmarkManager: Sendable {
+public final class BookmarkManager: @unchecked Sendable {
 
     private let defaults: UserDefaults
     private let bookmarksKey: String

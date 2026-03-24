@@ -145,9 +145,9 @@ public final class ImageLoader {
 
         let task = Task.detached { [weak self] in
             let result = await Self.loadAndProcess(url: url, maxWidth: maxWidth)
+            guard let self else { return }
 
-            await MainActor.run {
-                guard let self else { return }
+            await MainActor.run { [self] in
                 self.inFlightURLs.remove(url)
                 self.tasks.removeValue(forKey: url)
 

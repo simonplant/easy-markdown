@@ -256,15 +256,15 @@ public final class SmartCompletionCoordinator {
     private func detectListItem(line: String, fullText: String, cursorAt cursorLocation: Int) -> SmartCompletionStructure? {
         // Unordered: - item, * item, + item
         // Ordered: 1. item, 2. item, etc.
-        let unorderedPattern = /^(\s*[-*+]\s+).+$/
-        let orderedPattern = /^(\s*\d+\.\s+).+$/
+        let unorderedPattern = try! Regex(#"^(\s*[-*+]\s+).+$"#)
+        let orderedPattern = try! Regex(#"^(\s*\d+\.\s+).+$"#)
 
         let prefix: String
         if let match = line.wholeMatch(of: unorderedPattern) {
-            prefix = String(match.1)
+            prefix = String(match.output[1].substring ?? "")
         } else if let match = line.wholeMatch(of: orderedPattern) {
             // Normalize ordered prefix to next number
-            let trimmedPrefix = String(match.1)
+            let trimmedPrefix = String(match.output[1].substring ?? "")
             prefix = trimmedPrefix
         } else {
             return nil
@@ -290,13 +290,13 @@ public final class SmartCompletionCoordinator {
         let lines = textBefore.split(separator: "\n", omittingEmptySubsequences: false)
 
         var items: [String] = []
-        let listPattern = /^\s*(?:[-*+]|\d+\.)\s+(.+)$/
+        let listPattern = try! Regex(#"^\s*(?:[-*+]|\d+\.)\s+(.+)$"#)
 
         // Scan backwards through recent lines
         for line in lines.reversed() {
             let lineStr = String(line)
             if let match = lineStr.wholeMatch(of: listPattern) {
-                items.insert(String(match.1), at: 0)
+                items.insert(String(match.output[1].substring ?? ""), at: 0)
             } else if lineStr.trimmingCharacters(in: .whitespaces).isEmpty {
                 // Empty line breaks the list
                 break
@@ -344,11 +344,11 @@ public final class SmartCompletionCoordinator {
 
         // Gather existing keys
         var existingKeys: [String] = []
-        let keyPattern = /^(\w[\w-]*):\s/
+        let keyPattern = try! Regex(#"^(\w[\w-]*):\s"#)
         for i in 1..<lines.count {
             let lineStr = String(lines[i])
             if let match = lineStr.prefixMatch(of: keyPattern) {
-                existingKeys.append(String(match.1))
+                existingKeys.append(String(match.output[1].substring ?? ""))
             }
         }
 

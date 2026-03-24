@@ -819,7 +819,7 @@ struct PDFExporter {
                 var ascent: CGFloat = 0
                 var descent: CGFloat = 0
                 var leading: CGFloat = 0
-                let lineWidth = CGFloat(CTLineGetTypographicBounds(line, &ascent, &descent, &leading))
+                _ = CTLineGetTypographicBounds(line, &ascent, &descent, &leading)
 
                 let origin = origins[lineIndex]
                 // Convert from Core Text coordinates (origin at bottom-left of contentRect)
@@ -928,10 +928,9 @@ struct PDFExporter {
         #else
         // AppKit uses flipped coordinates for PDF context — push graphics context and draw
         NSGraphicsContext.saveGraphicsState()
-        if let nsContext = NSGraphicsContext(cgContext: context, flipped: true) {
-            NSGraphicsContext.current = nsContext
-            watermark.draw(at: CGPoint(x: x, y: y))
-        }
+        let nsContext = NSGraphicsContext(cgContext: context, flipped: true)
+        NSGraphicsContext.current = nsContext
+        watermark.draw(at: CGPoint(x: x, y: y))
         NSGraphicsContext.restoreGraphicsState()
         #endif
     }

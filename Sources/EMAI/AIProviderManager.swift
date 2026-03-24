@@ -4,14 +4,14 @@ import os
 import EMCore
 
 /// Validated URL constants — guard-let satisfies [A-048] (no force-unwrap).
-private let defaultModelDownloadURL: URL = {
+public let defaultModelDownloadURL: URL = {
     guard let url = URL(string: "https://models.easymarkdown.app/v1/model.mlpackage") else {
         preconditionFailure("Invalid hardcoded model download URL")
     }
     return url
 }()
 
-private let defaultCloudRelayURL: URL = {
+public let defaultCloudRelayURL: URL = {
     guard let url = URL(string: "https://api.easymarkdown.app/v1/generate") else {
         preconditionFailure("Invalid hardcoded cloud relay URL")
     }

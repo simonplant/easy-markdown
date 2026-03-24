@@ -55,10 +55,8 @@ public struct FormattingEngine: Sendable {
         if isHeadingSpacingEnabled {
             rules.append(HeadingSpacingRule())
         }
-        rules.append(contentsOf: [
-            ListContinuationRule(),
-            ListIndentRule(),
-        ])
+        rules.append(ListContinuationRule())
+        rules.append(ListIndentRule())
         rules.append(WhitespaceCleanupRule(
             trimTrailingWhitespace: isTrailingWhitespaceTrimEnabled,
             removeTrailingHashes: isHeadingSpacingEnabled,

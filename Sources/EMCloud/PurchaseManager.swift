@@ -43,7 +43,7 @@ public final class PurchaseManager {
     /// Whether a purchase or restore operation is in progress.
     public private(set) var isPurchasing: Bool = false
 
-    private var transactionListenerTask: Task<Void, Never>?
+    private nonisolated(unsafe) var transactionListenerTask: Task<Void, Never>?
 
     public init() {
         transactionListenerTask = Task { [weak self] in

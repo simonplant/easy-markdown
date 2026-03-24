@@ -81,14 +81,6 @@ public struct AIPrompt: Sendable {
 }
 
 /// Detected content type for content-aware prompting per [A-032].
-public enum ContentType: Sendable {
-    case prose
-    case codeBlock(language: String?)
-    case table
-    case mermaid
-    case mixed
-}
-
 /// Device and runtime context passed to provider selection and inference.
 public struct AIContext: Sendable {
     /// The current device's AI capability.

@@ -76,7 +76,7 @@ public final class TranslationService {
             contentType: contentType
         )
 
-        return AsyncStream { [weak self] continuation in
+        return AsyncStream<TranslationUpdate> { [weak self] (continuation: AsyncStream<TranslationUpdate>.Continuation) in
             guard let self else {
                 continuation.finish()
                 return
@@ -110,7 +110,7 @@ public final class TranslationService {
 
                 var isFirstToken = true
                 let fullID = self.signposter.makeSignpostID()
-                var fullState: OSSignposter.State?
+                var fullState: OSSignpostIntervalState?
                 let tokenStream = provider.generate(prompt: prompt, context: context)
 
                 do {

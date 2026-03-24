@@ -14,7 +14,10 @@ public final class SubscriptionManager: SubscriptionStatusProviding {
 
     /// When the current subscription period expires, if applicable.
     public private(set) var expirationDate: Date? {
-        didSet { _cache.withLock { $0.expirationDate = expirationDate } }
+        didSet {
+            let newValue = expirationDate
+            _cache.withLock { $0.expirationDate = newValue }
+        }
     }
 
     /// The available subscription products fetched from the App Store.
@@ -30,7 +33,7 @@ public final class SubscriptionManager: SubscriptionStatusProviding {
         initialState: (nil, nil)
     )
 
-    private var transactionListenerTask: Task<Void, Never>?
+    private nonisolated(unsafe) var transactionListenerTask: Task<Void, Never>?
     private let logger = Logger(subsystem: "com.easymarkdown.emcloud", category: "subscription")
 
     public init() {
