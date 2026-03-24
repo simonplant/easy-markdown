@@ -52,6 +52,8 @@ struct EditorShellView: View {
     @State private var lastTranslationLanguage: String = ""
     @State private var ghostTextCoordinator: GhostTextCoordinator?
     @State private var ghostTextService: GhostTextService?
+    @State private var smartCompletionCoordinator: SmartCompletionCoordinator?
+    @State private var smartCompletionService: SmartCompletionService?
     @State private var showingOpenFilePicker = false
     @State private var showingNewFilePicker = false
     @State private var isProSubscriber = false
@@ -113,6 +115,7 @@ struct EditorShellView: View {
                 toneCoordinator: toneCoordinator,
                 translationCoordinator: translationCoordinator,
                 ghostTextCoordinator: ghostTextCoordinator,
+                smartCompletionCoordinator: smartCompletionCoordinator,
                 isAutoFormatHeadingSpacing: settings.isAutoFormatHeadingSpacing,
                 isAutoFormatBlankLineSeparation: settings.isAutoFormatBlankLineSeparation,
                 isAutoFormatTrailingWhitespaceTrim: settings.trailingWhitespaceBehavior == .strip,
@@ -419,6 +422,7 @@ struct EditorShellView: View {
             translationCoordinator?.cancel()
             summarizeCoordinator?.cancel()
             ghostTextCoordinator?.cancel()
+            smartCompletionCoordinator?.cancel()
             // Clear doctor state on file close per FEAT-005 AC-3
             editorState.clearDiagnostics()
             // Save, then release per-scene file coordination resources per [A-028].
@@ -434,8 +438,10 @@ struct EditorShellView: View {
         }
         .onChange(of: settings.isGhostTextEnabled) { _, newValue in
             ghostTextCoordinator?.isEnabled = newValue
+            smartCompletionCoordinator?.isEnabled = newValue
             if !newValue {
                 ghostTextCoordinator?.cancel()
+                smartCompletionCoordinator?.cancel()
             }
         }
         .onChange(of: settings.writingGoalWordCount) { _, newValue in
@@ -690,6 +696,9 @@ struct EditorShellView: View {
 
         // FEAT-056: Ghost Text (Continue Writing)
         setupGhostText()
+
+        // FEAT-025: Smart Completions
+        setupSmartCompletion()
     }
 
     /// Starts the AI improve flow per FEAT-011 AC-1.
@@ -936,6 +945,42 @@ struct EditorShellView: View {
         }
 
         ghostTextCoordinator = coordinator
+    }
+
+    // MARK: - AI Smart Completions per FEAT-025
+
+    /// Creates and wires the smart completion coordinator and service per FEAT-025.
+    /// Connects the coordinator's `onRequestSmartCompletion` closure to the EMAI service,
+    /// maintaining module isolation per [A-015].
+    private func setupSmartCompletion() {
+        guard aiProviderManager.shouldShowAIUI else { return }
+
+        let service = SmartCompletionService(providerManager: aiProviderManager)
+        smartCompletionService = service
+
+        let coordinator = SmartCompletionCoordinator(editorState: editorState)
+        coordinator.isEnabled = settings.isGhostTextEnabled
+
+        // Wire the coordinator to request smart completion from EMAI when a structure is detected.
+        // This closure bridges EMEditor → EMAI without direct import per [A-015].
+        // Maps SmartCompletionStructure (EMEditor) to SmartCompletionPromptTemplate.StructureType (EMAI).
+        coordinator.onRequestSmartCompletion = { [weak service] structure, precedingText in
+            guard let service else { return nil }
+            let structureType: SmartCompletionPromptTemplate.StructureType = switch structure {
+            case .tableHeader(let columns):
+                .tableHeader(columns: columns)
+            case .listItem(let prefix, let items):
+                .listItem(prefix: prefix, items: items)
+            case .frontMatter(let existingKeys):
+                .frontMatter(existingKeys: existingKeys)
+            }
+            return service.startCompleting(
+                structureType: structureType,
+                precedingText: precedingText
+            )
+        }
+
+        smartCompletionCoordinator = coordinator
     }
 
     /// Inserts text at the current cursor position per FEAT-055 AC-2.

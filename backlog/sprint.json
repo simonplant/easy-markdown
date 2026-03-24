@@ -1,26 +1,20 @@
 {
-  "sprintId": "sprint-1774326546",
-  "startedAt": "2026-03-23T21:29:06-07:00",
-  "status": "completed",
+  "sprintId": "sprint-1774327293",
+  "startedAt": "2026-03-23T21:41:33-07:00",
+  "status": "in_progress",
   "item": {
-    "id": "FEAT-024",
-    "title": "F-027: AI — Translation (Pro AI)",
-    "intent": "Translation is a killer Pro AI feature — select text, pick a language, get an inline preview. Must work across 20+ languages.",
-    "description": "Select text, translate to another language. Cloud-powered for quality across 20+ languages: EN, ES, FR, DE, ZH, JA, KO, PT, IT, RU, AR, HI, NL, SV, PL, DA, NO, FI, TR, TH. Translation appears as inline replacement preview. Original recoverable via undo. Only selected text sent per D-AI-8.",
+    "id": "FEAT-025",
+    "title": "F-028: AI — Smart Completions (Local AI)",
+    "intent": "Context-aware autocomplete should understand markdown structure — suggest table layouts, list continuations, and patterns, not just words",
+    "description": "Completes markdown structures: table header suggests column layout, list suggests next items based on pattern. Completes front matter patterns if present (read-only per DP-6). Ghost text, Tab to accept. On-device, works offline. Same device floor as F-025: iPhone 15 / M1 Mac minimum.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "Pro subscriber selects English paragraph, taps Translate to Spanish, translated text appears as preview within 3 seconds",
-      "Undo restores original English text",
-      "Only selected text is sent to cloud API",
-      "Cloud API failure mid-translation shows partial result with option to retry or cancel",
-      "Very long selection (5000+ words) shows warning about processing time"
+      "User types table header row and presses Enter — AI suggests separator row and first data row",
+      "User Tabs to accept ghost text suggestion",
+      "Works offline on supported devices, not available on older devices"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T21:29:06-07:00",
-    "status": "passed",
-    "completedAt": "2026-03-23T21:41:32-07:00"
-  },
-  "completedAt": "2026-03-23T21:41:32-07:00",
-  "attempts": 1
+    "startedAt": "2026-03-23T21:41:33-07:00"
+  }
 }

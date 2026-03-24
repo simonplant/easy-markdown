@@ -40,6 +40,8 @@ public struct TextViewBridge: UIViewRepresentable {
     public var translationCoordinator: TranslationCoordinator?
     /// Optional ghost text coordinator for AI continue writing per FEAT-056.
     public var ghostTextCoordinator: GhostTextCoordinator?
+    /// Optional smart completion coordinator for AI structure-aware completions per FEAT-025.
+    public var smartCompletionCoordinator: SmartCompletionCoordinator?
 
     // MARK: - Formatting settings per FEAT-053 AC-6
 
@@ -93,6 +95,7 @@ public struct TextViewBridge: UIViewRepresentable {
         toneCoordinator: ToneAdjustmentCoordinator? = nil,
         translationCoordinator: TranslationCoordinator? = nil,
         ghostTextCoordinator: GhostTextCoordinator? = nil,
+        smartCompletionCoordinator: SmartCompletionCoordinator? = nil,
         isAutoFormatHeadingSpacing: Bool = true,
         isAutoFormatBlankLineSeparation: Bool = true,
         isAutoFormatTrailingWhitespaceTrim: Bool = true,
@@ -119,6 +122,7 @@ public struct TextViewBridge: UIViewRepresentable {
         self.toneCoordinator = toneCoordinator
         self.translationCoordinator = translationCoordinator
         self.ghostTextCoordinator = ghostTextCoordinator
+        self.smartCompletionCoordinator = smartCompletionCoordinator
         self.isAutoFormatHeadingSpacing = isAutoFormatHeadingSpacing
         self.isAutoFormatBlankLineSeparation = isAutoFormatBlankLineSeparation
         self.isAutoFormatTrailingWhitespaceTrim = isAutoFormatTrailingWhitespaceTrim
@@ -172,6 +176,12 @@ public struct TextViewBridge: UIViewRepresentable {
         if let ghostTextCoordinator {
             ghostTextCoordinator.textViewDelegate = context.coordinator
             context.coordinator.ghostTextCoordinator = ghostTextCoordinator
+        }
+
+        // Wire smart completion coordinator per FEAT-025
+        if let smartCompletionCoordinator {
+            smartCompletionCoordinator.textViewDelegate = context.coordinator
+            context.coordinator.smartCompletionCoordinator = smartCompletionCoordinator
         }
 
         // Wire Shift-Tab handler for list outdent per FEAT-004
@@ -295,6 +305,12 @@ public struct TextViewBridge: UIViewRepresentable {
             coordinator.ghostTextCoordinator = ghostTextCoordinator
         }
 
+        // Ensure smart completion coordinator stays wired per FEAT-025
+        if let smartCompletionCoordinator, smartCompletionCoordinator.textViewDelegate == nil {
+            smartCompletionCoordinator.textViewDelegate = coordinator
+            coordinator.smartCompletionCoordinator = smartCompletionCoordinator
+        }
+
         // Track whether we need to re-render
         let textChanged = coordinator.updateTextView(textView, with: text)
         let previousVariant = coordinator.renderConfig?.colorVariant
@@ -380,6 +396,8 @@ public struct TextViewBridge: NSViewRepresentable {
     public var translationCoordinator: TranslationCoordinator?
     /// Optional ghost text coordinator for AI continue writing per FEAT-056.
     public var ghostTextCoordinator: GhostTextCoordinator?
+    /// Optional smart completion coordinator for AI structure-aware completions per FEAT-025.
+    public var smartCompletionCoordinator: SmartCompletionCoordinator?
 
     // MARK: - Formatting settings per FEAT-053 AC-6
 
@@ -433,6 +451,7 @@ public struct TextViewBridge: NSViewRepresentable {
         toneCoordinator: ToneAdjustmentCoordinator? = nil,
         translationCoordinator: TranslationCoordinator? = nil,
         ghostTextCoordinator: GhostTextCoordinator? = nil,
+        smartCompletionCoordinator: SmartCompletionCoordinator? = nil,
         isAutoFormatHeadingSpacing: Bool = true,
         isAutoFormatBlankLineSeparation: Bool = true,
         isAutoFormatTrailingWhitespaceTrim: Bool = true,
@@ -459,6 +478,7 @@ public struct TextViewBridge: NSViewRepresentable {
         self.toneCoordinator = toneCoordinator
         self.translationCoordinator = translationCoordinator
         self.ghostTextCoordinator = ghostTextCoordinator
+        self.smartCompletionCoordinator = smartCompletionCoordinator
         self.isAutoFormatHeadingSpacing = isAutoFormatHeadingSpacing
         self.isAutoFormatBlankLineSeparation = isAutoFormatBlankLineSeparation
         self.isAutoFormatTrailingWhitespaceTrim = isAutoFormatTrailingWhitespaceTrim
@@ -518,6 +538,12 @@ public struct TextViewBridge: NSViewRepresentable {
         if let ghostTextCoordinator {
             ghostTextCoordinator.textViewDelegate = context.coordinator
             context.coordinator.ghostTextCoordinator = ghostTextCoordinator
+        }
+
+        // Wire smart completion coordinator per FEAT-025
+        if let smartCompletionCoordinator {
+            smartCompletionCoordinator.textViewDelegate = context.coordinator
+            context.coordinator.smartCompletionCoordinator = smartCompletionCoordinator
         }
 
         // Wire Shift-Tab handler for list outdent per FEAT-004
