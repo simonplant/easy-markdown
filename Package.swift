@@ -88,5 +88,8 @@ let package = Package(
         .testTarget(name: "EMCloudTests", dependencies: ["EMCloud", "EMCore"]),
         .testTarget(name: "EMSettingsTests", dependencies: ["EMSettings", "EMCore"]),
         .testTarget(name: "EMAppTests", dependencies: ["EMApp", "EMSettings", "EMAI", "EMCore"]),
+        .testTarget(name: "PerformanceRegressionTests", dependencies: [
+            "EMCore", "EMParser", "EMFormatter", "EMEditor", "EMAI", "EMFile",
+        ]),
     ]
 )
