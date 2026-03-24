@@ -365,6 +365,32 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         }
     }
 
+    /// Navigates the cursor to the start of a 1-based line number and scrolls
+    /// it into view per FEAT-022 AC-2.
+    func handleNavigateToLine(_ line: Int, in textView: UITextView) {
+        let fullText = textView.text ?? ""
+        let offset = utf16OffsetForLine(line, in: fullText)
+        let nsRange = NSRange(location: offset, length: 0)
+        textView.selectedRange = nsRange
+        textView.scrollRangeToVisible(nsRange)
+        editorState.updateSelectedRange(nsRange)
+    }
+
+    /// Returns the UTF-16 offset of the start of a 1-based line number.
+    private func utf16OffsetForLine(_ line: Int, in text: String) -> Int {
+        guard line > 1 else { return 0 }
+        var currentLine = 1
+        for (i, char) in text.utf16.enumerated() {
+            if char == 0x0A { // newline
+                currentLine += 1
+                if currentLine == line {
+                    return i + 1
+                }
+            }
+        }
+        return text.utf16.count
+    }
+
     /// Handles Shift-Tab for list outdent per FEAT-004.
     /// Called from EMTextView's key command handler.
     /// Returns true if the event was consumed by a formatting rule.
@@ -1106,6 +1132,32 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         if let emTextView = textView as? EMTextView {
             scheduleRender(for: emTextView)
         }
+    }
+
+    /// Navigates the cursor to the start of a 1-based line number and scrolls
+    /// it into view per FEAT-022 AC-2.
+    func handleNavigateToLine(_ line: Int, in textView: NSTextView) {
+        let fullText = textView.string
+        let offset = utf16OffsetForLine(line, in: fullText)
+        let nsRange = NSRange(location: offset, length: 0)
+        textView.setSelectedRange(nsRange)
+        textView.scrollRangeToVisible(nsRange)
+        editorState.updateSelectedRange(nsRange)
+    }
+
+    /// Returns the UTF-16 offset of the start of a 1-based line number.
+    private func utf16OffsetForLine(_ line: Int, in text: String) -> Int {
+        guard line > 1 else { return 0 }
+        var currentLine = 1
+        for (i, char) in text.utf16.enumerated() {
+            if char == 0x0A { // newline
+                currentLine += 1
+                if currentLine == line {
+                    return i + 1
+                }
+            }
+        }
+        return text.utf16.count
     }
 
     /// Handles Shift-Tab for list outdent per FEAT-004.

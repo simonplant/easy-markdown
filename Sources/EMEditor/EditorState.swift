@@ -80,6 +80,10 @@ public final class EditorState {
     /// Pass empty array to clear highlights.
     public var applyFindHighlights: ((_ matches: [FindMatch], _ currentIndex: Int?) -> Void)?
 
+    /// Navigates the cursor to a 1-based line number and scrolls it into view per FEAT-022 AC-2.
+    /// Wired by TextViewBridge to the text view coordinator.
+    public var navigateToLine: ((_ line: Int) -> Void)?
+
     public init() {
         self.selectedRange = NSRange(location: 0, length: 0)
         self.isSourceView = false
