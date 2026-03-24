@@ -48,8 +48,8 @@ public final class SpeechRecognitionManager {
 
     private var speechRecognizer: SFSpeechRecognizer?
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
-    private var recognitionTask: SFSpeechRecognitionTask?
-    private var audioEngine: AVAudioEngine?
+    var recognitionTask: SFSpeechRecognitionTask?
+    var audioEngine: AVAudioEngine?
     private let logger = Logger(subsystem: "com.easymarkdown.emeditor", category: "speech-recognition")
 
     /// Signpost for measuring speech recognition latency per [A-037].
@@ -58,6 +58,18 @@ public final class SpeechRecognitionManager {
     public init() {
         // Use the device's locale for recognition
         speechRecognizer = SFSpeechRecognizer()
+    }
+
+    deinit {
+        // Stop audio engine and remove tap to release the microphone
+        if let audioEngine {
+            audioEngine.stop()
+            audioEngine.inputNode.removeTap(onBus: 0)
+        }
+        audioEngine = nil
+        // Cancel any in-flight recognition task
+        recognitionTask?.cancel()
+        recognitionTask = nil
     }
 
     /// Starts speech recognition.
