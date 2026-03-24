@@ -208,7 +208,7 @@ public struct TextViewBridge: UIViewRepresentable {
         // Wire interactive element handlers per FEAT-049
         textView.onCheckboxTap = { [weak coordinator = context.coordinator, weak textView] range in
             guard let coordinator, let textView else { return }
-            coordinator.toggleCheckbox(at: range, in: textView)
+            coordinator.keyCommandHandler.toggleCheckbox(at: range, in: textView)
         }
         textView.onLinkTap = { [weak coordinator = context.coordinator] url in
             coordinator?.handleLinkTap(url: url)
@@ -219,21 +219,21 @@ public struct TextViewBridge: UIViewRepresentable {
         // to the floating action bar per FEAT-054.
         let boldAction: () -> Void = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return }
-            coordinator.handleBold(in: textView)
+            coordinator.keyCommandHandler.handleBold(in: textView)
         }
         let italicAction: () -> Void = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return }
-            coordinator.handleItalic(in: textView)
+            coordinator.keyCommandHandler.handleItalic(in: textView)
         }
         let linkAction: () -> Void = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return }
-            coordinator.handleLinkInsert(in: textView)
+            coordinator.keyCommandHandler.handleLinkInsert(in: textView)
         }
         textView.onBold = boldAction
         textView.onItalic = italicAction
         textView.onCode = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return }
-            coordinator.handleCode(in: textView)
+            coordinator.keyCommandHandler.handleCode(in: textView)
         }
         textView.onInsertLink = linkAction
 
@@ -252,13 +252,13 @@ public struct TextViewBridge: UIViewRepresentable {
         // Expose find highlight action per FEAT-017.
         editorState.applyFindHighlights = { [weak coordinator = context.coordinator, weak textView] matches, currentIndex in
             guard let coordinator, let textView else { return }
-            coordinator.applyFindHighlights(matches, currentIndex: currentIndex, in: textView)
+            coordinator.findReplaceCoordinator.applyFindHighlights(matches, currentIndex: currentIndex, in: textView)
         }
 
         // Expose line navigation for doctor suggestion acceptance per FEAT-022 AC-2.
         editorState.navigateToLine = { [weak coordinator = context.coordinator, weak textView] line in
             guard let coordinator, let textView else { return }
-            coordinator.handleNavigateToLine(line, in: textView)
+            coordinator.renderingCoordinator.handleNavigateToLine(line, in: textView)
         }
 
         // Wire app-level shortcut handlers per FEAT-009
@@ -290,7 +290,7 @@ public struct TextViewBridge: UIViewRepresentable {
 
         // Initial render if config is available
         if renderConfig != nil {
-            context.coordinator.requestRender(for: textView)
+            context.coordinator.renderingCoordinator.requestRender(for: textView)
         }
 
         return textView
@@ -359,7 +359,7 @@ public struct TextViewBridge: UIViewRepresentable {
         }
 
         // Update formatting settings per FEAT-053 AC-6
-        coordinator.updateFormattingSettings(
+        coordinator.keyCommandHandler.updateFormattingSettings(
             isHeadingSpacingEnabled: isAutoFormatHeadingSpacing,
             isBlankLineSeparationEnabled: isAutoFormatBlankLineSeparation,
             isTrailingWhitespaceTrimEnabled: isAutoFormatTrailingWhitespaceTrim
@@ -376,12 +376,12 @@ public struct TextViewBridge: UIViewRepresentable {
         // Re-render if text loaded from binding or view/theme changed
         if viewModeChanged, renderConfig != nil {
             // Use cursor-mapping toggle path per FEAT-050
-            coordinator.handleViewModeToggle(
+            coordinator.renderingCoordinator.handleViewModeToggle(
                 for: textView,
                 toSourceView: renderConfig?.isSourceView ?? false
             )
         } else if (textChanged || configChanged), renderConfig != nil {
-            coordinator.requestRender(for: textView)
+            coordinator.renderingCoordinator.requestRender(for: textView)
         }
     }
 
@@ -593,7 +593,7 @@ public struct TextViewBridge: NSViewRepresentable {
         // Wire interactive element handlers per FEAT-049
         textView.onCheckboxTap = { [weak coordinator = context.coordinator, weak textView] range in
             guard let coordinator, let textView else { return }
-            coordinator.toggleCheckbox(at: range, in: textView)
+            coordinator.keyCommandHandler.toggleCheckbox(at: range, in: textView)
         }
         textView.onLinkTap = { [weak coordinator = context.coordinator] url in
             coordinator?.handleLinkTap(url: url)
@@ -604,21 +604,21 @@ public struct TextViewBridge: NSViewRepresentable {
         // to the floating action bar per FEAT-054.
         let boldAction: () -> Void = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return }
-            coordinator.handleBold(in: textView)
+            coordinator.keyCommandHandler.handleBold(in: textView)
         }
         let italicAction: () -> Void = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return }
-            coordinator.handleItalic(in: textView)
+            coordinator.keyCommandHandler.handleItalic(in: textView)
         }
         let linkAction: () -> Void = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return }
-            coordinator.handleLinkInsert(in: textView)
+            coordinator.keyCommandHandler.handleLinkInsert(in: textView)
         }
         textView.onBold = boldAction
         textView.onItalic = italicAction
         textView.onCode = { [weak coordinator = context.coordinator, weak textView] in
             guard let coordinator, let textView else { return }
-            coordinator.handleCode(in: textView)
+            coordinator.keyCommandHandler.handleCode(in: textView)
         }
         textView.onInsertLink = linkAction
 
@@ -637,13 +637,13 @@ public struct TextViewBridge: NSViewRepresentable {
         // Expose find highlight action per FEAT-017.
         editorState.applyFindHighlights = { [weak coordinator = context.coordinator, weak textView] matches, currentIndex in
             guard let coordinator, let textView else { return }
-            coordinator.applyFindHighlights(matches, currentIndex: currentIndex, in: textView)
+            coordinator.findReplaceCoordinator.applyFindHighlights(matches, currentIndex: currentIndex, in: textView)
         }
 
         // Expose line navigation for doctor suggestion acceptance per FEAT-022 AC-2.
         editorState.navigateToLine = { [weak coordinator = context.coordinator, weak textView] line in
             guard let coordinator, let textView else { return }
-            coordinator.handleNavigateToLine(line, in: textView)
+            coordinator.renderingCoordinator.handleNavigateToLine(line, in: textView)
         }
 
         // Wire app-level shortcut handlers per FEAT-009
@@ -678,7 +678,7 @@ public struct TextViewBridge: NSViewRepresentable {
 
         // Initial render if config is available
         if renderConfig != nil {
-            context.coordinator.requestRender(for: textView)
+            context.coordinator.renderingCoordinator.requestRender(for: textView)
         }
 
         return scrollView
@@ -728,7 +728,7 @@ public struct TextViewBridge: NSViewRepresentable {
         textView.isContinuousSpellCheckingEnabled = isSpellCheckEnabled
 
         // Update formatting settings per FEAT-053 AC-6
-        coordinator.updateFormattingSettings(
+        coordinator.keyCommandHandler.updateFormattingSettings(
             isHeadingSpacingEnabled: isAutoFormatHeadingSpacing,
             isBlankLineSeparationEnabled: isAutoFormatBlankLineSeparation,
             isTrailingWhitespaceTrimEnabled: isAutoFormatTrailingWhitespaceTrim
@@ -744,12 +744,12 @@ public struct TextViewBridge: NSViewRepresentable {
 
         if viewModeChanged, renderConfig != nil {
             // Use cursor-mapping toggle path per FEAT-050
-            coordinator.handleViewModeToggle(
+            coordinator.renderingCoordinator.handleViewModeToggle(
                 for: textView,
                 toSourceView: renderConfig?.isSourceView ?? false
             )
         } else if (textChanged || configChanged), renderConfig != nil {
-            coordinator.requestRender(for: textView)
+            coordinator.renderingCoordinator.requestRender(for: textView)
         }
     }
 

@@ -1750,14 +1750,15 @@
         "All existing editor behavior works identically after the split",
         "No new public API surface — internal decomposition only"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "dependsOn": [
         "FEAT-073"
       ],
       "groomedAt": "2026-03-23",
-      "groomingNotes": "Downgraded from must to should: 1,666-line coordinator is a maintenance risk but causes no current user-facing bugs. Correct priority is should — schedule before adding significant new editor features that would touch this file."
+      "groomingNotes": "Downgraded from must to should: 1,666-line coordinator is a maintenance risk but causes no current user-facing bugs. Correct priority is should — schedule before adding significant new editor features that would touch this file.",
+      "completedAt": "2026-03-23T23:14:37-07:00"
     },
     {
       "id": "FEAT-076",
