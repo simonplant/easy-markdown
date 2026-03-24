@@ -49,11 +49,12 @@
       ],
       "scope": [],
       "dependsOn": [],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "groomingNotes": "User impact: On slow connections, closing a document before images load leaves silent download tasks running in the background — burning mobile data for images the user will never see. This is a silent cost, not a crash, so users cannot report it. Fix is narrow (ImageLoader.swift only). The three AC are already implementation-testable; no user-visible behavior changes. Confirm intent matches product value: 'zero resource waste when document closes'.",
-      "groomedAt": "2026-03-24"
+      "groomedAt": "2026-03-24",
+      "completedAt": "2026-03-24T00:12:58-07:00"
     },
     {
       "id": "BUG-003",
