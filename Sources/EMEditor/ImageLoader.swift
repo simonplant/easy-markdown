@@ -67,9 +67,17 @@ public final class ImageLoader {
     /// Tracks in-flight loads to avoid duplicate work.
     private var inFlightURLs: Set<URL> = []
 
+    /// Stores handles to in-flight loading tasks so they can be cancelled on dealloc.
+    private var tasks: [URL: Task<Void, Never>] = [:]
+
     /// Callback invoked when an image finishes loading, so the renderer
     /// can trigger a re-render. Called on the main actor.
     public var onImageLoaded: ((URL) -> Void)?
+
+    deinit {
+        tasks.values.forEach { $0.cancel() }
+        tasks.removeAll()
+    }
 
     public init() {
         cache = NSCache<NSURL, CacheEntry>()
@@ -135,12 +143,13 @@ public final class ImageLoader {
         guard !inFlightURLs.contains(url) else { return }
         inFlightURLs.insert(url)
 
-        Task.detached { [weak self] in
+        let task = Task.detached { [weak self] in
             let result = await Self.loadAndProcess(url: url, maxWidth: maxWidth)
 
             await MainActor.run {
                 guard let self else { return }
                 self.inFlightURLs.remove(url)
+                self.tasks.removeValue(forKey: url)
 
                 let entry: CacheEntry
                 switch result {
@@ -156,6 +165,7 @@ public final class ImageLoader {
                 self.onImageLoaded?(url)
             }
         }
+        tasks[url] = task
     }
 
     /// Loads and processes an image on a background thread.
