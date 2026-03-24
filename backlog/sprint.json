@@ -1,25 +1,25 @@
 {
-  "sprintId": "sprint-1774332878",
-  "startedAt": "2026-03-23T23:14:38-07:00",
+  "sprintId": "sprint-1774333548",
+  "startedAt": "2026-03-23T23:25:48-07:00",
   "status": "completed",
   "item": {
-    "id": "FEAT-076",
-    "title": "DEBT: Decompose EditorState into focused state objects",
-    "intent": "EditorState is accumulating unrelated responsibilities — selection, find/replace, formatting, diagnostics, and undo should not share a single observable object",
-    "description": "EditorState currently holds selection state (selectedRange, selectionWordCount, selectionRect), view mode (isSourceView), statistics (documentStats), find/replace (findReplaceState, applyFindHighlights), formatting shortcuts (performBold, performItalic, performLink), floating action bar focus (focusAISection), diagnostics (diagnostics, dismissedDiagnosticKeys), and undo manager. Extract into focused state structs: SelectionState, FormattingActions, DiagnosticsState. Compose them in EditorState so each concern is independently testable.",
+    "id": "FEAT-077",
+    "title": "DEBT: Replace four identical AI update enums with a single generic",
+    "intent": "Four line-for-line identical enums is copy-paste debt that will diverge — one generic type eliminates the duplication and makes future changes atomic",
+    "description": "ImproveWritingUpdate, SummarizeUpdate, ToneAdjustmentUpdate, and GhostTextUpdate in EMCore are structurally identical (token, completed, failed). Replace with a single generic: AIUpdate<Action: Sendable> with the same three cases. Use phantom types (ImproveWritingAction, SummarizeAction, ToneAdjustmentAction, GhostTextAction) for compile-time type safety at call sites. Update all consumers in EMAI and EMApp.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "EditorState composes focused state objects rather than owning all properties directly",
-      "SelectionState, FormattingActions, and DiagnosticsState are independently testable",
-      "No behavioral change to editor functionality",
-      "Each sub-state is @Observable for SwiftUI reactivity"
+      "Only one AIUpdate<Action> enum exists in EMCore",
+      "Four phantom action types provide compile-time type safety",
+      "All AI streaming consumers in EMAI and EMApp compile and work correctly",
+      "No behavioral change to AI features"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T23:14:38-07:00",
+    "startedAt": "2026-03-23T23:25:48-07:00",
     "status": "passed",
-    "completedAt": "2026-03-23T23:25:47-07:00"
+    "completedAt": "2026-03-23T23:30:56-07:00"
   },
-  "completedAt": "2026-03-23T23:25:47-07:00",
+  "completedAt": "2026-03-23T23:30:56-07:00",
   "attempts": 1
 }
