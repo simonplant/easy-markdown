@@ -650,9 +650,9 @@
       "status": "todo",
       "passes": false,
       "readyForSprint": true,
-      "lastFailReason": "Validator agent rejected implementation",
-      "lastFailAt": "2026-03-23T16:02:52-07:00",
-      "failCount": 3
+      "lastFailReason": "Implementation failed",
+      "lastFailAt": "2026-03-23T20:30:04-07:00",
+      "failCount": 4
     },
     {
       "id": "FEAT-031",
