@@ -69,6 +69,9 @@ let package = Package(
                 .product(name: "TreeSitterSwift", package: "tree-sitter-swift"),
                 .product(name: "TreeSitterPython", package: "tree-sitter-python"),
                 .product(name: "TreeSitterJavaScript", package: "tree-sitter-javascript"),
+            ],
+            resources: [
+                .process("Resources"),
             ]
         ),
         .target(name: "EMFile", dependencies: ["EMCore"]),
