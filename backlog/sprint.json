@@ -1,7 +1,7 @@
 {
   "sprintId": "sprint-1774327293",
   "startedAt": "2026-03-23T21:41:33-07:00",
-  "status": "in_progress",
+  "status": "completed",
   "item": {
     "id": "FEAT-025",
     "title": "F-028: AI — Smart Completions (Local AI)",
@@ -15,6 +15,10 @@
       "Works offline on supported devices, not available on older devices"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T21:41:33-07:00"
-  }
+    "startedAt": "2026-03-23T21:41:33-07:00",
+    "status": "passed",
+    "completedAt": "2026-03-23T21:56:07-07:00"
+  },
+  "completedAt": "2026-03-23T21:56:07-07:00",
+  "attempts": 1
 }

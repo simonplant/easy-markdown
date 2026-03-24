@@ -555,12 +555,13 @@
         "User Tabs to accept ghost text suggestion",
         "Works offline on supported devices, not available on older devices"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "lastFailReason": "Validator agent rejected implementation",
       "lastFailAt": "2026-03-21T10:00:31-07:00",
-      "failCount": 2
+      "failCount": 2,
+      "completedAt": "2026-03-23T21:56:07-07:00"
     },
     {
       "id": "FEAT-026",
