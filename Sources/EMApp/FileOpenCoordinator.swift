@@ -18,6 +18,7 @@ import UIKit
 /// - VoiceOver announcements (AC-4)
 /// - Bookmark persistence (AC-5)
 /// - Duplicate file detection (AC-6)
+/// - File conflict detection and auto-save per FEAT-045, FEAT-074
 @MainActor
 @Observable
 public final class FileOpenCoordinator {
@@ -27,6 +28,17 @@ public final class FileOpenCoordinator {
 
     /// The URL of the currently open file.
     public private(set) var currentFileURL: URL?
+
+    // MARK: - Conflict & Auto-Save per FEAT-074
+
+    /// File conflict manager for the currently open file per FEAT-045.
+    public private(set) var conflictManager: FileConflictManager?
+
+    /// Auto-save manager for the currently open file per FEAT-008.
+    public private(set) var autoSaveManager: AutoSaveManager?
+
+    /// Whether the "Save Elsewhere" panel is shown for deletion conflicts.
+    public var showingSaveElsewherePanel = false
 
     private let fileOpenService: FileOpenService
     private let openFileRegistry: OpenFileRegistry
@@ -127,11 +139,65 @@ public final class FileOpenCoordinator {
     /// Closes the currently open file, releasing resources.
     public func closeCurrentFile() {
         guard let url = currentFileURL else { return }
+        conflictManager?.stopMonitoring()
+        conflictManager = nil
+        autoSaveManager?.stop()
+        autoSaveManager = nil
         fileOpenService.close(url: url)
         openFileRegistry.unregister(url)
         currentFileContent = nil
         currentFileURL = nil
         logger.info("Closed file: \(url.lastPathComponent, privacy: .public)")
+    }
+
+    // MARK: - Conflict Detection per FEAT-045, FEAT-074
+
+    /// Starts conflict monitoring for the currently open file.
+    public func startConflictMonitoring() {
+        guard let url = currentFileURL else { return }
+        let manager = FileConflictManager(url: url)
+        conflictManager = manager
+        manager.startMonitoring()
+    }
+
+    /// Reloads the file from disk when user accepts external changes.
+    public func handleReload() throws -> FileContent? {
+        guard let manager = conflictManager else { return nil }
+        let content = try manager.reload()
+        return content
+    }
+
+    /// Shows the "Save Elsewhere" panel for deletion conflicts.
+    public func handleSaveElsewhere() {
+        showingSaveElsewherePanel = true
+    }
+
+    // MARK: - Auto-Save per FEAT-008, FEAT-074
+
+    /// Creates and starts auto-save for the current file.
+    ///
+    /// - Parameters:
+    ///   - lineEnding: The detected line ending for the file.
+    ///   - text: The current editor text.
+    ///   - contentProvider: Closure that returns the current text content for saving.
+    ///   - onSaveError: Closure called on save failure.
+    public func startAutoSave(
+        lineEnding: LineEnding,
+        text: String,
+        contentProvider: @escaping @MainActor () -> String,
+        onSaveError: @escaping @MainActor (EMError) -> Void
+    ) {
+        guard let url = currentFileURL,
+              let manager = conflictManager else { return }
+        let autoSave = AutoSaveManager(
+            url: url,
+            lineEnding: lineEnding,
+            conflictManager: manager,
+            initialContent: text
+        )
+        autoSave.contentProvider = contentProvider
+        autoSave.onSaveError = onSaveError
+        autoSaveManager = autoSave
     }
 
     // MARK: - Private

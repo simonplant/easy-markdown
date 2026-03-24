@@ -1,27 +1,23 @@
 {
-  "sprintId": "sprint-1774329498",
-  "startedAt": "2026-03-23T22:18:18-07:00",
-  "status": "completed",
+  "sprintId": "sprint-1774330353",
+  "startedAt": "2026-03-23T22:32:33-07:00",
+  "status": "in_progress",
   "item": {
-    "id": "FEAT-072",
-    "title": "GitHub Storage — Auth and Repo Browser",
-    "intent": "GitHub authentication must be seamless (one-time OAuth) and repo browsing must feel as natural as the system file picker",
-    "description": "Phase 2. GitHub OAuth device flow: user enters a code at github.com/login/device — no web view required in the app. Token stored in Keychain (not UserDefaults). Token refresh handled automatically. Sign out available in Settings. Repo browser: list user's repos (personal + orgs), search/filter, show last updated date. Navigate into repo to browse .md files. Repo list cached for offline access to previously cloned repos.",
+    "id": "FEAT-074",
+    "title": "DEBT: Decompose EditorShellView into focused coordinators",
+    "intent": "A view with 23 @State properties is untestable and unmaintainable — each concern must own its own state",
+    "description": "EditorShellView currently owns text editing state, 4 AI coordinators + 4 AI services, export state, conflict management, and subscription checks. Extract into: (1) AICoordinator that owns improve/summarize/tone/ghost coordinators and services, (2) ExportCoordinator that owns PDF and markdown share state, (3) move FileConflictManager into FileOpenCoordinator. EditorShellView should only own editor content and compose these coordinators.",
     "sourceBacklog": "backlog.json",
     "steps": [],
     "acceptanceCriteria": [
-      "OAuth device flow completes without a web view embedded in the app",
-      "Token persists in Keychain across app launches",
-      "Repo browser shows personal and org repos",
-      "User can search/filter repos by name",
-      "Sign out in Settings clears token and offers to delete local clones",
-      "Expired token triggers re-auth flow automatically"
+      "EditorShellView has fewer than 10 @State properties",
+      "AICoordinator owns all AI-related state and coordinators",
+      "ExportCoordinator owns PDF and markdown share sheet state",
+      "FileConflictManager is owned by FileOpenCoordinator, not the view",
+      "All existing editor functionality works identically after decomposition",
+      "Each extracted coordinator is independently testable"
     ],
     "scope": [],
-    "startedAt": "2026-03-23T22:18:18-07:00",
-    "status": "passed",
-    "completedAt": "2026-03-23T22:32:31-07:00"
-  },
-  "completedAt": "2026-03-23T22:32:31-07:00",
-  "attempts": 1
+    "startedAt": "2026-03-23T22:32:33-07:00"
+  }
 }
