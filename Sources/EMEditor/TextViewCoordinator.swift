@@ -97,6 +97,10 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
     /// Set by TextViewBridge when a ghost text coordinator is provided.
     weak var ghostTextCoordinator: GhostTextCoordinator?
 
+    /// Smart completion coordinator per FEAT-025.
+    /// Set by TextViewBridge when a smart completion coordinator is provided.
+    weak var smartCompletionCoordinator: SmartCompletionCoordinator?
+
     /// Whether this is the first render (triggers immediate doctor evaluation
     /// and file-open animation per FEAT-014 AC-11).
     private var isFirstRender = true
@@ -135,6 +139,10 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
         // Notify ghost text coordinator of text change per FEAT-056.
         // This both dismisses active ghost text (AC-3) and resets the pause timer (AC-1).
         ghostTextCoordinator?.textDidChange()
+
+        // Notify smart completion coordinator of text change per FEAT-025.
+        // Triggers structure-aware completion on Enter after markdown patterns.
+        smartCompletionCoordinator?.textDidChange()
 
         // Schedule debounced re-parse and render per [A-017]
         if let emTextView = textView as? EMTextView {
@@ -198,6 +206,18 @@ public final class TextViewCoordinator: NSObject, UITextViewDelegate, UIScrollVi
             signpost.end("keystroke")
             return false
         }
+
+        // Smart completion Tab accept per FEAT-025 AC-2.
+        if text == "\t",
+           let coordinator = smartCompletionCoordinator,
+           coordinator.phase == .ready || coordinator.phase == .streaming {
+            coordinator.accept()
+            signpost.end("keystroke")
+            return false
+        }
+
+        // Record replacement text for smart completion Enter detection per FEAT-025.
+        smartCompletionCoordinator?.willChangeText(replacementText: text)
 
         // CJK IME: if the text view has marked text (composing),
         // let the input system handle it without interference per AC-3.
@@ -924,6 +944,10 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
     /// Set by TextViewBridge when a ghost text coordinator is provided.
     weak var ghostTextCoordinator: GhostTextCoordinator?
 
+    /// Smart completion coordinator per FEAT-025.
+    /// Set by TextViewBridge when a smart completion coordinator is provided.
+    weak var smartCompletionCoordinator: SmartCompletionCoordinator?
+
     /// Whether this is the first render (triggers immediate doctor evaluation
     /// and file-open animation per FEAT-014 AC-11).
     private var isFirstRender = true
@@ -966,6 +990,20 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
             coordinator.accept()
             signpost.end("keystroke")
             return false
+        }
+
+        // Smart completion Tab accept per FEAT-025 AC-2.
+        if replacementString == "\t",
+           let coordinator = smartCompletionCoordinator,
+           coordinator.phase == .ready || coordinator.phase == .streaming {
+            coordinator.accept()
+            signpost.end("keystroke")
+            return false
+        }
+
+        // Record replacement text for smart completion Enter detection per FEAT-025.
+        if let replacement = replacementString {
+            smartCompletionCoordinator?.willChangeText(replacementText: replacement)
         }
 
         // CJK IME: if the text view has marked text (composing),
@@ -1269,6 +1307,10 @@ public final class TextViewCoordinator: NSObject, NSTextViewDelegate {
         // Notify ghost text coordinator of text change per FEAT-056.
         // This both dismisses active ghost text (AC-3) and resets the pause timer (AC-1).
         ghostTextCoordinator?.textDidChange()
+
+        // Notify smart completion coordinator of text change per FEAT-025.
+        // Triggers structure-aware completion on Enter after markdown patterns.
+        smartCompletionCoordinator?.textDidChange()
 
         // Schedule debounced re-parse and render per [A-017]
         scheduleRender(for: textView)
