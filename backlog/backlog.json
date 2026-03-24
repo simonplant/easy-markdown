@@ -1798,11 +1798,12 @@
         "All AI streaming consumers in EMAI and EMApp compile and work correctly",
         "No behavioral change to AI features"
       ],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "groomedAt": "2026-03-23",
-      "groomingNotes": "Downgraded from must to should: duplicate AI enums are copy-paste debt but cause no runtime errors or user-visible defects. Correct priority is should."
+      "groomingNotes": "Downgraded from must to should: duplicate AI enums are copy-paste debt but cause no runtime errors or user-visible defects. Correct priority is should.",
+      "completedAt": "2026-03-23T23:30:56-07:00"
     },
     {
       "id": "FEAT-078",
