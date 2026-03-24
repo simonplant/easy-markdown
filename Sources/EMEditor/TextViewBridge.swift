@@ -221,6 +221,12 @@ public struct TextViewBridge: UIViewRepresentable {
             coordinator.applyFindHighlights(matches, currentIndex: currentIndex, in: textView)
         }
 
+        // Expose line navigation for doctor suggestion acceptance per FEAT-022 AC-2.
+        editorState.navigateToLine = { [weak coordinator = context.coordinator, weak textView] line in
+            guard let coordinator, let textView else { return }
+            coordinator.handleNavigateToLine(line, in: textView)
+        }
+
         // Wire app-level shortcut handlers per FEAT-009
         textView.onAIAssist = onAIAssist
         textView.onToggleSourceView = onToggleSourceView
@@ -545,6 +551,12 @@ public struct TextViewBridge: NSViewRepresentable {
         editorState.applyFindHighlights = { [weak coordinator = context.coordinator, weak textView] matches, currentIndex in
             guard let coordinator, let textView else { return }
             coordinator.applyFindHighlights(matches, currentIndex: currentIndex, in: textView)
+        }
+
+        // Expose line navigation for doctor suggestion acceptance per FEAT-022 AC-2.
+        editorState.navigateToLine = { [weak coordinator = context.coordinator, weak textView] line in
+            guard let coordinator, let textView else { return }
+            coordinator.handleNavigateToLine(line, in: textView)
         }
 
         // Wire app-level shortcut handlers per FEAT-009

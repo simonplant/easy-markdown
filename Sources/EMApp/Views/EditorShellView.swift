@@ -194,6 +194,10 @@ struct EditorShellView: View {
                         onFix: { diagnostic in
                             handleDoctorFix(diagnostic)
                         },
+                        onNavigate: { diagnostic in
+                            showDoctorPopover = false
+                            editorState.navigateToLine?(diagnostic.line)
+                        },
                         onDismiss: { diagnostic in
                             editorState.dismissDiagnostic(diagnostic)
                             #if canImport(UIKit)

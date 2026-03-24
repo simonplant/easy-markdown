@@ -63,19 +63,22 @@ public struct DoctorIndicatorBar: View {
     }
 }
 
-/// Popover listing all current diagnostics with Fix and Dismiss actions.
+/// Popover listing all current diagnostics with Fix/Edit and Dismiss actions.
 public struct DoctorPopoverContent: View {
     public let diagnostics: [Diagnostic]
     public let onFix: (Diagnostic) -> Void
+    public let onNavigate: (Diagnostic) -> Void
     public let onDismiss: (Diagnostic) -> Void
 
     public init(
         diagnostics: [Diagnostic],
         onFix: @escaping (Diagnostic) -> Void,
+        onNavigate: @escaping (Diagnostic) -> Void,
         onDismiss: @escaping (Diagnostic) -> Void
     ) {
         self.diagnostics = diagnostics
         self.onFix = onFix
+        self.onNavigate = onNavigate
         self.onDismiss = onDismiss
     }
 
@@ -86,6 +89,7 @@ public struct DoctorPopoverContent: View {
                     DoctorIssueRow(
                         diagnostic: diagnostic,
                         onFix: { onFix(diagnostic) },
+                        onNavigate: { onNavigate(diagnostic) },
                         onDismiss: { onDismiss(diagnostic) }
                     )
                 }
@@ -96,10 +100,11 @@ public struct DoctorPopoverContent: View {
     }
 }
 
-/// A single diagnostic row with message, fix, and dismiss controls.
+/// A single diagnostic row with message, fix/edit, and dismiss controls.
 struct DoctorIssueRow: View {
     let diagnostic: Diagnostic
     let onFix: () -> Void
+    let onNavigate: () -> Void
     let onDismiss: () -> Void
 
     var body: some View {
@@ -127,6 +132,16 @@ struct DoctorIssueRow: View {
                         #if os(iOS)
                         .hoverEffect(.highlight)
                         #endif
+                } else {
+                    // Prose suggestions have no auto-fix; navigate to the line
+                    // so the user can edit manually per FEAT-022 AC-2.
+                    Button("Edit", action: onNavigate)
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                        .accessibilityLabel("Go to line \(diagnostic.line) to edit")
+                        #if os(iOS)
+                        .hoverEffect(.highlight)
+                        #endif
                 }
                 Button("Dismiss", action: onDismiss)
                     .buttonStyle(.bordered)
@@ -140,7 +155,7 @@ struct DoctorIssueRow: View {
         .padding(.vertical, 4)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Line \(diagnostic.line): \(diagnostic.message)")
-        .accessibilityHint(diagnostic.fix != nil ? "Actions available: Fix or Dismiss" : "Action available: Dismiss")
+        .accessibilityHint(diagnostic.fix != nil ? "Actions available: Fix or Dismiss" : "Actions available: Edit or Dismiss")
     }
 
     @ViewBuilder
