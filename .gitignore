@@ -1,3 +1,6 @@
+# Swift Package Manager build artifacts
+.build/
+
 # aishore runtime files
 .aishore/data/logs/
 .aishore/data/status/result.json
