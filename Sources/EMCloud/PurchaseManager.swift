@@ -43,10 +43,10 @@ public final class PurchaseManager {
     /// Whether a purchase or restore operation is in progress.
     public private(set) var isPurchasing: Bool = false
 
-    private nonisolated(unsafe) var transactionListenerTask: Task<Void, Never>?
+    private let transactionListenerHandle = TaskHandle()
 
     public init() {
-        transactionListenerTask = Task { [weak self] in
+        transactionListenerHandle.task = Task { [weak self] in
             await self?.listenForTransactions()
         }
         Task {
@@ -56,7 +56,7 @@ public final class PurchaseManager {
     }
 
     deinit {
-        transactionListenerTask?.cancel()
+        transactionListenerHandle.cancel()
     }
 
     // MARK: - Purchase

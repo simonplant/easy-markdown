@@ -1,3 +1,7 @@
+#if canImport(Darwin)
+import Darwin
+#endif
+
 /// Device capability for AI feature gating per [A-033].
 /// Determines whether the device supports on-device AI inference (A16+/M1+).
 public enum DeviceCapability: Sendable {

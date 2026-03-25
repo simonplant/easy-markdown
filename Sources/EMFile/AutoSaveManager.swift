@@ -51,7 +51,7 @@ public final class AutoSaveManager {
     private let fileURL: URL
     private let lineEnding: LineEnding
     private let conflictManager: FileConflictManager
-    nonisolated(unsafe) private var debounceTask: Task<Void, Never>?
+    private let debounceHandle = TaskHandle()
     private var lastSavedContent: String?
     private var isInBackground: Bool = false
 
@@ -94,7 +94,7 @@ public final class AutoSaveManager {
     }
 
     deinit {
-        debounceTask?.cancel()
+        debounceHandle.cancel()
     }
 
     // MARK: - Public API
@@ -103,8 +103,8 @@ public final class AutoSaveManager {
     ///
     /// Call this on every keystroke. The save will fire 1 second after the last call.
     public func contentDidChange() {
-        debounceTask?.cancel()
-        debounceTask = Task { [weak self, debounceNanoseconds] in
+        debounceHandle.cancel()
+        debounceHandle.task = Task { [weak self, debounceNanoseconds] in
             try? await Task.sleep(nanoseconds: debounceNanoseconds)
             guard !Task.isCancelled else { return }
             await self?.performSave()
@@ -115,8 +115,7 @@ public final class AutoSaveManager {
     ///
     /// Cancels any pending debounced save before executing.
     public func saveNow() async {
-        debounceTask?.cancel()
-        debounceTask = nil
+        debounceHandle.cancel()
         await performSave()
     }
 
@@ -130,8 +129,7 @@ public final class AutoSaveManager {
     /// Call this when the file is closed. Does not perform a final save —
     /// call `saveNow()` before `stop()` if a final save is needed.
     public func stop() {
-        debounceTask?.cancel()
-        debounceTask = nil
+        debounceHandle.cancel()
         removeLifecycleObservers()
     }
 
@@ -211,8 +209,7 @@ public final class AutoSaveManager {
 
     private func handleDidEnterBackground() {
         isInBackground = true
-        debounceTask?.cancel()
-        debounceTask = nil
+        debounceHandle.cancel()
         Task { [weak self] in
             await self?.performSave()
         }

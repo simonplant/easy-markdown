@@ -9,6 +9,7 @@ let package = Package(
         .macOS(.v14),
     ],
     products: [
+        .executable(name: "EasyMarkdown", targets: ["EasyMarkdownApp"]),
         .library(name: "EMCore", targets: ["EMCore"]),
         .library(name: "EMParser", targets: ["EMParser"]),
         .library(name: "EMFormatter", targets: ["EMFormatter"]),
@@ -70,6 +71,7 @@ let package = Package(
         .target(name: "EMGit", dependencies: ["EMCore"]),
         .target(name: "EMSettings", dependencies: ["EMCore"]),
         .target(name: "EMApp", dependencies: ["EMCore", "EMEditor", "EMFile", "EMFormatter", "EMAI", "EMCloud", "EMGit", "EMSettings"]),
+        .executableTarget(name: "EasyMarkdownApp", dependencies: ["EMApp"]),
         .testTarget(name: "EMCoreTests", dependencies: ["EMCore"]),
         .testTarget(name: "EMParserTests", dependencies: ["EMParser", "EMCore"]),
         .testTarget(name: "EMFileTests", dependencies: ["EMFile", "EMCore"]),

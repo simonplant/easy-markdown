@@ -315,7 +315,7 @@ public final class MermaidRenderer {
             }
 
             let width = json["width"] as? CGFloat ?? 400
-            let height = json["height"] as? CGFloat ?? 300
+            _ = json["height"] as? CGFloat ?? 300
 
             // Capture the rendered SVG as an image
             let config = WKSnapshotConfiguration()

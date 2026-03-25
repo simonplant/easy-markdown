@@ -33,11 +33,11 @@ public final class SubscriptionManager: SubscriptionStatusProviding {
         initialState: (nil, nil)
     )
 
-    private nonisolated(unsafe) var transactionListenerTask: Task<Void, Never>?
+    private let transactionListenerHandle = TaskHandle()
     private let logger = Logger(subsystem: "com.easymarkdown.emcloud", category: "subscription")
 
     public init() {
-        transactionListenerTask = Task { [weak self] in
+        transactionListenerHandle.task = Task { [weak self] in
             await self?.listenForTransactions()
         }
         Task {
@@ -47,7 +47,7 @@ public final class SubscriptionManager: SubscriptionStatusProviding {
     }
 
     deinit {
-        transactionListenerTask?.cancel()
+        transactionListenerHandle.cancel()
     }
 
     // MARK: - SubscriptionStatusProviding
