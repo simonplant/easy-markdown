@@ -1,0 +1,12 @@
+{
+  "": {
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMSettings.build/master.swiftdeps"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMSettings/SettingsManager.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMSettings.build/SettingsManager.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMSettings.build/SettingsManager.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMSettings.build/SettingsManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMSettings.build/SettingsManager.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMSettings.build/SettingsManager.dia"
+  }
+}

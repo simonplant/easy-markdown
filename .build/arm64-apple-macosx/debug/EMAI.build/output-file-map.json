@@ -1,0 +1,173 @@
+{
+  "": {
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/master.swiftdeps"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/AIProvider.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/AIProvider.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/AIProvider.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/AIProvider~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/AIProvider.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/AIProvider.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/AIProviderManager.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/AIProviderManager.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/AIProviderManager.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/AIProviderManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/AIProviderManager.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/AIProviderManager.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/ApplePlatformAIProvider.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ApplePlatformAIProvider.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ApplePlatformAIProvider.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ApplePlatformAIProvider~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ApplePlatformAIProvider.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ApplePlatformAIProvider.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/CloudAPIProvider.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/CloudAPIProvider.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/CloudAPIProvider.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/CloudAPIProvider~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/CloudAPIProvider.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/CloudAPIProvider.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/ContinueWritingPromptTemplate.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ContinueWritingPromptTemplate.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ContinueWritingPromptTemplate.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ContinueWritingPromptTemplate~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ContinueWritingPromptTemplate.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ContinueWritingPromptTemplate.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/GhostTextService.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/GhostTextService.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/GhostTextService.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/GhostTextService~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/GhostTextService.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/GhostTextService.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/ImprovePromptTemplate.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ImprovePromptTemplate.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ImprovePromptTemplate.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ImprovePromptTemplate~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ImprovePromptTemplate.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ImprovePromptTemplate.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/ImproveWritingService.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ImproveWritingService.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ImproveWritingService.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ImproveWritingService~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ImproveWritingService.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ImproveWritingService.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/InferenceEngine.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/InferenceEngine.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/InferenceEngine.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/InferenceEngine~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/InferenceEngine.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/InferenceEngine.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/LocalModelProvider.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/LocalModelProvider.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/LocalModelProvider.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/LocalModelProvider~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/LocalModelProvider.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/LocalModelProvider.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/ModelDownloadManager.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelDownloadManager.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelDownloadManager.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelDownloadManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelDownloadManager.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelDownloadManager.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/ModelLoader.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelLoader.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelLoader.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelLoader~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelLoader.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelLoader.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/ModelStorageManager.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelStorageManager.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelStorageManager.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelStorageManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelStorageManager.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ModelStorageManager.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/NetworkMonitor.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/NetworkMonitor.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/NetworkMonitor.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/NetworkMonitor~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/NetworkMonitor.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/NetworkMonitor.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/SmartCompletionPromptTemplate.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SmartCompletionPromptTemplate.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SmartCompletionPromptTemplate.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SmartCompletionPromptTemplate~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SmartCompletionPromptTemplate.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SmartCompletionPromptTemplate.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/SmartCompletionService.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SmartCompletionService.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SmartCompletionService.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SmartCompletionService~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SmartCompletionService.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SmartCompletionService.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/SummarizePromptTemplate.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SummarizePromptTemplate.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SummarizePromptTemplate.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SummarizePromptTemplate~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SummarizePromptTemplate.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SummarizePromptTemplate.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/SummarizeService.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SummarizeService.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SummarizeService.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SummarizeService~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SummarizeService.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/SummarizeService.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/ToneAdjustmentPromptTemplate.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ToneAdjustmentPromptTemplate.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ToneAdjustmentPromptTemplate.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ToneAdjustmentPromptTemplate~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ToneAdjustmentPromptTemplate.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ToneAdjustmentPromptTemplate.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/ToneAdjustmentService.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ToneAdjustmentService.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ToneAdjustmentService.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ToneAdjustmentService~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ToneAdjustmentService.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/ToneAdjustmentService.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/TranslationPromptTemplate.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/TranslationPromptTemplate.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/TranslationPromptTemplate.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/TranslationPromptTemplate~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/TranslationPromptTemplate.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/TranslationPromptTemplate.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/TranslationService.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/TranslationService.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/TranslationService.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/TranslationService~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/TranslationService.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/TranslationService.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/VoiceIntentPromptTemplate.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/VoiceIntentPromptTemplate.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/VoiceIntentPromptTemplate.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/VoiceIntentPromptTemplate~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/VoiceIntentPromptTemplate.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/VoiceIntentPromptTemplate.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMAI/VoiceIntentService.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/VoiceIntentService.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/VoiceIntentService.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/VoiceIntentService~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/VoiceIntentService.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMAI.build/VoiceIntentService.dia"
+  }
+}

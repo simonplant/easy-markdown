@@ -1,0 +1,75 @@
+{
+  "": {
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/master.swiftdeps"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Tests/EMFormatterTests/FormattingEngineTests.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/FormattingEngineTests.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/FormattingEngineTests.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/FormattingEngineTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/FormattingEngineTests.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/FormattingEngineTests.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Tests/EMFormatterTests/FormattingPerformanceTests.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/FormattingPerformanceTests.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/FormattingPerformanceTests.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/FormattingPerformanceTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/FormattingPerformanceTests.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/FormattingPerformanceTests.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Tests/EMFormatterTests/HeadingSpacingRuleTests.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/HeadingSpacingRuleTests.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/HeadingSpacingRuleTests.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/HeadingSpacingRuleTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/HeadingSpacingRuleTests.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/HeadingSpacingRuleTests.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Tests/EMFormatterTests/ListContinuationRuleTests.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/ListContinuationRuleTests.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/ListContinuationRuleTests.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/ListContinuationRuleTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/ListContinuationRuleTests.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/ListContinuationRuleTests.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Tests/EMFormatterTests/ListIndentRuleTests.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/ListIndentRuleTests.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/ListIndentRuleTests.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/ListIndentRuleTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/ListIndentRuleTests.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/ListIndentRuleTests.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Tests/EMFormatterTests/SaveFormattingTests.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/SaveFormattingTests.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/SaveFormattingTests.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/SaveFormattingTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/SaveFormattingTests.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/SaveFormattingTests.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Tests/EMFormatterTests/TableAlignmentRuleTests.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableAlignmentRuleTests.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableAlignmentRuleTests.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableAlignmentRuleTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableAlignmentRuleTests.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableAlignmentRuleTests.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Tests/EMFormatterTests/TableContinuationRuleTests.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableContinuationRuleTests.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableContinuationRuleTests.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableContinuationRuleTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableContinuationRuleTests.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableContinuationRuleTests.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Tests/EMFormatterTests/TableNavigationRuleTests.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableNavigationRuleTests.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableNavigationRuleTests.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableNavigationRuleTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableNavigationRuleTests.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/TableNavigationRuleTests.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Tests/EMFormatterTests/WhitespaceCleanupRuleTests.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/WhitespaceCleanupRuleTests.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/WhitespaceCleanupRuleTests.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/WhitespaceCleanupRuleTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/WhitespaceCleanupRuleTests.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMFormatterTests.build/WhitespaceCleanupRuleTests.dia"
+  }
+}

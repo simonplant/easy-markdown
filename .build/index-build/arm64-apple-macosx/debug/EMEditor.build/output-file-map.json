@@ -1,0 +1,271 @@
+{
+  "": {
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/master.swiftdeps"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/CursorMapper.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/CursorMapper.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/CursorMapper.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/CursorMapper~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/CursorMapper.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/CursorMapper.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/DiagnosticsState.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DiagnosticsState.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DiagnosticsState.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DiagnosticsState~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DiagnosticsState.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DiagnosticsState.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/DoctorCoordinator.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DoctorCoordinator.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DoctorCoordinator.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DoctorCoordinator~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DoctorCoordinator.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DoctorCoordinator.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/DoctorIndicatorView.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DoctorIndicatorView.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DoctorIndicatorView.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DoctorIndicatorView~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DoctorIndicatorView.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DoctorIndicatorView.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/DocumentStatsCalculator.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DocumentStatsCalculator.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DocumentStatsCalculator.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DocumentStatsCalculator~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DocumentStatsCalculator.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DocumentStatsCalculator.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/EMTextView.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/EMTextView.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/EMTextView.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/EMTextView~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/EMTextView.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/EMTextView.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/EditorState.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/EditorState.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/EditorState.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/EditorState~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/EditorState.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/EditorState.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/FindReplaceCoordinator.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceCoordinator.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceCoordinator.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceCoordinator~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceCoordinator.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceCoordinator.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/FindReplaceEngine.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceEngine.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceEngine.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceEngine~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceEngine.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceEngine.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/FindReplaceState.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceState.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceState.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceState~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceState.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FindReplaceState.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/FloatingActionBar.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FloatingActionBar.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FloatingActionBar.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FloatingActionBar~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FloatingActionBar.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FloatingActionBar.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/FormattingActions.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FormattingActions.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FormattingActions.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FormattingActions~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FormattingActions.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/FormattingActions.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/GhostTextCoordinator.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/GhostTextCoordinator.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/GhostTextCoordinator.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/GhostTextCoordinator~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/GhostTextCoordinator.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/GhostTextCoordinator.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/GhostTextRenderer.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/GhostTextRenderer.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/GhostTextRenderer.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/GhostTextRenderer~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/GhostTextRenderer.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/GhostTextRenderer.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/ImageLoader.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ImageLoader.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ImageLoader.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ImageLoader~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ImageLoader.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ImageLoader.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/ImproveWritingCoordinator.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ImproveWritingCoordinator.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ImproveWritingCoordinator.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ImproveWritingCoordinator~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ImproveWritingCoordinator.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ImproveWritingCoordinator.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/InlineDiffRenderer.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/InlineDiffRenderer.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/InlineDiffRenderer.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/InlineDiffRenderer~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/InlineDiffRenderer.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/InlineDiffRenderer.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/InlineDiffState.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/InlineDiffState.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/InlineDiffState.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/InlineDiffState~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/InlineDiffState.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/InlineDiffState.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/KeystrokeLatencyBenchmark.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/KeystrokeLatencyBenchmark.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/KeystrokeLatencyBenchmark.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/KeystrokeLatencyBenchmark~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/KeystrokeLatencyBenchmark.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/KeystrokeLatencyBenchmark.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/MarkdownRenderer.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/MarkdownRenderer.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/MarkdownRenderer.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/MarkdownRenderer~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/MarkdownRenderer.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/MarkdownRenderer.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/MermaidRenderer.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/MermaidRenderer.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/MermaidRenderer.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/MermaidRenderer~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/MermaidRenderer.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/MermaidRenderer.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/RenderTransitionAnimator.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/RenderTransitionAnimator.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/RenderTransitionAnimator.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/RenderTransitionAnimator~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/RenderTransitionAnimator.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/RenderTransitionAnimator.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/SelectionState.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SelectionState.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SelectionState.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SelectionState~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SelectionState.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SelectionState.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/SmartCompletionCoordinator.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SmartCompletionCoordinator.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SmartCompletionCoordinator.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SmartCompletionCoordinator~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SmartCompletionCoordinator.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SmartCompletionCoordinator.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/SpeechRecognitionManager.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SpeechRecognitionManager.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SpeechRecognitionManager.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SpeechRecognitionManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SpeechRecognitionManager.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SpeechRecognitionManager.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/SpellCheckExclusionCalculator.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SpellCheckExclusionCalculator.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SpellCheckExclusionCalculator.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SpellCheckExclusionCalculator~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SpellCheckExclusionCalculator.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SpellCheckExclusionCalculator.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/SummarizeCoordinator.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SummarizeCoordinator.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SummarizeCoordinator.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SummarizeCoordinator~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SummarizeCoordinator.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SummarizeCoordinator.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/SummaryPopoverContent.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SummaryPopoverContent.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SummaryPopoverContent.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SummaryPopoverContent~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SummaryPopoverContent.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SummaryPopoverContent.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/SyntaxHighlighter.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SyntaxHighlighter.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SyntaxHighlighter.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SyntaxHighlighter~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SyntaxHighlighter.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/SyntaxHighlighter.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/TextViewBridge.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewBridge.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewBridge.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewBridge~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewBridge.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewBridge.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/TextViewCoordinator.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewCoordinator.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewCoordinator.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewCoordinator~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewCoordinator.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewCoordinator.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/TextViewKeyCommandHandler.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewKeyCommandHandler.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewKeyCommandHandler.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewKeyCommandHandler~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewKeyCommandHandler.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewKeyCommandHandler.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/TextViewRenderingCoordinator.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewRenderingCoordinator.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewRenderingCoordinator.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewRenderingCoordinator~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewRenderingCoordinator.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TextViewRenderingCoordinator.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/ToneAdjustmentCoordinator.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ToneAdjustmentCoordinator.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ToneAdjustmentCoordinator.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ToneAdjustmentCoordinator~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ToneAdjustmentCoordinator.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/ToneAdjustmentCoordinator.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/TranslationCoordinator.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TranslationCoordinator.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TranslationCoordinator.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TranslationCoordinator~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TranslationCoordinator.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/TranslationCoordinator.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/VoiceCoordinator.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/VoiceCoordinator.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/VoiceCoordinator.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/VoiceCoordinator~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/VoiceCoordinator.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/VoiceCoordinator.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMEditor/VoiceTranscriptionOverlay.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/VoiceTranscriptionOverlay.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/VoiceTranscriptionOverlay.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/VoiceTranscriptionOverlay~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/VoiceTranscriptionOverlay.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/VoiceTranscriptionOverlay.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/DerivedSources/resource_bundle_accessor.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/resource_bundle_accessor.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/resource_bundle_accessor.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/resource_bundle_accessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/resource_bundle_accessor.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMEditor.build/resource_bundle_accessor.dia"
+  }
+}

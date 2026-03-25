@@ -1,0 +1,19 @@
+{
+  "": {
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMCloudTests.build/master.swiftdeps"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Tests/EMCloudTests/PurchaseManagerTests.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMCloudTests.build/PurchaseManagerTests.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMCloudTests.build/PurchaseManagerTests.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMCloudTests.build/PurchaseManagerTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMCloudTests.build/PurchaseManagerTests.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMCloudTests.build/PurchaseManagerTests.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Tests/EMCloudTests/SubscriptionManagerTests.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMCloudTests.build/SubscriptionManagerTests.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMCloudTests.build/SubscriptionManagerTests.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMCloudTests.build/SubscriptionManagerTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMCloudTests.build/SubscriptionManagerTests.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMCloudTests.build/SubscriptionManagerTests.dia"
+  }
+}

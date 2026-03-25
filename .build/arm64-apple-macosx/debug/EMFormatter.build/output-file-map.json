@@ -1,0 +1,89 @@
+{
+  "": {
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/master.swiftdeps"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMFormatter/FormattingEngine.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/FormattingEngine.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/FormattingEngine.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/FormattingEngine~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/FormattingEngine.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/FormattingEngine.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMFormatter/FormattingRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/FormattingRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/FormattingRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/FormattingRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/FormattingRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/FormattingRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMFormatter/HeadingSpacingRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/HeadingSpacingRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/HeadingSpacingRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/HeadingSpacingRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/HeadingSpacingRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/HeadingSpacingRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMFormatter/ListContinuationRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListContinuationRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListContinuationRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListContinuationRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListContinuationRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListContinuationRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMFormatter/ListFormatting.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListFormatting.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListFormatting.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListFormatting~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListFormatting.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListFormatting.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMFormatter/ListIndentRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListIndentRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListIndentRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListIndentRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListIndentRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/ListIndentRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMFormatter/SaveFormatting.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/SaveFormatting.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/SaveFormatting.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/SaveFormatting~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/SaveFormatting.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/SaveFormatting.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMFormatter/TableAlignmentRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableAlignmentRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableAlignmentRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableAlignmentRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableAlignmentRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableAlignmentRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMFormatter/TableContinuationRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableContinuationRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableContinuationRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableContinuationRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableContinuationRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableContinuationRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMFormatter/TableFormatting.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableFormatting.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableFormatting.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableFormatting~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableFormatting.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableFormatting.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMFormatter/TableNavigationRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableNavigationRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableNavigationRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableNavigationRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableNavigationRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/TableNavigationRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMFormatter/WhitespaceCleanupRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/WhitespaceCleanupRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/WhitespaceCleanupRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/WhitespaceCleanupRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/WhitespaceCleanupRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/arm64-apple-macosx/debug/EMFormatter.build/WhitespaceCleanupRule.dia"
+  }
+}

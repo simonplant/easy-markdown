@@ -1,0 +1,75 @@
+{
+  "": {
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/master.swiftdeps"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMDoctor/DoctorEngine.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DoctorEngine.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DoctorEngine.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DoctorEngine~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DoctorEngine.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DoctorEngine.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMDoctor/DoctorRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DoctorRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DoctorRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DoctorRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DoctorRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DoctorRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMDoctor/Rules/BrokenRelativeLinkRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/BrokenRelativeLinkRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/BrokenRelativeLinkRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/BrokenRelativeLinkRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/BrokenRelativeLinkRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/BrokenRelativeLinkRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMDoctor/Rules/DuplicateHeadingRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DuplicateHeadingRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DuplicateHeadingRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DuplicateHeadingRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DuplicateHeadingRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/DuplicateHeadingRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMDoctor/Rules/HeadingHierarchyRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/HeadingHierarchyRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/HeadingHierarchyRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/HeadingHierarchyRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/HeadingHierarchyRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/HeadingHierarchyRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMDoctor/Rules/LongSentenceRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/LongSentenceRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/LongSentenceRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/LongSentenceRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/LongSentenceRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/LongSentenceRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMDoctor/Rules/MissingBlankLineRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/MissingBlankLineRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/MissingBlankLineRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/MissingBlankLineRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/MissingBlankLineRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/MissingBlankLineRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMDoctor/Rules/PassiveVoiceRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/PassiveVoiceRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/PassiveVoiceRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/PassiveVoiceRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/PassiveVoiceRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/PassiveVoiceRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMDoctor/Rules/RepeatedWordRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/RepeatedWordRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/RepeatedWordRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/RepeatedWordRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/RepeatedWordRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/RepeatedWordRule.dia"
+  },
+  "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/Sources/EMDoctor/Rules/TrailingWhitespaceRule.swift": {
+    "dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/TrailingWhitespaceRule.d",
+    "object": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/TrailingWhitespaceRule.swift.o",
+    "swiftmodule": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/TrailingWhitespaceRule~partial.swiftmodule",
+    "swift-dependencies": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/TrailingWhitespaceRule.swiftdeps",
+    "diagnostics": "/Users/simonp/Library/Mobile Documents/com~apple~CloudDocs/dev/easy-markdown/.build/index-build/arm64-apple-macosx/debug/EMDoctor.build/TrailingWhitespaceRule.dia"
+  }
+}
