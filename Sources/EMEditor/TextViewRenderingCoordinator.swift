@@ -36,8 +36,11 @@ final class TextViewRenderingCoordinator {
     /// Debounce task for full re-parse per [A-017].
     private var parseDebounceTask: Task<Void, Never>?
 
-    /// Debounce interval for full re-parse (300ms per [A-017]).
-    private let parseDebounceInterval: UInt64 = 300_000_000
+    /// Debounce interval for full re-parse (100ms per [A-017]).
+    private let parseDebounceInterval: UInt64 = 100_000_000
+
+    /// Generation counter to discard stale background renders.
+    private var renderGeneration: UInt64 = 0
 
     /// Whether this is the first render (triggers immediate doctor evaluation
     /// and file-open animation per FEAT-014 AC-11).
@@ -140,78 +143,121 @@ final class TextViewRenderingCoordinator {
 
     // MARK: - Rendering per FEAT-003
 
-    /// Requests an immediate parse and render. Called on initial load and view mode toggle.
-    /// On first render in rich mode, plays The Render file-open animation per FEAT-014 AC-11.
+    /// Requests a parse and render. Called on initial load and view mode toggle.
+    /// Parse + render run on a background task to avoid blocking the main thread.
     func requestRender(for textView: EMTextView) {
         guard let config = renderConfig else { return }
+        renderGeneration &+= 1
+        let generation = renderGeneration
 
         let sourceText = textView.text ?? ""
-        let parseResult = parser.parse(sourceText)
-        currentAST = parseResult.ast
+        let isFirst = isFirstRender
+        if isFirstRender { isFirstRender = false }
 
-        // File-open animation: first render in rich mode plays source→rich transition per FEAT-014 AC-11
-        if isFirstRender && !config.isSourceView && !sourceText.isEmpty {
-            isFirstRender = false
+        Task { [weak self] in
+            guard let self else { return }
 
-            let sourceConfig = RenderConfiguration(
-                typeScale: config.typeScale,
-                colors: config.colors,
-                isSourceView: true,
-                colorVariant: config.colorVariant,
-                layoutMetrics: config.layoutMetrics,
-                documentURL: config.documentURL
-            )
-            applyRendering(
-                to: textView, ast: parseResult.ast,
-                sourceText: sourceText, config: sourceConfig
-            )
-            textView.layoutIfNeeded()
+            let parser = self.parser
+            let renderer = self.renderer
+            let rendered = await Task.detached(priority: .userInitiated) {
+                let parseResult = parser.parse(sourceText)
+                let attrStr = NSMutableAttributedString(string: sourceText)
+                renderer.render(into: attrStr, ast: parseResult.ast, sourceText: sourceText, config: config)
+                return (attrStr, parseResult)
+            }.value
 
-            let markers = RenderElementExtractor.extract(
-                from: parseResult.ast, sourceText: sourceText
-            )
-            renderAnimator.performTransition(
-                textView: textView,
-                markers: markers,
-                applyRendering: { [weak self] in
-                    guard let self else { return }
-                    applyRendering(
-                        to: textView, ast: parseResult.ast,
-                        sourceText: sourceText, config: config
-                    )
-                },
-                direction: .sourceToRich
-            ) { [weak self] in
-                self?.doctorCoordinator.evaluateImmediately(
-                    text: sourceText, ast: parseResult.ast
-                )
+            guard self.renderGeneration == generation else { return }
+
+            let (renderedAttrs, parseResult) = rendered
+            self.currentAST = parseResult.ast
+
+            let textStorage = textView.textStorage
+            guard textStorage.length == renderedAttrs.length else {
+                renderLogger.warning("Text storage length mismatch — skipping render")
+                return
             }
-            return
-        }
 
-        applyRendering(to: textView, ast: parseResult.ast, sourceText: sourceText, config: config)
+            textStorage.beginEditing()
+            renderedAttrs.enumerateAttributes(
+                in: NSRange(location: 0, length: renderedAttrs.length),
+                options: []
+            ) { attrs, range, _ in
+                textStorage.setAttributes(attrs, range: range)
+            }
+            textStorage.endEditing()
 
-        if isFirstRender {
-            isFirstRender = false
-            doctorCoordinator.evaluateImmediately(text: sourceText, ast: parseResult.ast)
-        } else {
-            doctorCoordinator.scheduleEvaluation(text: sourceText, ast: parseResult.ast)
+            if isFirst {
+                self.doctorCoordinator.evaluateImmediately(text: sourceText, ast: parseResult.ast)
+            } else {
+                self.doctorCoordinator.scheduleEvaluation(text: sourceText, ast: parseResult.ast)
+            }
         }
     }
 
     /// Schedules a debounced parse and render after text changes per [A-017].
+    /// Parse and render run on a background task; only attribute application touches the main thread.
     func scheduleRender(for textView: EMTextView) {
         parseDebounceTask?.cancel()
+        renderGeneration &+= 1
+        let generation = renderGeneration
 
         parseDebounceTask = Task { [weak self] in
             do {
-                try await Task.sleep(nanoseconds: self?.parseDebounceInterval ?? 300_000_000)
+                try await Task.sleep(nanoseconds: self?.parseDebounceInterval ?? 100_000_000)
             } catch {
                 return // Cancelled
             }
 
-            guard let self, !Task.isCancelled else { return }
-            self.requestRender(for: textView)
+            guard let self, !Task.isCancelled, self.renderGeneration == generation else { return }
+            guard let config = self.renderConfig else { return }
+
+            let sourceText = textView.text ?? ""
+            let selectedRange = textView.selectedRange
+            let scrollOffset = textView.contentOffset
+
+            // Parse + render on background thread
+            let parser = self.parser
+            let renderer = self.renderer
+            let rendered = await Task.detached(priority: .userInitiated) {
+                let parseResult = parser.parse(sourceText)
+                let attrStr = NSMutableAttributedString(string: sourceText)
+                renderer.render(into: attrStr, ast: parseResult.ast, sourceText: sourceText, config: config)
+                return (attrStr, parseResult)
+            }.value
+
+            guard !Task.isCancelled, self.renderGeneration == generation else { return }
+
+            let (renderedAttrs, parseResult) = rendered
+            self.currentAST = parseResult.ast
+
+            // Apply pre-rendered attributes to live text storage on main thread
+            let textStorage = textView.textStorage
+            guard textStorage.length == renderedAttrs.length else {
+                renderLogger.warning("Text storage length mismatch — skipping render")
+                return
+            }
+
+            textStorage.beginEditing()
+            renderedAttrs.enumerateAttributes(
+                in: NSRange(location: 0, length: renderedAttrs.length),
+                options: []
+            ) { attrs, range, _ in
+                textStorage.setAttributes(attrs, range: range)
+            }
+            textStorage.endEditing()
+
+            textView.selectedRange = selectedRange
+            textView.setContentOffset(scrollOffset, animated: false)
+
+            // Reapply find highlights if find bar is active per FEAT-017
+            let findState = self.editorState.findReplaceState
+            if findState.isVisible, !findState.matches.isEmpty {
+                self.findReplaceCoordinator?.applyFindHighlights(
+                    findState.matches, currentIndex: findState.currentMatchIndex, in: textView
+                )
+            }
+
+            self.doctorCoordinator.scheduleEvaluation(text: sourceText, ast: parseResult.ast)
         }
     }
 
@@ -413,8 +459,11 @@ final class TextViewRenderingCoordinator {
     /// Debounce task for full re-parse per [A-017].
     private var parseDebounceTask: Task<Void, Never>?
 
-    /// Debounce interval for full re-parse (300ms per [A-017]).
-    private let parseDebounceInterval: UInt64 = 300_000_000
+    /// Debounce interval for full re-parse (100ms per [A-017]).
+    private let parseDebounceInterval: UInt64 = 100_000_000
+
+    /// Generation counter to discard stale background renders.
+    private var renderGeneration: UInt64 = 0
 
     /// Whether this is the first render (triggers immediate doctor evaluation
     /// and file-open animation per FEAT-014 AC-11).
@@ -517,80 +566,119 @@ final class TextViewRenderingCoordinator {
 
     // MARK: - Rendering per FEAT-003
 
-    /// Requests an immediate parse and render.
-    /// On first render in rich mode, plays file-open animation per FEAT-014 AC-11.
+    /// Requests a parse and render. Called on initial load and view mode toggle.
+    /// Parse + render run on a background task to avoid blocking the main thread.
     func requestRender(for textView: EMTextView) {
         guard let config = renderConfig else { return }
+        renderGeneration &+= 1
+        let generation = renderGeneration
 
         let sourceText = textView.string
-        let parseResult = parser.parse(sourceText)
-        currentAST = parseResult.ast
+        let isFirst = isFirstRender
+        if isFirstRender { isFirstRender = false }
 
-        // File-open animation per FEAT-014 AC-11
-        if isFirstRender && !config.isSourceView && !sourceText.isEmpty {
-            isFirstRender = false
+        Task { [weak self] in
+            guard let self else { return }
 
-            let sourceConfig = RenderConfiguration(
-                typeScale: config.typeScale,
-                colors: config.colors,
-                isSourceView: true,
-                colorVariant: config.colorVariant,
-                layoutMetrics: config.layoutMetrics,
-                documentURL: config.documentURL
-            )
-            applyRendering(
-                to: textView, ast: parseResult.ast,
-                sourceText: sourceText, config: sourceConfig
-            )
-            textView.layoutManager?.ensureLayout(forCharacterRange: NSRange(
-                location: 0, length: (sourceText as NSString).length
-            ))
+            let parser = self.parser
+            let renderer = self.renderer
+            let rendered = await Task.detached(priority: .userInitiated) {
+                let parseResult = parser.parse(sourceText)
+                let attrStr = NSMutableAttributedString(string: sourceText)
+                renderer.render(into: attrStr, ast: parseResult.ast, sourceText: sourceText, config: config)
+                return (attrStr, parseResult)
+            }.value
 
-            let markers = RenderElementExtractor.extract(
-                from: parseResult.ast, sourceText: sourceText
-            )
-            renderAnimator.performTransition(
-                textView: textView,
-                markers: markers,
-                applyRendering: { [weak self] in
-                    guard let self else { return }
-                    applyRendering(
-                        to: textView, ast: parseResult.ast,
-                        sourceText: sourceText, config: config
-                    )
-                },
-                direction: .sourceToRich
-            ) { [weak self] in
-                self?.doctorCoordinator.evaluateImmediately(
-                    text: sourceText, ast: parseResult.ast
-                )
+            guard self.renderGeneration == generation else { return }
+
+            let (renderedAttrs, parseResult) = rendered
+            self.currentAST = parseResult.ast
+
+            guard let textStorage = textView.textStorage else { return }
+            guard textStorage.length == renderedAttrs.length else {
+                renderLogger.warning("Text storage length mismatch — skipping render")
+                return
             }
-            return
-        }
 
-        applyRendering(to: textView, ast: parseResult.ast, sourceText: sourceText, config: config)
+            textStorage.beginEditing()
+            renderedAttrs.enumerateAttributes(
+                in: NSRange(location: 0, length: renderedAttrs.length),
+                options: []
+            ) { attrs, range, _ in
+                textStorage.setAttributes(attrs, range: range)
+            }
+            textStorage.endEditing()
 
-        if isFirstRender {
-            isFirstRender = false
-            doctorCoordinator.evaluateImmediately(text: sourceText, ast: parseResult.ast)
-        } else {
-            doctorCoordinator.scheduleEvaluation(text: sourceText, ast: parseResult.ast)
+            if isFirst {
+                self.doctorCoordinator.evaluateImmediately(text: sourceText, ast: parseResult.ast)
+            } else {
+                self.doctorCoordinator.scheduleEvaluation(text: sourceText, ast: parseResult.ast)
+            }
         }
     }
 
     /// Schedules a debounced parse and render after text changes per [A-017].
+    /// Parse and render run on a background task; only attribute application touches the main thread.
     func scheduleRender(for textView: EMTextView) {
         parseDebounceTask?.cancel()
+        renderGeneration &+= 1
+        let generation = renderGeneration
 
         parseDebounceTask = Task { [weak self] in
             do {
-                try await Task.sleep(nanoseconds: self?.parseDebounceInterval ?? 300_000_000)
+                try await Task.sleep(nanoseconds: self?.parseDebounceInterval ?? 100_000_000)
             } catch {
                 return
             }
 
-            guard let self, !Task.isCancelled else { return }
-            self.requestRender(for: textView)
+            guard let self, !Task.isCancelled, self.renderGeneration == generation else { return }
+            guard let config = self.renderConfig else { return }
+
+            let sourceText = textView.string
+            let selectedRange = textView.selectedRange()
+
+            // Parse + render on background thread
+            let parser = self.parser
+            let renderer = self.renderer
+            let rendered = await Task.detached(priority: .userInitiated) {
+                let parseResult = parser.parse(sourceText)
+                let attrStr = NSMutableAttributedString(string: sourceText)
+                renderer.render(into: attrStr, ast: parseResult.ast, sourceText: sourceText, config: config)
+                return (attrStr, parseResult)
+            }.value
+
+            guard !Task.isCancelled, self.renderGeneration == generation else { return }
+
+            let (renderedAttrs, parseResult) = rendered
+            self.currentAST = parseResult.ast
+
+            // Apply pre-rendered attributes to live text storage on main thread
+            guard let textStorage = textView.textStorage else { return }
+            guard textStorage.length == renderedAttrs.length else {
+                renderLogger.warning("Text storage length mismatch — skipping render")
+                return
+            }
+
+            textStorage.beginEditing()
+            renderedAttrs.enumerateAttributes(
+                in: NSRange(location: 0, length: renderedAttrs.length),
+                options: []
+            ) { attrs, range, _ in
+                textStorage.setAttributes(attrs, range: range)
+            }
+            textStorage.endEditing()
+
+            textView.setSelectedRange(selectedRange)
+
+            // Reapply find highlights if find bar is active per FEAT-017
+            let findState = self.editorState.findReplaceState
+            if findState.isVisible, !findState.matches.isEmpty {
+                self.findReplaceCoordinator?.applyFindHighlights(
+                    findState.matches, currentIndex: findState.currentMatchIndex, in: textView
+                )
+            }
+
+            self.doctorCoordinator.scheduleEvaluation(text: sourceText, ast: parseResult.ast)
         }
     }
 

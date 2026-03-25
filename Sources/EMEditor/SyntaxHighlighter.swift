@@ -205,16 +205,20 @@ struct SyntaxHighlighter {
     }
 
     /// Compiled rules per language, lazily cached.
-    /// Thread safety: all callers reach this through @MainActor MarkdownRenderer.render().
+    /// Thread safety: lock protects concurrent read/write from background render tasks.
+    private static let ruleCacheLock = NSLock()
     nonisolated(unsafe) private static var ruleCache: [String: [HighlightRule]] = [:]
 
     /// Returns compiled highlight rules for a language, or nil if unsupported.
     private func highlightRules(for language: String?) -> [HighlightRule]? {
         guard let lang = language else { return nil }
 
+        Self.ruleCacheLock.lock()
         if let cached = Self.ruleCache[lang] {
+            Self.ruleCacheLock.unlock()
             return cached
         }
+        Self.ruleCacheLock.unlock()
 
         let rules: [HighlightRule]?
         switch lang {
@@ -241,7 +245,9 @@ struct SyntaxHighlighter {
         }
 
         if let rules {
+            Self.ruleCacheLock.lock()
             Self.ruleCache[lang] = rules
+            Self.ruleCacheLock.unlock()
         }
         return rules
     }

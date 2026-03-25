@@ -146,7 +146,7 @@ public struct MarkdownRenderer {
     ///   - ast: The parsed markdown AST.
     ///   - sourceText: The raw markdown text (must match attributedString's string).
     ///   - config: Rendering configuration (fonts, colors, mode).
-    @MainActor
+    /// Can be called from any thread when rendering into a detached attributed string.
     public func render(
         into attributedString: NSMutableAttributedString,
         ast: MarkdownAST,
