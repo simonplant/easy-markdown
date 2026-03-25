@@ -1,5 +1,5 @@
 aishore - AI Sprint Runner (v__VERSION__)
-Copyright (C) 2026 Simon Plant. Licensed under AGPL-3.0. See LICENSE.
+Copyright (C) 2025-2026 Simon Plant. Licensed under Apache-2.0. See LICENSE.
 
 Usage: .aishore/aishore <command> [options]
        .aishore/aishore auto <scope> [--parallel N] [--limit N] [--retries N] [--max-failures N] [--timeout N] [--no-merge] [--pr] [--refine] [--quick] [--warm-retry] [--category <name>] [--auto-review] [--no-summary] [--dry-run]
@@ -80,9 +80,11 @@ Commands:
     --auto-review   Run architecture review after completion
     --limit N       Cap session at N successful items then exit cleanly
     --no-summary    Suppress end-of-session summary table
+    --parallel N    Run up to N items concurrently in worktrees (1-4, default: 1)
 
   groom             Groom bugs/tech debt (Tech Lead mode)
     --backlog       Groom features instead (Product Owner mode)
+    --architect     Scaffolding review — detect fragment risk, inject skeleton items
 
   review            Architecture review (read-only)
     --update-docs   Allow updates to docs
@@ -116,6 +118,7 @@ Examples:
   .aishore/aishore auto done --timeout 5   # Kill agents running longer than 5 min
   .aishore/aishore auto done --category documentation  # Only documentation items
   .aishore/aishore groom --backlog      # Groom features
+  .aishore/aishore groom --architect   # Detect missing scaffolding, add skeleton items
   .aishore/aishore update --dry-run     # Check for updates
 
 Files:

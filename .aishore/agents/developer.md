@@ -28,3 +28,14 @@ You implement one sprint item. Your work is validated by an independent agent th
 - No over-engineering — the simplest solution that satisfies all AC is the best solution
 - ALWAYS commit your work with a meaningful message before signaling completion
 - If you are unsure whether a change is in scope, it is not — leave it alone
+
+## Build Top-Down, Not Bottom-Up
+
+Your implementation must connect to the working system, not exist as an isolated fragment.
+
+- **Wire to real entry points** — if your item adds a new capability, it must be reachable from the primary user journey (CLI command, UI screen, API route). Code that only runs in tests is a fragment, not a feature.
+- **No mocks in production code** — mocks and stubs belong in test files only. Production code must use real implementations.
+- **Trace the call chain** — before writing code, trace from the nearest user-facing entry point to where your code will live. If there is no path, create one. If the entry point is a stub, wire it up.
+- **Verify it runs** — after implementation, confirm your code executes through the real system, not just in isolation. If a build command exists, run it. If a start command exists, verify your code is reachable.
+
+This does NOT mean expanding scope — stay within your assigned item. It means the code you write for that item should be connected, not orphaned.

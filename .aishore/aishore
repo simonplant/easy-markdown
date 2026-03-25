@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # aishore - AI Sprint Runner CLI
-# Copyright (C) 2026 Simon Plant. Licensed under AGPL-3.0. See LICENSE.
+# Copyright (C) 2025-2026 Simon Plant. Licensed under Apache-2.0. See LICENSE.
 #
 # A self-contained sprint orchestration tool for Claude Code
 #
@@ -11,6 +11,7 @@
 #   run [count|ID]  Run sprints (default: 1, feature branches, auto-commit)
 #   groom           Groom bugs/tech debt (Tech Lead)
 #   groom --backlog Groom features (Product Owner)
+#   groom --architect Scaffolding review (Architect)
 #   review          Architecture review
 #   metrics         Show sprint metrics
 #   update          Update aishore from upstream (with checksum verification)
@@ -1678,10 +1679,16 @@ build_agent_prompt() {
     local prompt_file="$AGENTS_DIR/${agent_name}.md"
     [[ ! -f "$prompt_file" ]] && { log_error "Agent not found: $agent_name"; return 1; }
 
-    # Read prompt file; strip populate section unless in populate mode
+    # Read prompt file; strip mode-specific sections when not in that mode
     local prompt_content
     if [[ "$agent_name" == "product-owner" && "$mode" != "populate" ]]; then
         prompt_content="$(sed '/^## Populate Mode/,$d' "$prompt_file" | sed -e :a -e '/^[[:space:]]*$/{ $d; N; ba; }')"
+    elif [[ "$agent_name" == "architect" && "$mode" == "groom" ]]; then
+        # Strip Review Mode section, keep Groom Mode section
+        prompt_content="$(sed '/^## Review Mode/,/^## Groom Mode/{/^## Groom Mode/!d}' "$prompt_file")"
+    elif [[ "$agent_name" == "architect" ]]; then
+        # Strip Groom Mode section (review mode)
+        prompt_content="$(sed '/^## Groom Mode/,$d' "$prompt_file" | sed -e :a -e '/^[[:space:]]*$/{ $d; N; ba; }')"
     else
         prompt_content="$(cat "$prompt_file")"
     fi
@@ -1744,12 +1751,16 @@ Run \`$VALIDATE_CMD\` after implementing. Fix failures before writing result.jso
 ## Validation Command
 The orchestrator runs \`$VALIDATE_CMD\` before you. If results are provided below, trust them — do not re-run the command."
         fi
-    elif [[ "$agent_name" == "tech-lead" || "$agent_name" == "product-owner" ]]; then
+    elif [[ "$agent_name" == "tech-lead" || "$agent_name" == "product-owner" || ("$agent_name" == "architect" && "$mode" == "groom") ]]; then
         # CLI commands: shared preamble + role-specific examples
         local cli_role_lines
         if [[ "$agent_name" == "product-owner" ]]; then
             cli_role_lines=".aishore/aishore backlog add --type feat --title \"...\" --desc \"...\" --priority should
 .aishore/aishore backlog edit <ID> --priority must --groomed-at --groomed-notes \"...\""
+        elif [[ "$agent_name" == "architect" ]]; then
+            cli_role_lines=".aishore/aishore backlog add --type feat --title \"...\" --intent \"...\" --desc \"...\" --priority must --ready --step \"...\" --step \"...\" --ac \"...\" --ac \"...\"
+.aishore/aishore backlog edit <ID> --ready --groomed-at --groomed-notes \"...\"
+.aishore/aishore backlog edit <ID> --depends-on FEAT-XXX,FEAT-YYY"
         else
             cli_role_lines=".aishore/aishore backlog add --type bug --title \"...\" --desc \"...\" --priority should
 .aishore/aishore backlog edit <ID> --ready --groomed-at --groomed-notes \"...\"
@@ -1817,7 +1828,11 @@ run_agent() {
         validator)
             agent_perms="${CFG_PERMS_VALIDATOR:-$PERMS_VALIDATOR}" ;;
         architect)
-            agent_perms="${CFG_PERMS_REVIEWER:-$PERMS_REVIEWER}" ;;
+            if [[ "$mode" == "groom" ]]; then
+                agent_perms="${CFG_PERMS_DEVELOPER:-$PERMS_DEVELOPER}"
+            else
+                agent_perms="${CFG_PERMS_REVIEWER:-$PERMS_REVIEWER}"
+            fi ;;
         tech-lead|product-owner)
             # Groom agents need full permissions to update backlog files
             agent_perms="${CFG_PERMS_DEVELOPER:-$PERMS_DEVELOPER}" ;;
@@ -3508,6 +3523,11 @@ run_sprint_loop() {
                 local auto_groom_snap
                 auto_groom_snap=$(mktemp -d)
                 snapshot_backlog_files "$auto_groom_snap"
+                # Architect runs first — detects fragment risk and creates scaffolding items
+                # before tech-lead/product-owner groom features that depend on the skeleton
+                GROOM_MONITOR=true run_agent "architect" "groom" "$MODEL_FAST" groom_context "" "$groom_combined_feedback" || true
+                GROOM_MONITOR=
+                check_result || log_warning "Architect groom did not pass — continuing"
                 GROOM_MONITOR=true run_agent "tech-lead" "groom" "$MODEL_FAST" groom_context "" "$groom_combined_feedback" || true
                 GROOM_MONITOR=
                 check_result || log_warning "Tech-lead groom did not pass — continuing"
@@ -3873,16 +3893,20 @@ cmd_run() {
 cmd_groom() {
     require_tool jq
 
-    local mode="bugs" _backlog=false
-    parse_opts "bool:_backlog:--backlog" -- "$@" || return 1
+    local mode="bugs" _backlog=false _architect=false
+    parse_opts "bool:_backlog:--backlog" "bool:_architect:--architect" -- "$@" || return 1
     [[ "$_backlog" == "true" ]] && mode="backlog"
+    [[ "$_architect" == "true" ]] && mode="architect"
 
     acquire_lock
     load_config
     cd "$PROJECT_ROOT"
 
     local agent
-    if [[ "$mode" == "backlog" ]]; then
+    if [[ "$mode" == "architect" ]]; then
+        log_header "Architect: Scaffolding Review"
+        agent="architect"
+    elif [[ "$mode" == "backlog" ]]; then
         log_header "Product Owner: Backlog Grooming"
         agent="product-owner"
     else
