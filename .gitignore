@@ -1,5 +1,9 @@
-# Swift Package Manager build artifacts
+# Xcode / Swift
 .build/
+.swiftpm/
+EasyMarkdown.xcodeproj/xcuserdata/
+Package.resolved
+.DS_Store
 
 # aishore runtime files
 .aishore/data/logs/
