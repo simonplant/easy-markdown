@@ -14,6 +14,10 @@ import EMParser
 
 private let renderLogger = Logger(subsystem: "com.easymarkdown.emeditor", category: "rendering")
 
+/// Kill switch: when true, all markdown rendering is skipped and the editor works as plain text.
+/// Flip to false to re-enable the render pipeline incrementally.
+public var markdownRenderingEnabled = false
+
 // MARK: - iOS Rendering Coordinator
 
 #if canImport(UIKit)
@@ -84,6 +88,7 @@ final class TextViewRenderingCoordinator {
 
     /// Performs an animated view mode toggle with cursor mapping per [A-021] and FEAT-014.
     func handleViewModeToggle(for textView: EMTextView, toSourceView: Bool) {
+        guard markdownRenderingEnabled else { return }
         toggleSignpost.begin("toggle")
 
         guard let config = renderConfig else {
@@ -146,6 +151,7 @@ final class TextViewRenderingCoordinator {
     /// Requests a parse and render. Called on initial load and view mode toggle.
     /// Parse + render run on a background task to avoid blocking the main thread.
     func requestRender(for textView: EMTextView) {
+        guard markdownRenderingEnabled else { return }
         guard let config = renderConfig else { return }
         renderGeneration &+= 1
         let generation = renderGeneration
@@ -197,6 +203,7 @@ final class TextViewRenderingCoordinator {
     /// Schedules a debounced parse and render after text changes per [A-017].
     /// Parse and render run on a background task; only attribute application touches the main thread.
     func scheduleRender(for textView: EMTextView) {
+        guard markdownRenderingEnabled else { return }
         parseDebounceTask?.cancel()
         renderGeneration &+= 1
         let generation = renderGeneration
@@ -507,6 +514,7 @@ final class TextViewRenderingCoordinator {
 
     /// Performs an animated view mode toggle with cursor mapping per [A-021] and FEAT-014.
     func handleViewModeToggle(for textView: EMTextView, toSourceView: Bool) {
+        guard markdownRenderingEnabled else { return }
         toggleSignpost.begin("toggle")
 
         guard let config = renderConfig else {
@@ -569,6 +577,7 @@ final class TextViewRenderingCoordinator {
     /// Requests a parse and render. Called on initial load and view mode toggle.
     /// Parse + render run on a background task to avoid blocking the main thread.
     func requestRender(for textView: EMTextView) {
+        guard markdownRenderingEnabled else { return }
         guard let config = renderConfig else { return }
         renderGeneration &+= 1
         let generation = renderGeneration
@@ -620,6 +629,7 @@ final class TextViewRenderingCoordinator {
     /// Schedules a debounced parse and render after text changes per [A-017].
     /// Parse and render run on a background task; only attribute application touches the main thread.
     func scheduleRender(for textView: EMTextView) {
+        guard markdownRenderingEnabled else { return }
         parseDebounceTask?.cancel()
         renderGeneration &+= 1
         let generation = renderGeneration
