@@ -1,1 +1,22 @@
-{"sprintId": null, "status": "idle", "item": null}
+{
+  "sprintId": "sprint-1774413399",
+  "startedAt": "2026-03-24T21:36:39-07:00",
+  "status": "in_progress",
+  "item": {
+    "id": "FEAT-088",
+    "title": "App Target Entry Point and Xcode Build Setup",
+    "intent": "The repo needs a buildable app target so developers can run on device without manual setup beyond opening Xcode",
+    "description": "Add EasyMarkdownApp/ directory with @main entry point (thin wrapper delegating to AppShell), Info.plist with UTI declarations for .md/.markdown, multi-window scene manifest for iPad Stage Manager, and document type registration. Add BUILDING.md with step-by-step Xcode setup guide. No .xcodeproj checked in (SPM-first per A-001).",
+    "sourceBacklog": "backlog.json",
+    "steps": [],
+    "acceptanceCriteria": [
+      "EasyMarkdownApp.swift contains @main struct delegating to AppShell from EMApp",
+      "Info.plist declares UTImportedTypeDeclarations (not Exported) for net.daringfireball.markdown",
+      "Info.plist does NOT reference a SceneDelegate class (pure SwiftUI lifecycle via WindowGroup)",
+      "BUILDING.md documents step-by-step Xcode target creation, signing, and first-build validation",
+      "swift build still passes (EasyMarkdownApp/ is not part of any SPM target)"
+    ],
+    "scope": [],
+    "startedAt": "2026-03-24T21:36:39-07:00"
+  }
+}
