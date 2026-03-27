@@ -40,14 +40,19 @@
       "description": "Three issues found during PR #2 code review: (1) Arrow key and Escape handling via .onKeyPress is wrapped in #if os(iOS) only — macOS users get no keyboard navigation in the Quick Open palette. (2) relativeDate() in QuickOpenResultRow allocates a new DateFormatter per row per render — should be a static let. (3) Fuzzy match score can go deeply negative from gap penalties before being clamped to max(score, 1), making all weak matches rank identically at score 1.",
       "priority": "must",
       "category": "Editor",
-      "steps": [],
+      "steps": [
+        "In Sources/EMApp/QuickOpenView.swift, find the .onKeyPress or keyboard handling code that is wrapped in #if os(iOS). Remove the platform guard so arrow key (up/down) selection navigation and Escape dismissal work on both iOS and macOS. On macOS, .onKeyPress requires macOS 14+ which matches the deployment target.",
+        "In the QuickOpenResultRow or wherever relativeDate() is defined, change the DateFormatter from a local allocation to a private static let. The formatter should be allocated once, not per render.",
+        "In Sources/EMApp/FuzzyMatcher.swift, fix the scoring so that gap penalties do not drive the score deeply negative before clamping. Cap the per-gap penalty (e.g. max penalty of -3 per gap) or use a decay multiplier instead of unbounded subtraction. The goal: weak matches should produce distinguishable scores, not all clamp to the same floor.",
+        "swift build must pass"
+      ],
       "acceptanceCriteria": [
         "macOS: arrow keys move selection and Return opens file in Quick Open palette",
         "macOS: Escape dismisses the Quick Open palette",
         "DateFormatter in QuickOpenResultRow.relativeDate is a static let, not allocated per call",
         "Fuzzy match scores for weak matches are distinguishable — not all clamped to 1"
       ],
-      "scope": [],
+      "scope": ["Sources/EMApp/QuickOpenView.swift", "Sources/EMApp/QuickOpenViewModel.swift", "Sources/EMApp/FuzzyMatcher.swift"],
       "dependsOn": [],
       "status": "todo",
       "passes": false,
