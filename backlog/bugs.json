@@ -52,13 +52,18 @@
         "DateFormatter in QuickOpenResultRow.relativeDate is a static let, not allocated per call",
         "Fuzzy match scores for weak matches are distinguishable — not all clamped to 1"
       ],
-      "scope": ["Sources/EMApp/QuickOpenView.swift", "Sources/EMApp/QuickOpenViewModel.swift", "Sources/EMApp/FuzzyMatcher.swift"],
+      "scope": [
+        "Sources/EMApp/QuickOpenView.swift",
+        "Sources/EMApp/QuickOpenViewModel.swift",
+        "Sources/EMApp/FuzzyMatcher.swift"
+      ],
       "dependsOn": [],
-      "status": "todo",
-      "passes": false,
-      "readyForSprint": true,
+      "status": "done",
+      "passes": true,
+      "readyForSprint": false,
       "groomedAt": "2026-03-24",
-      "groomingNotes": "Derived from closed PR #2 review. The PR attempted to land FEAT-016 (Quick Open) which was already completed via sprint. Issues found during review: (1) macOS keyboard nav: .onKeyPress modifiers are iOS 17+ only — on macOS, use .onKeyPress on the containing VStack or NSEvent-based key handling. This is the highest-priority fix since Cmd+P users are keyboard-first. (2) DateFormatter allocation: trivial fix, make it `private static let` on QuickOpenResultRow. (3) Fuzzy scoring: the gap penalty loop subtracts distance(from:to:) for each gap with no per-gap cap, so a query matching chars spread across a long filename yields e.g. score=-300 which clamps to 1, same as score=-1. Fix: cap per-gap penalty or use a multiplier that decays rather than going negative. Also noted but not actionable as a bug: QuickOpenResult struct is internal (should be package/private), and the hidden Button hack for Cmd+P on HomeView is fragile but acceptable given SwiftUI limitations on iOS."
+      "groomingNotes": "Derived from closed PR #2 review. The PR attempted to land FEAT-016 (Quick Open) which was already completed via sprint. Issues found during review: (1) macOS keyboard nav: .onKeyPress modifiers are iOS 17+ only — on macOS, use .onKeyPress on the containing VStack or NSEvent-based key handling. This is the highest-priority fix since Cmd+P users are keyboard-first. (2) DateFormatter allocation: trivial fix, make it `private static let` on QuickOpenResultRow. (3) Fuzzy scoring: the gap penalty loop subtracts distance(from:to:) for each gap with no per-gap cap, so a query matching chars spread across a long filename yields e.g. score=-300 which clamps to 1, same as score=-1. Fix: cap per-gap penalty or use a multiplier that decays rather than going negative. Also noted but not actionable as a bug: QuickOpenResult struct is internal (should be package/private), and the hidden Button hack for Cmd+P on HomeView is fragile but acceptable given SwiftUI limitations on iOS.",
+      "completedAt": "2026-03-27T16:09:32-07:00"
     }
   ]
 }
