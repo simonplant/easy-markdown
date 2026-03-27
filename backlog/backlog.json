@@ -82,7 +82,7 @@
       "title": "F-022a: Mermaid Diagram Rendering",
       "intent": "AI agents and builders produce documents with diagrams constantly. If a Mermaid block renders as raw text, the document experience is broken. Diagrams must render beautifully inline.",
       "description": "Render Mermaid diagram blocks as visual diagrams inline in the editor. Fenced code blocks with mermaid language tag render as visual diagrams in rich view. Supported types: flowcharts, sequence, ER, class, Gantt, pie, state, mind maps. Diagrams adapt to light/dark theme. Included in PDF/print export as vector graphics. The Render animation applies. Malformed Mermaid shows raw code with doctor warning. Depends on: FEAT-038 (Parser).",
-      "priority": "must",
+      "priority": "future",
       "category": "Editor",
       "dependsOn": [
         "SPIKE-006"
@@ -100,7 +100,7 @@
       ],
       "status": "todo",
       "passes": false,
-      "readyForSprint": true,
+      "readyForSprint": false,
       "lastFailReason": "Implementation failed",
       "lastFailAt": "2026-03-23T20:30:04-07:00",
       "failCount": 4,
@@ -148,7 +148,7 @@
       "title": "F-029: AI — Generate from Prompt (Pro AI)",
       "intent": "Let users describe what they want and have AI generate the markdown — README scaffolds, comparison tables, outlines",
       "description": "Cloud-powered Pro AI feature. User types a prompt like 'write a README for a React component library' or 'create a table comparing AWS vs GCP storage'. AI generates markdown inserted at cursor. Inline preview before accepting.",
-      "priority": "should",
+      "priority": "future",
       "category": "AI",
       "steps": [],
       "acceptanceCriteria": [
@@ -166,7 +166,7 @@
       "title": "F-030: AI — Document-Level Analysis (Pro AI)",
       "intent": "Let users ask the AI about their entire document — what is missing, suggest an outline, identify gaps in coverage",
       "description": "Cloud-powered Pro AI feature. User can ask document-level questions: 'what is missing from this doc?', 'suggest an outline', 'identify gaps'. Requires sending document content to cloud with explicit user consent per D-AI-8.",
-      "priority": "should",
+      "priority": "future",
       "category": "AI",
       "steps": [],
       "acceptanceCriteria": [
@@ -220,7 +220,7 @@
       "title": "F-022b: AI-Assisted Diagram Editing",
       "intent": "AI is the interface for editing diagrams — select a diagram, describe a change in natural language, AI rewrites the code and the diagram re-renders. No visual editor needed.",
       "description": "When user selects or taps a rendered Mermaid diagram, a contextual action bar appears with Edit with AI. User describes change in natural language. AI rewrites the Mermaid code, diagram re-renders. Shows inline diff with rendered preview. Uses same AI infrastructure as F-025. Depends on: FEAT-030 (Mermaid Rendering), FEAT-041 (AI Model Pipeline).",
-      "priority": "should",
+      "priority": "future",
       "category": "AI",
       "steps": [],
       "acceptanceCriteria": [
@@ -260,7 +260,7 @@
       "title": "GitHub Storage — Clone and Open",
       "intent": "Users can open markdown files directly from their GitHub repos with the same ease as opening from iCloud or Dropbox",
       "description": "Phase 2. 'Open from GitHub' option on home screen alongside 'Open File'. User authenticates via GitHub OAuth device flow (one-time). Browses their repos, selects a file. EMGit clones the repo (or pulls if already cloned) to a local app container directory. File opens in the editor via EMFile — editing is identical to any local file. Cloned repos cached locally; repos not accessed in 30 days offered for cleanup in Settings.",
-      "priority": "should",
+      "priority": "future",
       "category": "File Management",
       "dependsOn": [
         "SPIKE-009"
@@ -288,7 +288,7 @@
       "title": "GitHub Storage — Auto-Commit and Push",
       "intent": "Changes to files in GitHub repos are automatically committed and pushed so the user never has to think about git operations",
       "description": "Phase 2. When user closes a file or the app backgrounds: auto-save fires, then EMGit commits the change ('Update filename.md') and pushes to the remote. Pull-with-rebase before push to detect conflicts. If push fails (network, conflict): non-modal banner, changes remain committed locally and push on next opportunity. Subtle toolbar indicator shows when there are unpushed local commits. User can tap the indicator to push manually at any time without closing the file. Conflict on pull surfaces via the same external-change flow as file conflict detection (FEAT-045).",
-      "priority": "should",
+      "priority": "future",
       "category": "File Management",
       "dependsOn": [
         "SPIKE-009",
@@ -315,7 +315,7 @@
       "title": "App Target Entry Point and Xcode Build Setup",
       "intent": "The repo needs a buildable app target so developers can run on device without manual setup beyond opening Xcode",
       "description": "Add EasyMarkdownApp/ directory with @main entry point (thin wrapper delegating to AppShell), Info.plist with UTI declarations for .md/.markdown, multi-window scene manifest for iPad Stage Manager, and document type registration. Add BUILDING.md with step-by-step Xcode setup guide. No .xcodeproj checked in (SPM-first per A-001).",
-      "priority": "should",
+      "priority": "must",
       "category": "Infrastructure",
       "steps": [],
       "acceptanceCriteria": [

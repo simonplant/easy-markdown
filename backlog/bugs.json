@@ -6,7 +6,7 @@
       "title": "CloudAPIProvider: no retry on transient network failure — users get immediate error on brief connectivity drop",
       "intent": "A momentary network blip must not surface as an AI failure — one silent retry is the minimum bar for a production cloud service",
       "description": "CloudAPIProvider maps URLError.timedOut and URLError.networkConnectionLost to EMError.ai(.inferenceTimeout/.cloudUnavailable) with no retry. A brief connectivity drop during generation causes an immediate user-visible failure. A single retry with a 1-2s delay would handle most transient failures transparently.",
-      "priority": "should",
+      "priority": "must",
       "category": null,
       "steps": [
         "In Sources/EMAI/CloudAPIProvider.swift, identify the URLSession data task call inside generate(). Wrap it in a retry loop: func withRetry<T>(maxAttempts: Int, delay: Duration, _ body: () async throws -> T) async throws -> T — attempt body(), on URLError.networkConnectionLost or URLError.timedOut wait delay then retry, on final attempt rethrow. Use maxAttempts: 2, delay: .seconds(1.5).",
@@ -37,7 +37,7 @@
       "title": "Quick Open (FEAT-016): no macOS keyboard nav, DateFormatter perf, fuzzy score floor",
       "intent": "Quick Open's power-user audience is primarily macOS keyboard users — they cannot navigate results without a mouse today",
       "description": "Three issues found during PR #2 code review: (1) Arrow key and Escape handling via .onKeyPress is wrapped in #if os(iOS) only — macOS users get no keyboard navigation in the Quick Open palette. (2) relativeDate() in QuickOpenResultRow allocates a new DateFormatter per row per render — should be a static let. (3) Fuzzy match score can go deeply negative from gap penalties before being clamped to max(score, 1), making all weak matches rank identically at score 1.",
-      "priority": "should",
+      "priority": "must",
       "category": "Editor",
       "steps": [],
       "acceptanceCriteria": [
