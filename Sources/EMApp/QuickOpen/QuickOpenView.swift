@@ -64,6 +64,24 @@ struct QuickOpenView: View {
         .padding(.horizontal, 20)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Quick Open")
+        .onKeyPress(.upArrow) {
+            viewModel.moveSelectionUp()
+            return .handled
+        }
+        .onKeyPress(.downArrow) {
+            viewModel.moveSelectionDown()
+            return .handled
+        }
+        .onKeyPress(.escape) {
+            onDismiss()
+            return .handled
+        }
+        .onKeyPress(.return) {
+            if let result = viewModel.selectedResult {
+                openResult(result)
+            }
+            return .handled
+        }
     }
 
     // MARK: - States
@@ -123,11 +141,12 @@ struct QuickOpenView: View {
     private var resultsList: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
-                ForEach(viewModel.results) { result in
+                ForEach(Array(viewModel.results.enumerated()), id: \.element.id) { index, result in
                     Button(action: { openResult(result) }) {
                         QuickOpenResultRow(result: result)
                     }
                     .buttonStyle(.plain)
+                    .background(index == viewModel.selectedIndex ? Color.accentColor.opacity(0.2) : Color.clear)
                     .accessibilityLabel("\(result.recentItem.filename) in \(result.recentItem.parentFolder)")
                     .accessibilityHint("Opens this file")
                 }
@@ -162,6 +181,12 @@ struct QuickOpenView: View {
 struct QuickOpenResultRow: View {
     let result: QuickOpenResult
 
+    private static let relativeDateFormatter: RelativeDateTimeFormatter = {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter
+    }()
+
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: "doc.text")
@@ -182,7 +207,7 @@ struct QuickOpenResultRow: View {
 
             Spacer()
 
-            Text(result.recentItem.lastOpenedDate, style: .relative)
+            Text(relativeDate)
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
         }
@@ -192,5 +217,10 @@ struct QuickOpenResultRow: View {
         #if os(iOS)
         .hoverEffect(.highlight)
         #endif
+    }
+
+    /// Formats the last-opened date as a relative string using a static formatter.
+    private var relativeDate: String {
+        Self.relativeDateFormatter.localizedString(for: result.recentItem.lastOpenedDate, relativeTo: Date())
     }
 }

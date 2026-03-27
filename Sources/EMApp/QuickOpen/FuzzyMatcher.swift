@@ -79,9 +79,11 @@ public enum FuzzyMatcher {
         // All query characters must match
         guard queryIndex == queryChars.count else { return nil }
 
-        // Penalize longer targets (prefer shorter, more specific matches)
+        // Penalize longer targets (prefer shorter, more specific matches).
+        // Cap the penalty so weak matches remain distinguishable instead of all clamping to 1.
         let lengthPenalty = max(0, targetChars.count - queryChars.count)
-        score = max(1, score - lengthPenalty / 3)
+        let cappedPenalty = min(lengthPenalty / 3, score / 2)
+        score = max(1, score - cappedPenalty)
 
         // Build matched ranges from indices
         let ranges = buildRanges(matchedIndices: matchedIndices, in: target)
