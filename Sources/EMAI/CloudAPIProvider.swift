@@ -2,6 +2,30 @@ import Foundation
 import os
 import EMCore
 
+/// Retries a transient network failure once with a delay.
+/// Only retries URLError.networkConnectionLost and .timedOut — all other errors rethrow immediately.
+private func withRetry<T: Sendable>(
+    maxAttempts: Int = 2,
+    delay: Duration = .milliseconds(1500),
+    _ body: @Sendable () async throws -> T
+) async throws -> T {
+    for attempt in 1...maxAttempts {
+        do {
+            return try await body()
+        } catch {
+            // Only retry transient network errors, and only if we have attempts left
+            guard attempt < maxAttempts,
+                  let urlError = error as? URLError,
+                  urlError.code == .networkConnectionLost || urlError.code == .timedOut
+            else {
+                throw error
+            }
+            try await Task.sleep(for: delay)
+        }
+    }
+    fatalError("unreachable — loop always returns or throws")
+}
+
 /// Cloud AI provider via SSE streaming per [A-009] and [A-029].
 /// Requires Pro AI subscription. Sends only user-selected text per [D-AI-8].
 /// No logging of prompts or responses.
@@ -13,6 +37,7 @@ public final class CloudAPIProvider: AIProvider, Sendable {
     private let relayURL: URL
     private let networkMonitor: NetworkMonitor
     private let subscriptionStatus: any SubscriptionStatusProviding
+    private let session: URLSession
     private let logger = Logger(subsystem: "com.easymarkdown.emai", category: "cloud-provider")
 
     /// Timeout for cloud requests before suggesting local AI as fallback.
@@ -31,6 +56,20 @@ public final class CloudAPIProvider: AIProvider, Sendable {
         self.relayURL = relayURL
         self.networkMonitor = networkMonitor
         self.subscriptionStatus = subscriptionStatus
+        self.session = .shared
+    }
+
+    /// Internal initializer for testing with a custom URLSession.
+    init(
+        relayURL: URL,
+        networkMonitor: NetworkMonitor,
+        subscriptionStatus: any SubscriptionStatusProviding,
+        session: URLSession
+    ) {
+        self.relayURL = relayURL
+        self.networkMonitor = networkMonitor
+        self.subscriptionStatus = subscriptionStatus
+        self.session = session
     }
 
     public var isAvailable: Bool {
@@ -49,7 +88,7 @@ public final class CloudAPIProvider: AIProvider, Sendable {
         prompt: AIPrompt,
         context: AIContext
     ) -> AsyncThrowingStream<String, Error> {
-        AsyncThrowingStream { [relayURL, subscriptionStatus, logger] continuation in
+        AsyncThrowingStream { [relayURL, subscriptionStatus, session, logger] continuation in
             Task {
                 do {
                     // Verify subscription before each request per [A-057]
@@ -80,7 +119,9 @@ public final class CloudAPIProvider: AIProvider, Sendable {
                     ]
                     request.httpBody = try JSONEncoder().encode(body)
 
-                    let (asyncBytes, response) = try await URLSession.shared.bytes(for: request)
+                    let (asyncBytes, response) = try await withRetry {
+                        try await session.bytes(for: request)
+                    }
 
                     guard let httpResponse = response as? HTTPURLResponse else {
                         continuation.finish(throwing: EMError.ai(.cloudUnavailable))
