@@ -1,0 +1,57 @@
+[
+  {
+    "id": "BUG-001",
+    "title": "SpeechRecognitionManager: no deinit cleanup — audio engine leaks if deallocated while recording",
+    "intent": "Audio resources must be released on dealloc — a live mic after the editor closes is a privacy violation and a resource bug",
+    "description": "SpeechRecognitionManager has no deinit. If the instance is deallocated while state is .recording or .starting, AVAudioEngine and SFSpeechRecognitionTask are never stopped or cancelled. The microphone tap remains active and the OS audio session is not released. stopRecording() exists but is not called on dealloc.",
+    "priority": "should",
+    "category": null,
+    "steps": [
+      "In Sources/EMEditor/SpeechRecognitionManager.swift, add deinit: if audioEngine \\!= nil { audioEngine?.stop(); audioEngine?.inputNode.removeTap(onBus: 0); audioEngine = nil; recognitionTask?.cancel(); recognitionTask = nil; state = .idle }",
+      "Verify the deinit executes on the main actor (SpeechRecognitionManager is @MainActor — Swift guarantees deinit runs on the actor's executor for actor-isolated types)",
+      "Test: in EMAITests or EMEditorTests, create SpeechRecognitionManager, set audioEngine to a non-nil AVAudioEngine stub, then nil the manager reference and verify via weak var that the instance deallocates and audioEngine cleanup path was hit (use a spy/subclass or test hook)",
+      "swift build must pass"
+    ],
+    "acceptanceCriteria": [
+      "Deallocating SpeechRecognitionManager while audioEngine is non-nil stops the engine and removes the tap",
+      "Deallocating SpeechRecognitionManager while recognitionTask is non-nil cancels the task",
+      "Unit test passes verifying dealloc path cleans up audio resources"
+    ],
+    "scope": [],
+    "dependsOn": [],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "groomingNotes": "File: Sources/EMEditor/SpeechRecognitionManager.swift. STEPS: (1) Add deinit to SpeechRecognitionManager: check if audioEngine != nil — if so, call audioEngine?.stop(), audioEngine?.inputNode.removeTap(onBus: 0), audioEngine = nil, recognitionTask?.cancel(), recognitionTask = nil. Set state = .idle to prevent stale observers firing. (2) Because SpeechRecognitionManager is @MainActor, deinit runs on the main actor — no threading concern. (3) Test in EMAITests or EMEditorTests: create a SpeechRecognitionManager, call startRecording() (mock AVAudioEngine or skip to state = .recording manually), then assign manager = nil — verify via weak reference that it is deallocated and audioEngine is nil (add a teardown observable property for testing). (4) swift build must pass.",
+    "groomedAt": "2026-03-24",
+    "completedAt": "2026-03-24T00:11:37-07:00"
+  },
+  {
+    "id": "BUG-002",
+    "title": "ImageLoader: in-flight Task.detached loads not cancelled on dealloc — remote image tasks outlive the loader",
+    "intent": "Network requests must not outlive the component that issued them — dangling URLSession tasks waste bandwidth and complicate memory analysis",
+    "description": "loadImageIfNeeded fires Task.detached without storing the Task handle. When ImageLoader is deallocated (e.g., document closed), any in-flight URLSession downloads for remote images continue running with no way to cancel them. The [weak self] guard prevents crashes, but the URLSession download itself is not cancelled, wasting bandwidth for potentially large remote images.",
+    "priority": "should",
+    "category": null,
+    "steps": [
+      "In Sources/EMEditor/ImageLoader.swift, add private var tasks: [URL: Task<Void, Never>] = [:] to the class",
+      "In loadImageIfNeeded, change 'Task.detached { ... }' to 'let task = Task.detached { ... }' and store: tasks[url] = task",
+      "Inside the Task body in the MainActor.run block, after setting cache entry, add: self.tasks.removeValue(forKey: url)",
+      "Add deinit to ImageLoader: tasks.values.forEach { $0.cancel() }; tasks.removeAll()",
+      "swift build must pass"
+    ],
+    "acceptanceCriteria": [
+      "Deallocating ImageLoader cancels all stored in-flight tasks",
+      "Task handle is removed from tasks dictionary when load completes (no unbounded growth)",
+      "Existing load-deduplication via inFlightURLs is unaffected"
+    ],
+    "scope": [],
+    "dependsOn": [],
+    "status": "done",
+    "passes": true,
+    "readyForSprint": false,
+    "groomingNotes": "User impact: On slow connections, closing a document before images load leaves silent download tasks running in the background — burning mobile data for images the user will never see. This is a silent cost, not a crash, so users cannot report it. Fix is narrow (ImageLoader.swift only). The three AC are already implementation-testable; no user-visible behavior changes. Confirm intent matches product value: 'zero resource waste when document closes'.",
+    "groomedAt": "2026-03-24",
+    "completedAt": "2026-03-24T00:12:58-07:00"
+  }
+]
